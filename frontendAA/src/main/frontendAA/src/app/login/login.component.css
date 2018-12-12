@@ -1,0 +1,20 @@
+#logo {
+  width: 15%;
+  margin-left: 42.5%;
+}
+
+#loginButton {
+  width: 20%;
+}
+
+.mainForm {
+  width: 70%;
+  margin: 1% auto 15% auto;
+  padding: 30px 30px 45px 30px;
+}
+
+#loginButton {
+
+  position: relative;
+  float: right;
+}

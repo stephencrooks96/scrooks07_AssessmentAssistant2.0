@@ -1,0 +1,27 @@
+<app-header></app-header>
+<div class="container">
+  <div class="title">
+    <h2 class="display-2">Modules</h2>
+  </div>
+
+  <div *ngIf="modulesWithTutors">
+    <div class='row' style="align-content: center;">
+      <div *ngFor="let moduleTutor of modulesWithTutors" class='col-sm-8'
+           style="margin-left: auto; margin-right: auto; margin-bottom: 30px;">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">{{moduleTutor.module.moduleName}}
+              <small class="text-muted"> {{moduleTutor.module.year}}</small>
+            </h2>
+            <h5 class="card-subtitle mb-2 text-muted">
+              Tutor: {{moduleTutor.tutor.firstName + " " + moduleTutor.tutor.lastName}}</h5>
+            <h5 class="card-subtitle mb-2 text-muted">Email: {{moduleTutor.tutor.username}}</h5>
+            <h5 class="card-text">{{moduleTutor.module.moduleDescription}}</h5>
+            <h6><a [routerLink]="['/moduleHome', moduleTutor.module.moduleID]" class="card-link">Go
+              to {{moduleTutor.module.moduleName}}</a></h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

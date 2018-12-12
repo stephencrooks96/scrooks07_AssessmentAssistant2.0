@@ -1,0 +1,15 @@
+#logoutButton {
+  margin-top: 5%;
+  margin-right: 5%;
+  position: relative;
+  float: right;
+}
+
+#logoutButton button {
+  background-color: #bdbdbd;
+}
+
+#logo {
+  width: 10%;
+  margin-left: 45%;
+}

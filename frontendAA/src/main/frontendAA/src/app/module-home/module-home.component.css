@@ -1,0 +1,62 @@
+.nav-item a {
+  color: white;
+}
+
+#moduleHomeArea {
+  background-color: #6B757E;
+  min-height: 450px;
+  padding-bottom: 10px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+.modHomeInner {
+  width: 70%;
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
+.marking {
+  background-color: #343a40;
+  color: white;
+  padding-bottom: 15px;
+  border-radius: 5px;
+
+}
+
+table {
+  text-align: center;
+}
+
+nav {
+  margin-bottom: 20px;
+}
+
+
+#addTestForm input {
+  color: white;
+  background-color: #202529;
+  border-color: #202529;
+}
+
+.markingObj {
+  align-content: center;
+  text-align: center;
+}
+
+.markingObj .row {
+  align-content: center;
+  text-align: center;
+}
+
+#markNav a:active {
+  background-color: white;
+}
+
+#markNav {
+  background-color: #333A40;
+  margin-bottom: 5px;
+}
+
+
+

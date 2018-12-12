@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" data-ng-app="editTest">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="shortcut icon" type="image/ico"
+	th:href="@{/images/favicon.ico}" />
+	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+	
+	<script th:inline='javascript'>
+	
+	/*<![CDATA[*/
+		
+	var testID = /*[[${test.testID}]]*/ 'default';
+	
+	/*]]>*/
+	</script>
+<script src="js/editTest.js"></script>
+
+<link rel="stylesheet"
+	href="https://cdn.rawgit.com/Chalarangelo/mini.css/v2.3.4/dist/mini-default.min.css">
+<link href="/css/assessmentAssistant.css" rel="stylesheet"
+	type="text/css">
+
+
+<title>Edit Test</title>
+</head>
+<body>
+	<div>
+		<!-- Include _menu.html -->
+		<th:block th:include="/logoutButton"></th:block>
+
+
+		<a th:href="@{/myModules}"><img id="homeLogo" src="/images/logo_transparent.png" /></a>
+
+	</div>
+	<div class="container" data-ng-controller="editingTest" data-ng-init="testInit()">
+
+		<h1>Test: {{testTitle}}</h1>
+		<h3>Starts: {{startDateTime}}</h3>
+		<h3>Ends: {{endDateTime}}</h3>
+
+		<a class="shadow button"
+			data-ng-click="showQuestionsForms = !showQuestionsForms">Add new
+			Question</a> <a class="shadow button"
+			data-ng-click="showQuestionsForms = !showQuestionsForms">Choose
+			one you have used before</a>
+
+		<div id="questionForm" data-ng-show='showQuestionsForms'>
+			<form class='shadow' id='addQuestionForm' name='addQuestionForm'
+				data-ng-submit="addQuestion()" method='POST' style="width: 100%;">
+				<div class="row">
+					<fieldset style="height: 95%; width: 100%;">
+						<legend>Question</legend>
+						
+						<div class="row">
+							<div class='col-sm-2'>
+								<label for='sf1-select' class='doc'>Question Type:</label>
+							</div>
+							<div class='col-sm-4' th:utext="${questionTypes}"></div>
+							<div class='col-sm-2'>
+								<label for="sf1-num" class="doc">Max Score:</label>
+							</div>
+							<div class='col-sm-4'>
+								<input type="number" id="sf1-num" style="width: 350px;"
+									class="doc" data-ng-model="question.maxScore">
+							</div>
+						</div>
+
+
+						<div class="row">
+							<div class='col-sm-2'>
+								<label for="sf1-textarea" class="doc">Question Content:</label>
+							</div>
+							<div class='col-sm-10'>
+								<textarea class="doc"
+									style="max-width: 915px; width: 915px; min-width: 915px; min-height: 150px;" data-ng-model="question.questionContent"></textarea>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class='col-sm-2'></div>
+							<div class='col-sm-10'>
+								<input type="file" id="file-input" style="display: none" /> <label
+									for="file-input" class="button">Question Figure</label>
+							</div>
+						</div>
+
+
+					</fieldset>
+
+
+					<fieldset style="height: 95%; width: 100%;" id="markSchemeFieldset">
+						<legend>Mark Scheme</legend>
+						<p style="font-size: x-small;">Here you can allocate marks to
+							some key points you will be looking for, the more you add the
+							more Assessment Assistant can do for you.</p>
+						<p style="font-size: x-small;">Don't worry if a student's
+							answer meets criteria for more of these than the question is
+							worth, the system will never allocate more than the maximum marks
+							you have assigned to the question.</p>
+
+						<fieldset>
+							<legend>Correct Point</legend>
+							<div class="row">
+								<div class='col-sm-2'>
+									<label for="phrase1" class="doc">Phrase:</label>
+								</div>
+								<div class='col-sm-4'>
+									<input type="text" id="phrase1" style="width: 350px;"
+										class="doc" data-ng-model="correctPoint[0].phrase">
+								</div>
+								<div class='col-sm-2'>
+									<label for="marksWorth1" class="doc">Marks worth:</label>
+								</div>
+								<div class='col-sm-4'>
+									<input type="number" id="marksWorth1" style="width: 350px;"
+										class="doc" data-ng-model="correctPoint[0].marksWorth">
+								</div>
+							</div>
+
+							<div class="row">
+								<div class='col-sm-2'>
+									<label for="feedbackToGive1" class="doc">Feedback to
+										give:</label>
+								</div>
+								<div class='col-sm-4'>
+									<textarea id='feedbackToGive1' class="doc"
+										style="max-width: 350px; width: 350px; min-height: 150px;" data-ng-model="correctPoint[0].feedback"></textarea>
+								</div>
+
+								<div class='col-sm-2'>
+									<label for="alternativePhrases1" class="doc">Alternative
+										phrases:</label>
+								</div>
+								<div class='col-sm-4'>
+									<textarea id='alternativePhrases1' class="doc"
+										style="max-width: 350px; width: 350px; min-height: 150px;"
+										placeholder="Insert each alternative inside ' ' quotation marks." data-ng-model="correctPoint[0].alternative"></textarea>
+								</div>
+							</div>
+
+						</fieldset>
+						<a id='correctPointButton' data-add-another-correct-point data-ng-click="addAnother()">Add another
+							correct point...</a>
+					</fieldset>
+				</div>
+				<input id="addQuestionButton" class="shadow button" type="submit"
+					name='addQuestionButton' value="Save" />
+			</form>
+
+		</div>
+		<div id="questionBank" data-ng-show='!showQuestionsForms'></div>
+
+	</div>
+
+
+
+
+</body>
+
+
+</html>

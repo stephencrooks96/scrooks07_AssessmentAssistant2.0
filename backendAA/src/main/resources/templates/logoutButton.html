@@ -1,0 +1,10 @@
+<div xmlns:th="http://www.thymeleaf.org">
+
+
+	<div id="logoutButton">
+		<span th:if="${#request.userPrincipal != null}"
+			th:utext="${'Logged in as ' + #request.userPrincipal.name} + ': '"></span><a
+			th:if="${#request.userPrincipal != null}" th:href="@{/logout}"><button
+				class="small">logout</button></a>
+	</div>
+</div>

@@ -1,0 +1,63 @@
+/* You can add global styles to this file, and also import other style files */
+@charset "UTF-8";
+
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "~@fortawesome/fontawesome-free/css/all.css";
+
+body {
+  background-color: #dbdbdb;
+}
+
+.breadcrumbs ol {
+  background-color: #dbdbdb;
+}
+
+.breadcrumbs ol li a {
+  color: #584E74;
+}
+
+.container {
+  width: 80%;
+}
+
+.title {
+  text-align: center;
+}
+
+.mainForm {
+  background-color: #bdbdbd;
+  width: 50%;
+  margin: 1% auto 15% auto;
+  padding: 30px 30px 30px 30px;
+}
+
+#addQuestionForm {
+  background-color: #bdbdbd;
+  width: 60%;
+}
+
+.shadow.btn {
+  border-color: #545454;
+  background-color: #545454;
+  color: white;
+}
+
+#addTestButton {
+  width: 55%;
+}
+
+.shadow {
+  border-radius: 5px;
+  box-shadow: 5px 3px 2.5px #545454;
+}
+
+#startDate, #endDate {
+  min-height: 2em;
+}
+
+#addQuestionButton {
+  width: 20%;
+  margin-left: 40%;
+  margin-right: 40%;
+}
+

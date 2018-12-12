@@ -1,0 +1,521 @@
+<app-header></app-header>
+<div class="container">
+  <nav aria-label="breadcrumb" class="breadcrumbs">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="'/myModules'">Modules</a></li>
+      <li aria-current="page" class="breadcrumb-item active">{{moduleTutor.module.moduleName}}</li>
+    </ol>
+  </nav>
+
+  <div class="title">
+    <h3 class="display-3">{{moduleTutor.module.moduleName || ""}}</h3>
+  </div>
+
+
+  <div class="shadow" id="moduleHomeArea">
+    <nav class="navbar navbar-dark bg-dark" id="navbar-example">
+      <a class="navbar-brand" style="color: white;">Module Home</a>
+      <ul class="nav nav-pills" style="color: white;">
+        <li class="nav-item">
+          <a
+            (click)="activeTestCheck = true;
+            activeResultCheck = false;
+            addTestCheck = false;
+            performanceCheck = false;
+            scheduledTestCheck = false;
+            markingCheck = false;
+            testDraftCheck = false;
+            reviewMarkingCheck = false"
+            class="nav-link" href="#">Active
+            Tests</a>
+        </li>
+
+        <li *ngIf="'student' == moduleAssoc" class="nav-item">
+          <a (click)="activeResultCheck = true;
+             activeTestCheck = false;
+             addTestCheck = false;
+             performanceCheck = false;
+             scheduledTestCheck = false;
+             markingCheck = false;
+             testDraftCheck = false;
+             reviewMarkingCheck = false"
+             class="nav-link" href="#">Active
+            Results</a>
+        </li>
+        <li *ngIf="'student' == moduleAssoc || 'tutor' == moduleAssoc" class="nav-item">
+          <a (click)="activeResultCheck = false;
+             activeTestCheck = false;
+             performanceCheck = true;
+             addTestCheck = false;
+             scheduledTestCheck = false;
+             markingCheck = false;
+             testDraftCheck = false;
+             reviewMarkingCheck = false"
+             class="nav-link" href="#">Performance</a>
+        </li>
+        <li *ngIf="'tutor' == moduleAssoc" class="nav-item">
+          <a (click)="activeTestCheck = false;
+             activeResultCheck = false;
+             addTestCheck = true;
+             performanceCheck = false;
+             scheduledTestCheck = false;
+             markingCheck = false;
+             testDraftCheck = false;
+             reviewMarkingCheck = false"
+             class="nav-link" href="#">Add Test</a>
+        </li>
+        <li *ngIf="'tutor' == moduleAssoc" class="nav-item">
+          <a (click)="activeTestCheck = false;
+             activeResultCheck = false;
+             addTestCheck = false;
+             performanceCheck = false;
+             scheduledTestCheck = true;
+             markingCheck = false;
+             testDraftCheck = false;
+             reviewMarkingCheck = false"
+             class="nav-link" href="#">Scheduled
+            Tests</a>
+        </li>
+        <li *ngIf="'student' != moduleAssoc" class="nav-item">
+          <a (click)="activeTestCheck = false;
+             activeResultCheck = false;
+             addTestCheck = false;
+             performanceCheck = false;
+             scheduledTestCheck = false;
+             markingCheck = true;
+             testDraftCheck = false;
+             reviewMarkingCheck = false"
+             class="nav-link" href="#">Marking</a>
+        </li>
+        <li *ngIf="'tutor' == moduleAssoc" class="nav-item">
+          <a (click)="activeTestCheck = false;
+             activeResultCheck = false;
+             addTestCheck = false;
+             performanceCheck = false;
+             scheduledTestCheck = false;
+             markingCheck = false;
+             testDraftCheck = true;
+             reviewMarkingCheck = false"
+             class="nav-link" href="#">Test
+            Drafts</a>
+        </li>
+        <li *ngIf="'tutor' == moduleAssoc" class="nav-item">
+          <a (click)="activeTestCheck = false;
+             activeResultCheck = false;
+             performanceCheck = false;
+             addTestCheck = false;
+             scheduledTestCheck = false;
+             markingCheck = false;
+             testDraftCheck = false;
+             reviewMarkingCheck = true"
+             class="nav-link" href="#">Review
+            Marking</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div *ngIf="activeTestCheck">
+      <div class="modHomeInner" id="activeTests">
+        <div *ngIf="activeTests && activeTests.length > 0">
+          <div class="title">
+            <h5 class="display-5">Active Tests</h5>
+          </div>
+          <table class="table table-dark">
+
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th>Title</th>
+              <th>Deadline</th>
+              <th *ngIf="'student' == moduleAssoc">Take</th>
+              <th *ngIf="'student' != moduleAssoc">View</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let activeTest of activeTests">
+              <td scope="row">{{activeTest.testID}}</td>
+              <td data-label="Title:"> {{activeTest.testTitle}}</td>
+              <td data-label="Deadline:">{{activeTest.endDateTime}}</td>
+              <td data-label="Take:"><a [routerLink]="['/takeTest', activeTest.testID]" style="color: white;"><i
+                class="fas fa-stopwatch fa-lg"></i></a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf=" activeTests && activeTests.length == 0">
+          <div class="title">
+            <h5 class="display-5">Active Tests</h5>
+            <h1 class="display-3">No active tests to show.</h1>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div *ngIf="activeResultCheck">
+      <div *ngIf="'student' == moduleAssoc" class="modHomeInner" id="activeResults">
+        <div *ngIf="activeResults && activeResults.length > 0">
+          <div class="title">
+            <h5 class="display-5">Active Results</h5>
+          </div>
+          <table class="table table-striped">
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th>Title</th>
+              <th>Score</th>
+              <th>Feedback</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr *ngFor="let activeResult of activeResults">
+              <td scope="row">{{activeResult.test.testID}}</td>
+              <td data-label="Title">{{activeResult.test.testTitle}}</td>
+              <td data-label="Grade">{{ activeResult.grade }}</td>
+              <td data-label="Feedback"><a [routerLink]="['/testFeedback', activeResult.test.testID]">View</a></td>
+            </tr>
+
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="activeResults.length == 0">
+          <div class="title">
+            <h5 class="display-5">Active Results</h5>
+            <h1 class="display-3">No active results to show.</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="performanceCheck">
+      <div *ngIf="'student' == moduleAssoc || 'tutor' == moduleAssoc" class="modHomeInner" id="performance">
+        <div *ngIf="performanceList && performanceList.length > 0">
+          <div class="title">
+            <h5 class="display-5">Performance</h5>
+          </div>
+          <table class="table table-dark">
+
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th>Test</th>
+              <th>Average</th>
+              <th>Class Average</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let performance of performanceList">
+              <td scope="row">{{performance.testAndResult.test.testID}}</td>
+              <td data-label="Test"> {{performance.testAndResult.test.testTitle}}</td>
+
+              <td *ngIf="performance.testAndResult.testResult.testScore > performance.classAverage"
+                  class="table-success"
+                  data-label="Average">{{performance.testAndResult.testResult.testScore / performance.testAndResult.percentageScore * 100}}</td>
+              <td *ngIf="performance.testAndResult.testResult.testScore < performance.classAverage"
+                  class="table-danger"
+                  data-label="Average">{{performance.testAndResult.testResult.testScore / performance.testAndResult.percentageScore * 100}}</td>
+              <td *ngIf="performance.testAndResult.testResult.testScore == performance.classAverage"
+                  class="table-warning"
+                  data-label="Average">{{performance.testAndResult.testResult.testScore / performance.testAndResult.percentageScore * 100}}</td>
+              <td
+                data-label="Class Average">{{performance.classAverage / performance.testAndResult.percentageScore * 100}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="performanceList.length == 0">
+          <div class="title">
+            <h5 class="display-5">Performance</h5>
+            <h1 class="display-3">No performance data to show.</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="addTestCheck">
+      <div *ngIf="'tutor' == moduleAssoc" class="modHomeInner" id="addTest">
+        <div class="title">
+          <h5 class="display-5">Add Test</h5>
+        </div>
+        <form (submit)="addTest()" id="addTestForm" name='addTestForm'
+              role="form" style="padding-left: 25%;">
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col-sm-2">
+                <label class="form-control-lg" for="testTitle" style="font-size: 1.75rem;">Title</label>
+              </div>
+              <div class="cols-sm-9">
+                <div *ngIf="testTitle.invalid && (testTitle.dirty || testTitle.touched)"
+                     class="alert alert-danger" role="alert">
+
+                  <div *ngIf="testTitle.errors.required">
+                    Test needs a title.
+                  </div>
+                  <div *ngIf="testTitle.errors.minlength">
+                    Title must be at least 1 character long.
+                  </div>
+                  <div *ngIf="testTitle.errors.maxlength">
+                    Title must not be over 50 characters long.
+                  </div>
+                </div>
+                <input #testTitle="ngModel" [(ngModel)]="testInsert.testTitle" aria-describedby="testTitleHelp"
+                       class="form-control-lg" id="testTitle"
+                       maxlength="50" minlength="1" name="testTitle" required type="text"/>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group">
+
+            <div class="row">
+              <div class="col-sm-2">
+                <label class="form-control-lg" for="startDate" style="font-size: 1.75rem;">Start</label>
+              </div>
+
+              <div class="col-sm-9" style="padding-left: 0;">
+                <div *ngIf="startDate.invalid && (startDate.dirty || startDate.touched)"
+                     class="alert alert-danger" role="alert">
+
+                  <div *ngIf="startDate.errors.required">
+                    Test needs a start date.
+                  </div>
+                </div>
+                <input #startDate="ngModel" [(ngModel)]="testInsert.startDateTime" aria-describedby="startDateHelp"
+                       class="form-control-lg" id="startDate"
+                       name="startDate" required type="datetime-local"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+
+            <div class="row">
+              <div class="col-sm-2">
+                <label class="form-control-lg" for="endDate" style="font-size: 1.75rem;">End</label>
+              </div>
+              <div class="col-sm-9" style="padding-left: 0;">
+                <div *ngIf="endDate.invalid && (endDate.dirty || endDate.touched)"
+                     class="alert alert-danger" role="alert">
+
+                  <div *ngIf="endDate.errors.required">
+                    Test needs a end date.
+                  </div>
+                </div>
+                <input #endDate="ngModel" [(ngModel)]="testInsert.endDateTime" aria-describedby="endDateHelp"
+                       class="form-control-lg" id="endDate"
+                       name="endDate" required type="datetime-local"/>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <div class="col-sm-2">
+            </div>
+            <div class="col-sm-9">
+              <button class="btn btn-dark" id="loginButton" type="submit">Save and add questions...</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+
+    <div *ngIf="scheduledTestCheck">
+      <div *ngIf="'tutor' == moduleAssoc" class="modHomeInner" id="scheduledTests">
+        <div *ngIf="scheduledTests.length > 0">
+          <div class="title">
+            <h5 class="display-5">Scheduled Tests</h5>
+          </div>
+          <table class="table table-dark">
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th>Title</th>
+              <th>Start Time</th>
+              <th>Moved to Drafts</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr *ngFor="let scheduledTest of scheduledTests">
+              <td scope="row">{{scheduledTest.testID}}</td>
+              <td data-label="Title:">{{scheduledTest.testTitle}}</td>
+              <td data-label="Starts:">{{scheduledTest.startDateTime}}</td>
+              <td data-label="Not ready?"><a [routerLink]="['/retractScheduled', scheduledTest.testID]"
+                                             style="color: white;"><i
+                class="fas fa-step-backward fa-lg"></i></a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="scheduledTests.length == 0">
+          <div class="title">
+            <h5 class="display-5">Scheduled Tests</h5>
+            <h1 class="display-3">No scheduled tests to show.</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div *ngIf="markingCheck">
+      <div *ngIf="'student' != moduleAssoc" class="modHomeInner" id="marking">
+        <div *ngIf="marking.length > 0">
+          <div class="title">
+            <h5 class="display-5">Marking</h5>
+          </div>
+          <div class="marking">
+            <nav class="nav" id="markNav">
+              <div class="row">
+                <div class="col">
+                  <div ngbDropdown class="d-inline-block">
+                    <button class="btn btn-dark" ngbDropdownToggle>Tests</button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                      <button class="dropdown-item" *ngFor="let testMarking of marking" (click)="show = testMarking.test.testID">{{testMarking.test.testTitle}}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </nav>
+            <div *ngFor="let testMarking of marking">
+              <div
+                *ngIf="testMarking == marking[0] ? show == testMarking.test.testID || show == 0 : show == testMarking.test.testID"
+                class="markingObj" id="testMarking.test.testID">
+                <h2>{{testMarking.test.testTitle}}</h2><span>answers marked</span>
+                <div *ngIf="'tutor' == moduleAssoc">
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <h2>You</h2>
+                    </div>
+                    <div class="col-sm-6">
+                      <h2>Assistants</h2>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <h5 class="display-4">{{testMarking.totalForYou - testMarking.toBeMarkedByYou}}
+                        / {{testMarking.totalForYou}}</h5>
+                    </div>
+                    <div class="col-sm-6">
+                      <h5 class="display-4">{{testMarking.totalForTAs - testMarking.toBeMarkedByTAs}}
+                        / {{testMarking.totalForTAs}}</h5>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <h5 class="display-4">
+                        Progress: {{calculateProgress(testMarking.marked, testMarking.toBeMarkedByYou, testMarking.toBeMarkedByTAs)}}
+                        %</h5>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div aria-label="Basic example" class="btn-group" role="group">
+                  <button [routerLink]="['/mark', testMarking.test.testID]" class="btn btn-warning" type="button">Mark
+                    script
+                  </button>
+                  <button *ngIf="'tutor' == moduleAssoc" [routerLink]="['/viewProgress', testMarking.test.testID]"
+                          class="btn btn-warning"
+                          type="button">View marker Progress
+                  </button>
+                  <button *ngIf="'tutor' == moduleAssoc" [routerLink]="['/delegateMarking', testMarking.test.testID]"
+                          class="btn btn-warning"
+                          type="button">Assign scripts
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="marking.length == 0">
+          <div class="title">
+            <h5 class="display-5">Marking</h5>
+            <h1 class="display-3">No marking to show.</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="testDraftCheck">
+      <div *ngIf="'tutor' == moduleAssoc" class="modHomeInner" id="testDrafts">
+        <div *ngIf="testDrafts.length > 0">
+          <div class="title">
+            <h5 class="display-5">Test Drafts</h5>
+          </div>
+          <table class="table table-dark">
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th>Title</th>
+              <th>Edit</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let testDraft of testDrafts">
+              <td scope="row">{{testDraft.testID}}</td>
+              <td data-label="Title">{{testDraft.testTitle}}</td>
+              <td data-label="Edit"><a [routerLink]="['/editTest', testDraft.testID]" style="color: white;"><i
+                class="fas fa-edit fa-lg"></i></a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="testDrafts.length == 0">
+          <div class="title">
+            <h5 class="display-5">Test Drafts</h5>
+            <h1 class="display-3">No drafts to show.</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="reviewMarkingCheck">
+      <div *ngIf="'tutor' == moduleAssoc" class="modHomeInner" id="reviewMarking">
+        <div *ngIf="testsForReview.length > 0">
+          <div class="title">
+            <h5 class="display-5">Review Marking</h5>
+          </div>
+          <table class="table table-dark">
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th>Title</th>
+              <th>Review</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr *ngFor="let test of testsForReview">
+
+
+              <td scope="row">{{test.test.testID}}</td>
+              <td data-label="Title">{{test.test.testTitle}}</td>
+              <td data-label="Review"><a [routerLink]="['/reviewMarking', test.test.testID]" style="color: white;"><i
+                class="fas fa-search fa-lg"></i></a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="testsForReview.length == 0">
+          <div class="title">
+            <h5 class="display-5">Review Marking</h5>
+            <h1 class="display-3">No reviews ready.</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
