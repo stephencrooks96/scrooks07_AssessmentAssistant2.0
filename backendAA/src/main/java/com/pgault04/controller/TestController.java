@@ -2,6 +2,7 @@ package com.pgault04.controller;
 
 import com.pgault04.entities.QuestionType;
 import com.pgault04.entities.Tests;
+import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.QuestionTypeRepo;
 import com.pgault04.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +44,28 @@ public class TestController {
     @RequestMapping(value = "/getQuestionTypes", method = RequestMethod.GET)
     public List<QuestionType> getQuestionTypes() {
         return questionTypeRepo.selectAll();
+    }
+
+    /**
+     *
+     * @param questionData
+     * @param principal
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/newQuestion", method = RequestMethod.POST)
+    public Boolean newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
+
+        try {
+
+            testServ.newQuestion(questionData, principal.getName());
+            return true;
+
+        } catch (Exception e) {
+
+            return false;
+        }
+
+
     }
 }

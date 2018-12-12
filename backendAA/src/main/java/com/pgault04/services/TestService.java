@@ -1,16 +1,14 @@
 package com.pgault04.services;
 
-import com.pgault04.entities.Module;
-import com.pgault04.entities.Tests;
-import com.pgault04.entities.User;
-import com.pgault04.repositories.ModuleRepo;
-import com.pgault04.repositories.TestsRepo;
-import com.pgault04.repositories.UserRepo;
+import com.pgault04.entities.*;
+import com.pgault04.pojos.TutorQuestionPojo;
+import com.pgault04.repositories.*;
 import com.pgault04.utilities.StringToDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.List;
 
 /**
  *
@@ -29,6 +27,18 @@ public class TestService {
 
     @Autowired
     ModuleService modServ;
+
+    @Autowired
+    QuestionTypeRepo questionTypeRepo;
+
+    @Autowired
+    QuestionRepo questionRepo;
+
+    @Autowired
+    TestQuestionRepo testQuestionRepo;
+
+    @Autowired
+    CorrectPointRepo cpRepo;
 
     /**
      * Method primes input data to be entered in to the database Ensures data size
@@ -91,5 +101,38 @@ public class TestService {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param questionData
+     * @param username
+     * @return
+     */
+    public void newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
+
+        Question question = questionData.getQuestion();
+        List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
+        User user = userRepo.selectByUsername(username);
+        question.setCreatorID(user.getUserID());
+
+        question = questionRepo.insert(question);
+        testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
+        addCorrectPoints(correctPoints);
+
+    }
+
+    /**
+     * @param correctPoints
+     * @return
+     */
+    public void addCorrectPoints(List<CorrectPoint> correctPoints) throws Exception {
+        if (correctPoints != null && correctPoints.size() > 0) {
+            for (CorrectPoint cp : correctPoints) {
+
+                cpRepo.insert(cp);
+            }
+        }
+
+
     }
 }
