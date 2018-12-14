@@ -1,4 +1,10 @@
-DROP TABLE IF EXISTS Answer, AssociationType, Message, Module, ModuleAssociation, Password, Question, QuestionType, TestQuestion, TestResutlt, Tests, TimeModifier, User, UserRole, UserSessions;
+DROP TABLE IF EXISTS Alternative, Answer, AssociationType, Message, Module, ModuleAssociation, Password, Question, QuestionType, TestQuestion, TestResutlt, Tests, TimeModifier, User, UserRole, UserSessions;
+
+CREATE TABLE IF NOT EXISTS Alternative (
+  alternativeID int(11) NOT NULL AUTO_INCREMENT,
+  correctPointID int(11) NOT NULL,
+  alternativePhrase text NOT NULL
+  );
 
 CREATE TABLE IF NOT EXISTS Answer (
   answerID int(11) NOT NULL AUTO_INCREMENT,
@@ -7,10 +13,8 @@ CREATE TABLE IF NOT EXISTS Answer (
   answererID int(11) NOT NULL,
   markerID int(11) NOT NULL,
   content text NOT NULL,
-  score int(11),
-  feedback text,
-  marksGainedFor text
-);
+  score int(11)
+  );
 
 -- --------------------------------------------------------
 
@@ -21,9 +25,17 @@ CREATE TABLE IF NOT EXISTS Answer (
 CREATE TABLE IF NOT EXISTS AssociationType (
   associationTypeID int(11) NOT NULL AUTO_INCREMENT,
   associationType varchar(30) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS CorrectPoint (
+  correctPointID int(11) NOT NULL AUTO_INCREMENT,
+  questionID int(11) NOT NULL,
+  phrase text NOT NULL,
+  marksWorth double NOT NULL,
+  feedback text NOT NULL
+  );
 
 --
 -- Table structure for table Message
@@ -36,7 +48,7 @@ CREATE TABLE IF NOT EXISTS Message (
   senderID int(11) NOT NULL,
   messageTimestamp timestamp(3) NOT NULL,
   newMessage tinyint(1) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -50,7 +62,7 @@ CREATE TABLE IF NOT EXISTS Module (
   moduleDescription varchar(500) NOT NULL,
   tutorUserID int(11) NOT NULL,
   year year(4) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -63,7 +75,7 @@ CREATE TABLE IF NOT EXISTS ModuleAssociation (
   moduleID int(11) NOT NULL,
   userID int(11) NOT NULL,
   associationType int(11) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -74,7 +86,7 @@ CREATE TABLE IF NOT EXISTS ModuleAssociation (
 CREATE TABLE IF NOT EXISTS Password (
   userID int(11) NOT NULL,
   resetString varchar(10) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -86,11 +98,10 @@ CREATE TABLE IF NOT EXISTS Question (
   questionType int(11) NOT NULL,
   questionID int(11) NOT NULL AUTO_INCREMENT,
   questionContent text NOT NULL,
-  questionFigure varchar(255) NOT NULL,
+  questionFigure varchar(255),
   maxScore int(11) NOT NULL,
-  modelAnswerID int(11),
   creatorID int(11) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -101,17 +112,17 @@ CREATE TABLE IF NOT EXISTS Question (
 CREATE TABLE IF NOT EXISTS QuestionType (
   questionTypeID int(11) NOT NULL AUTO_INCREMENT,
   questionType varchar(255) NOT NULL
-);
+  );
 
 --
 -- Table structure for table TestQuestion
 --
 
 CREATE TABLE IF NOT EXISTS TestQuestion (
-  testQuestionID int(11) NOT NULL AUTO_INCREMENT, 
+  testQuestionID int(11) NOT NULL AUTO_INCREMENT,
   testID int(11) NOT NULL,
   questionID int(11) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -124,7 +135,7 @@ CREATE TABLE IF NOT EXISTS TestResult (
   testID int(11) NOT NULL,
   studentID int(11) NOT NULL,
   testScore int(11) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -139,8 +150,9 @@ CREATE TABLE IF NOT EXISTS Tests (
   startDateTime timestamp NOT NULL,
   endDateTime timestamp NOT NULL,
   publishResults tinyint(1) NOT NULL,
-  scheduled tinyint(1) NOT NULL
-);
+  scheduled tinyint(1) NOT NULL,
+  publishGrades tinyint(1) NOT NULL,
+  );
 
 -- --------------------------------------------------------
 
@@ -151,7 +163,7 @@ CREATE TABLE IF NOT EXISTS Tests (
 CREATE TABLE IF NOT EXISTS TimeModifier (
   userID int(11) NOT NULL,
   timeModifier double NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -167,7 +179,7 @@ CREATE TABLE IF NOT EXISTS User (
   lastName varchar(30) NOT NULL,
   enabled tinyint(1) NOT NULL,
   userRoleID int(11) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -178,7 +190,7 @@ CREATE TABLE IF NOT EXISTS User (
 CREATE TABLE IF NOT EXISTS UserRole (
   userRoleID int(11) NOT NULL AUTO_INCREMENT,
   role varchar(50) NOT NULL
-);
+  );
 
 -- --------------------------------------------------------
 
@@ -188,17 +200,20 @@ CREATE TABLE IF NOT EXISTS UserRole (
 
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS UserSessions (
- 
-    username VARCHAR(64) NOT NULL,
-    sessionID VARCHAR(64) NOT NULL,
-    tokenID VARCHAR(64) NOT NULL,
-    lastActive TIMESTAMP NOT NULL,
-     
-);
+
+  username VARCHAR(64) NOT NULL,
+  sessionID VARCHAR(64) NOT NULL,
+  tokenID VARCHAR(64) NOT NULL,
+  lastActive TIMESTAMP NOT NULL,
+
+  );
 
 --
 -- Indexes for dumped tables
 --
+
+CREATE PRIMARY KEY IF NOT EXISTS alternativeID ON Alternative (alternativeID);
+CREATE INDEX IF NOT EXISTS correctPointIDAlt ON Alternative (correctPointID);
 
 --
 -- Indexes for table Answer
@@ -212,6 +227,9 @@ CREATE INDEX IF NOT EXISTS testID ON Answer (testID);
 -- Indexes for table AssociationType
 --
 CREATE PRIMARY KEY IF NOT EXISTS associationTypeID ON AssociationType (associationTypeID);
+
+CREATE PRIMARY KEY IF NOT EXISTS correctPointID ON CorrectPoint (correctPointID);
+CREATE INDEX IF NOT EXISTS questionIDCorrect ON CorrectPoint (questionID);
 
 --
 -- Indexes for table Message
@@ -244,7 +262,6 @@ CREATE PRIMARY KEY IF NOT EXISTS userIDPass ON Password (userID);
 --
 CREATE PRIMARY KEY IF NOT EXISTS questionID ON Question (questionID);
 CREATE INDEX IF NOT EXISTS questionType ON Question (questionType);
-CREATE INDEX IF NOT EXISTS modelAnswerID ON Question (modelAnswerID);
 CREATE INDEX IF NOT EXISTS creatorID ON Question (creatorID);
 
 --
@@ -332,7 +349,6 @@ ALTER TABLE Password ADD FOREIGN KEY (userID) REFERENCES User (userID);
 --
 -- Constraints for table Question
 --
-ALTER TABLE Question ADD FOREIGN KEY (modelAnswerID) REFERENCES Answer (answerID);
 ALTER TABLE Question ADD FOREIGN KEY (questionType) REFERENCES QuestionType (questionTypeID);
 ALTER TABLE Question ADD FOREIGN KEY (creatorID) REFERENCES User (userID);
 
@@ -362,7 +378,6 @@ ALTER TABLE TimeModifier ADD FOREIGN KEY (userID) REFERENCES User (userID);
 -- Constraints for table User
 --
 ALTER TABLE User ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID);
-
 
 
 -- DATA
@@ -395,43 +410,41 @@ insert into ModuleAssociation (moduleID, userID, associationType) values (2, 1, 
 insert into ModuleAssociation (moduleID, userID, associationType) values (1, 2, 1);
 insert into ModuleAssociation (moduleID, userID, associationType) values (2, 2, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
 
 insert into QuestionType (questionType) values ('questionType1');
 
-insert into Question (questionType, questionContent, questionFigure, maxScore, modelAnswerID, creatorID) values (1, 'content', 'figure', 100, null, 2);
+insert into Question (questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'content', 'figure', 100, 2);
 
-insert into Question (questionType, questionContent, questionFigure, maxScore, modelAnswerID, creatorID) values (1, 'content', 'figure', 100, null, 2);
+insert into Question (questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'content', 'figure', 100, 2);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, marksGainedFor) values (1, 1, 2, 2, 'content', 100, 'feedback', '<mark>mark</mark>');
+insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 1, 2, 2, 'content', 100);
 
-update question set modelAnswerID = 1 where questionID = 1;
+insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 1, 1, 2, 'content', 100);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, marksGainedFor) values (1, 1, 1, 2, 'content', 100, 'feedback', '<mark>mark</mark>');
-
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1, 0);
 
 insert into testresult (testID, studentID, testScore) values (2, 1, 100);
 
 insert into testquestion (testID, questionID) values (2, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 1);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 1, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0);
 
 insert into testquestion (testID, questionID) values (5, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0);
 
 insert into testquestion (testID, questionID) values (6, 1);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, marksGainedFor) values (1, 1, 1, 2, 'content', null, 'feedback', '<mark>mark</mark>');
+insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 1, 1, 2, 'content', null);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled) values (1, 'TestActive', '2018-11-11 00:00:00', '2018-11-11 00:00:00', 1, 1);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '2018-11-11 00:00:00', '2018-11-11 00:00:00', 1, 1, 0);
 
 insert into testquestion (testID, questionID) values (7, 1);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, marksGainedFor) values (1, 7, 2, 1, 'content', null, 'feedback', '<mark>mark</mark>');
+insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 7, 2, 1, 'content', null);
 
