@@ -42,7 +42,6 @@ public class UnitTestQuestionRepo {
 	QuestionTypeRepo questionTypeRepo;
 
 	private Question questionObj;
-	private Long modelAnswerID;
 	private String questionContent, questionFigure;
 	private Integer maxScore;
 
@@ -55,10 +54,9 @@ public class UnitTestQuestionRepo {
 		this.questionContent = "content";
 		this.questionFigure = "questionFigure";
 		this.maxScore = 100;
-		this.modelAnswerID = null;
 
 		questionObj = new Question(QUESTION_TYPE_ID_IN_DB, questionContent, questionFigure, maxScore,
-				modelAnswerID, USER_ID_IN_DB);
+				USER_ID_IN_DB);
 
 	}
 
@@ -78,19 +76,16 @@ public class UnitTestQuestionRepo {
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.QuestionRepo#insert(pgault04.entities.Question)}.
-	 */
+
 	@Test
 	public void testInsert() {
 
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
 
-		List<Question> questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
+		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
 
-		assertEquals(1, questions.size());
+		assertNotNull(questions);
 
 		// Updates the user in the table
 		questionObj.setQuestionContent("content2");
@@ -100,28 +95,21 @@ public class UnitTestQuestionRepo {
 
 		questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
 
-		assertEquals("content2", questions.get(0).getQuestionContent());
+		assertEquals("content2", questions.getQuestionContent());
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.QuestionRepo#selectByUserID(java.lang.Long)}.
-	 */
+
 	@Test
 	public void testSelectByQuestionID() {
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
 
-		List<Question> questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
+		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
 
-		assertEquals(1, questions.size());
+		assertNotNull(questions);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.QuestionRepo#delete(java.lang.Long)}.
-	 */
 	@Test
 	public void testDelete() {
 		// Inserts one user to table
@@ -129,9 +117,9 @@ public class UnitTestQuestionRepo {
 
 		questionRepo.delete(questionObj.getQuestionID());
 
-		List<Question> questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
+		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
 
-		assertEquals(0, questions.size());
+		assertNull(questions);
 	}
 
 }

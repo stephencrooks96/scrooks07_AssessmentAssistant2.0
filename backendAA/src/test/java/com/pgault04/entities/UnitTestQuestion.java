@@ -32,8 +32,6 @@ public class UnitTestQuestion {
 	private String questionFigure;
 
 	private Integer maxScore;
-
-	private Long modelAnswerID;
 	
 	private Long creatorID;
 
@@ -49,7 +47,6 @@ public class UnitTestQuestion {
 		this.questionContent = "questionContent";
 		this.questionFigure = "questionFigure";
 		this.maxScore = 3;
-		this.modelAnswerID = 4L;
 		this.creatorID = 1L;
 	}
 
@@ -69,14 +66,13 @@ public class UnitTestQuestion {
 	@Test
 	public void testQuestionConstructorWithArgs() {
 		questionObj = null;
-		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, modelAnswerID, creatorID);
+		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, creatorID);
 
 		assertNotNull(questionObj);
 		assertEquals(questionType, questionObj.getQuestionType());
 		assertEquals(questionContent, questionObj.getQuestionContent());
 		assertEquals(questionFigure, questionObj.getQuestionFigure());
 		assertEquals(maxScore, questionObj.getMaxScore());
-		assertEquals(modelAnswerID, questionObj.getModelAnswerID());
 		assertEquals(creatorID, questionObj.getCreatorID());
 	}
 
@@ -133,16 +129,6 @@ public class UnitTestQuestion {
 		questionObj.setMaxScore(maxScore);
 		assertEquals(maxScore, questionObj.getMaxScore());
 
-	}
-
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#getModelAnswerID()}.
-	 */
-	@Test
-	public void testGetSetModelAnswerID() {
-		questionObj.setModelAnswerID(modelAnswerID);
-		assertEquals(modelAnswerID, questionObj.getModelAnswerID());
 	}
 	
 	/**

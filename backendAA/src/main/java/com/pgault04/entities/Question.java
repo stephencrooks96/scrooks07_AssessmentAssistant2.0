@@ -20,8 +20,6 @@ public class Question {
 	private String questionFigure;
 
 	private Integer maxScore;
-
-	private Long modelAnswerID;
 	
 	private Long creatorID;
 
@@ -41,12 +39,11 @@ public class Question {
 	 * @param modelAnswerID
 	 */
 	public Question(Long questionType, String questionContent, String questionFigure, Integer maxScore,
-			Long modelAnswerID, Long creatorID) {
+			Long creatorID) {
 		this.setQuestionType(questionType);
 		this.setQuestionContent(questionContent);
 		this.setQuestionFigure(questionFigure);
 		this.setMaxScore(maxScore);
-		this.setModelAnswerID(modelAnswerID);
 		this.setCreatorID(creatorID);
 	}
 
@@ -126,21 +123,6 @@ public class Question {
 	}
 
 	/**
-	 * @return the modelAnswerID
-	 */
-	public Long getModelAnswerID() {
-		return modelAnswerID;
-	}
-
-	/**
-	 * @param modelAnswerID
-	 *            the modelAnswerID to set
-	 */
-	public void setModelAnswerID(Long modelAnswerID) {
-		this.modelAnswerID = modelAnswerID;
-	}
-
-	/**
 	 * @return the creatorID
 	 */
 	public Long getCreatorID() {
@@ -154,16 +136,15 @@ public class Question {
 		this.creatorID = creatorID;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return "Question [questionType=" + questionType + ", questionID=" + questionID + ", questionContent="
-				+ questionContent + ", questionFigure=" + questionFigure + ", maxScore=" + maxScore + ", modelAnswerID="
-				+ modelAnswerID + ", creatorID=" + creatorID + "]";
+		return "Question{" +
+				"questionType=" + questionType +
+				", questionID=" + questionID +
+				", questionContent='" + questionContent + '\'' +
+				", questionFigure='" + questionFigure + '\'' +
+				", maxScore=" + maxScore +
+				", creatorID=" + creatorID +
+				'}';
 	}
-	
-	
-
 }

@@ -77,6 +77,17 @@ CREATE TABLE IF NOT EXISTS ModuleAssociation (
   associationType int(11) NOT NULL
   );
 
+--
+-- Table structure for table Options
+--
+
+CREATE TABLE IF NOT EXISTS OptionTbl (
+  optionID int(11) NOT NULL AUTO_INCREMENT,
+  questionID int(11) NOT NULL,
+  optionContent text NOT NULL,
+  correct tinyint(1) NOT NULL
+  );
+
 -- --------------------------------------------------------
 
 --
@@ -253,6 +264,13 @@ CREATE INDEX IF NOT EXISTS userIDAssoc ON ModuleAssociation (userID);
 CREATE INDEX IF NOT EXISTS associationType ON ModuleAssociation (associationType);
 
 --
+-- Indexes for table Option
+--
+CREATE PRIMARY KEY IF NOT EXISTS optionID ON OptionTbl (optionID);
+CREATE INDEX IF NOT EXISTS questionIDOpt ON OptionTbl (questionID);
+
+
+--
 -- Indexes for table Password
 --
 CREATE PRIMARY KEY IF NOT EXISTS userIDPass ON Password (userID);
@@ -342,6 +360,11 @@ ALTER TABLE ModuleAssociation ADD FOREIGN KEY (moduleID) REFERENCES Module (modu
 ALTER TABLE ModuleAssociation ADD FOREIGN KEY (userID) REFERENCES User (userID);
 
 --
+-- Constraints for table OptionTbl
+--
+ALTER TABLE OptionTbl ADD FOREIGN KEY (questionID) REFERENCES Question (questionID);
+
+--
 -- Constraints for table Password
 --
 ALTER TABLE Password ADD FOREIGN KEY (userID) REFERENCES User (userID);
@@ -378,7 +401,6 @@ ALTER TABLE TimeModifier ADD FOREIGN KEY (userID) REFERENCES User (userID);
 -- Constraints for table User
 --
 ALTER TABLE User ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID);
-
 
 -- DATA
 
