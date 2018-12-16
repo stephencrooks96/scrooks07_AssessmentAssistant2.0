@@ -157,8 +157,8 @@ public class ModuleService {
                         List<Question> questions = new ArrayList<>();
 
                         for (TestQuestion testQuestion : testQuestionRepo.selectByTestID(test.getTestID())) {
-                            List<Question> questionToAdd = questionRepo.selectByQuestionID(testQuestion.getQuestionID());
-                            questions.add(questionToAdd.get(0));
+                            Question questionToAdd = questionRepo.selectByQuestionID(testQuestion.getQuestionID());
+                            questions.add(questionToAdd);
                         }
 
                         double percentageScore = 0;
@@ -246,8 +246,8 @@ public class ModuleService {
                     if (testResult.getStudentID().equals(user.getUserID())) {
                         List<Question> questionList = new ArrayList<>();
                         for (TestQuestion testQuestion : testQuestionRepo.selectByTestID(test.getTestID())) {
-                            List<Question> questionToAdd = questionRepo.selectByQuestionID(testQuestion.getQuestionID());
-                            questionList.add(questionToAdd.get(0));
+                            Question questionToAdd = questionRepo.selectByQuestionID(testQuestion.getQuestionID());
+                            questionList.add(questionToAdd);
                         }
                         tar = new TestAndResult(test, testResult, questionList, null);
                     }
