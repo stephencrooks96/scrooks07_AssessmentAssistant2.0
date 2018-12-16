@@ -22,8 +22,6 @@ export class EditTestComponent implements OnInit {
   testID: number;
   test = new Tests();
   moduleTutor = new ModuleWithTutorFE();
-  questionTypesToShow: QuestionType[];
-  questionInsert = new TutorQuestionPojo();
   showAdd = true;
   showExist = false;
   showDetail = false;
@@ -35,9 +33,6 @@ export class EditTestComponent implements OnInit {
 
   ngOnInit() {
     this.getByTestID(this.testID);
-    this.getQuestionTypes();
-    this.questionInsert.correctPoints = [];
-    this.addCorrectPoint();
     this.getQuestions(this.testID);
   }
 
@@ -49,44 +44,5 @@ export class EditTestComponent implements OnInit {
   getQuestions(testID) {
     return this.testServ.getQuestions(testID).subscribe(questions => this.questions = questions);
   }
-
-
-  getQuestionTypes() {
-    return this.testServ.getQuestionTypes()
-      .subscribe(questionTypes => this.questionTypesToShow = questionTypes);
-  }
-
-  addCorrectPoint() {
-    const correctPoint = new CorrectPoint();
-    correctPoint.alternatives = [];
-    const alternative = new Alternative();
-    alternative.alternativeID = 0;
-    alternative.correctPointID = 0;
-    alternative.alternativePhrase = '';
-    correctPoint.alternatives.push(alternative);
-    correctPoint.feedback = '';
-    correctPoint.marksWorth = 0;
-    correctPoint.phrase = '';
-    correctPoint.questionID = 0;
-    this.questionInsert.correctPoints.push(correctPoint);
-
-    return false;
-  }
-
-  addAlternative(i) {
-    const alternative = new Alternative();
-    alternative.alternativeID = 0;
-    alternative.correctPointID = 0;
-    alternative.alternativePhrase = '';
-    this.questionInsert.correctPoints[i].alternatives.push(alternative);
-    return false;
-  }
-
-  trackById(index: number, obj: any): any {
-    return index;
-  }
-
-
-
 
 }
