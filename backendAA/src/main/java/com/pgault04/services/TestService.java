@@ -150,31 +150,44 @@ public class TestService {
      * @param username
      * @return
      */
-    public void newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
+    public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
 
         Question question = questionData.getQuestion();
         List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
         User user = userRepo.selectByUsername(username);
         question.setCreatorID(user.getUserID());
 
-        question = questionRepo.insert(question);
+        questionData.setQuestion(questionRepo.insert(question));
         testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
-        addCorrectPoints(correctPoints);
-
+        questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID()));
+        return questionData;
     }
 
     /**
      * @param correctPoints
      * @return
      */
-    public void addCorrectPoints(List<CorrectPoint> correctPoints) throws Exception {
+    public List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID) throws Exception {
         if (correctPoints != null && correctPoints.size() > 0) {
             for (CorrectPoint cp : correctPoints) {
-
-                cpRepo.insert(cp);
+                cp.setQuestionID(questionID);
+                cp.setCorrectPointID(-1L);
+                cp = cpRepo.insert(cp);
+                cp.setAlternatives(addAlternatives(cp.getCorrectPointID(), cp.getAlternatives()));
             }
         }
+        return correctPoints;
+    }
 
-
+    public List<Alternative> addAlternatives(Long correctPointID, List<Alternative> alternatives) throws Exception {
+        if (alternatives != null && alternatives.size() > 0) {
+            for (Alternative alt: alternatives) {
+                alt.setCorrectPointID(correctPointID);
+                alt.setAlternativeID(-1L);
+                Alternative returned = alternativeRepo.insert(alt);
+                alt.setAlternativeID(returned.getAlternativeID());
+            }
+        }
+        return alternatives;
     }
 }

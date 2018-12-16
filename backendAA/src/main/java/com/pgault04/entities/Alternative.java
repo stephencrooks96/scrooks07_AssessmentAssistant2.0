@@ -18,7 +18,6 @@ public class Alternative {
 	public Alternative() {}
 
 	public Alternative(Long correctPointID, String alternativePhrase) {
-
 		this.setCorrectPointID(correctPointID);
 		this.setAlternativePhrase(alternativePhrase);
 	}

@@ -29,9 +29,9 @@ public class QuestionRepo {
     NamedParameterJdbcTemplate namedparamTmpl;
     private String tableName = "Question";
     private final String insertSQL = "INSERT INTO " + tableName
-            + " (questionType, questionContent, questionFigure, maxScore, modelAnswerID, creatorID) values (:questionType, :questionContent, :questionFigure, :maxScore, :modelAnswerID, :creatorID)";
+            + " (questionType, questionContent, questionFigure, maxScore, creatorID) values (:questionType, :questionContent, :questionFigure, :maxScore, :creatorID)";
     private final String updateSQL = "UPDATE " + tableName + " SET questionType=:questionType, "
-            + "questionContent=:questionContent, questionFigure=:questionFigure, maxScore=:maxScore, modelAnswerID=:modelAnswerID, creatorID=:creatorID "
+            + "questionContent=:questionContent, questionFigure=:questionFigure, maxScore=:maxScore, creatorID=:creatorID "
             + "WHERE questionID=:questionID";
     private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
     private String deleteSQL = "DELETE FROM " + tableName + " WHERE questionID=?";

@@ -59,6 +59,18 @@ insert into question(questionType, questionContent, questionFigure, maxScore, cr
 insert into question(questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'How much wood would a wood chuck chuck if a wood chuck could chuck wood?', null, 3, 2);
 insert into question(questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'In Star Wars what color was Luke Skywalkers lightsaber?', null, 2, 2);
 
+insert into testquestion(testID, questionID) values (7, 1);
+insert into testquestion(testID, questionID) values (7, 2);
+insert into testquestion(testID, questionID) values (7, 3);
+
+insert into testquestion(testID, questionID) values (8, 1);
+insert into testquestion(testID, questionID) values (8, 2);
+insert into testquestion(testID, questionID) values (8, 3);
+
+insert into testquestion(testID, questionID) values (9, 1);
+insert into testquestion(testID, questionID) values (9, 2);
+insert into testquestion(testID, questionID) values (9, 3);
+
 insert into testquestion(testID, questionID) values (10, 1);
 insert into testquestion(testID, questionID) values (10, 2);
 insert into testquestion(testID, questionID) values (10, 3);

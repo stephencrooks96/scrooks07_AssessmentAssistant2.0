@@ -23,6 +23,16 @@ export class TestService {
     );
   }
 
+  public addQuestion(questionData: TutorQuestionPojo): Observable<TutorQuestionPojo> {
+    let headers = new HttpHeaders({
+      'Accept': 'application/json',
+      'Authorization': 'Basic ' + localStorage.getItem("creds")
+    });
+    return this.http.post<TutorQuestionPojo>(this.app.url + "/tests/addQuestion", questionData, {headers: headers}).pipe(
+      tap((question: TutorQuestionPojo) => console.log(`Added question with id=${question.question.questionID}`))
+    );
+  }
+
   getByTestID(testID): Observable<Tests> {
     let headers = new HttpHeaders({
       'Accept': 'application/json',

@@ -27,12 +27,12 @@
       </span></h3>
       <div class="panel panel-default default-pre-scrollable">
         <table class="table-striped">
-          <tr *ngFor="let question of questions; let rowIndex = index">
-            <td>{{rowIndex}}</td>
-            <td>{{question.questionContent}}</td>
+          <tr *ngFor="let tutorQuestion of questions; let rowIndex = index">
+            <td>{{rowIndex + 1}}</td>
+            <td style="padding-left: 10px;">{{tutorQuestion.question.questionContent}}</td>
             <td>
               <button type="button" class="btn btn-info"
-                      (click)="questionDetail = question; showExist = false; showAdd = false; showDetail = true;">Info
+                      (click)="questionDetail = tutorQuestion; showExist = false; showAdd = false; showDetail = true;">Info
               </button>
             </td>
           </tr>

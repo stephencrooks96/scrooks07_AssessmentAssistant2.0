@@ -59,19 +59,14 @@ public class TestController {
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = "/newQuestion", method = RequestMethod.POST)
-    public Boolean newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
+    @RequestMapping(value = "/addQuestion", method = RequestMethod.POST)
+    public TutorQuestionPojo newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
 
         try {
-
-            testServ.newQuestion(questionData, principal.getName());
-            return true;
-
+            TutorQuestionPojo tqp = testServ.newQuestion(questionData, principal.getName());
+            return tqp;
         } catch (Exception e) {
-
-            return false;
+            return null;
         }
-
-
     }
 }

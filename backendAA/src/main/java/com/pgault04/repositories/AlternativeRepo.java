@@ -29,10 +29,10 @@ public class AlternativeRepo {
 	private String tableName = "Alternative";
 
 	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (correctPointID, phrase) values (:correctPointID, :phrase)";
+			+ " (correctPointID, alternativePhrase) values (:correctPointID, :alternativePhrase)";
 
 	private final String updateSQL = "UPDATE " + tableName + " SET correctPointID=:correctPointID, "
-			+ "phrase=:phrase " + "WHERE alternativeID=:alternativeID";
+			+ "alternativePhrase=:alternativePhrase " + "WHERE alternativeID=:alternativeID";
 
 	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
 

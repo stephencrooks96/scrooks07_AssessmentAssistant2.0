@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS Alternative, Answer, AssociationType, Message, Module, ModuleAssociation, Password, Question, QuestionType, TestQuestion, TestResutlt, Tests, TimeModifier, User, UserRole, UserSessions;
+DROP TABLE IF EXISTS Alternative, Answer, AssociationType, CorrectPoint, Message, Module, ModuleAssociation, OptionTbl, Password, Question, QuestionType, TestQuestion, TestResutlt, Tests, TimeModifier, User, UserRole, UserSessions;
 
 CREATE TABLE IF NOT EXISTS Alternative (
   alternativeID int(11) NOT NULL AUTO_INCREMENT,

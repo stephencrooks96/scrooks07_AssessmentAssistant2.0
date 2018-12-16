@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TestService} from "../services/test.service";
 import {EditTestComponent} from "../edit-test/edit-test.component";
-import {Alternative, CorrectPoint, QuestionType, TutorQuestionPojo} from "../modelObjs/objects.model";
+import {Alternative, CorrectPoint, QuestionType, Tests, TutorQuestionPojo} from "../modelObjs/objects.model";
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector: 'app-add-question',
@@ -13,7 +14,9 @@ export class AddQuestionComponent implements OnInit {
 
   questionInsert = new TutorQuestionPojo();
   questionTypesToShow: QuestionType[];
-  constructor(private editTest: EditTestComponent, private testServ: TestService) { }
+
+  constructor(private editTest: EditTestComponent, private testServ: TestService) {
+  }
 
   ngOnInit() {
     this.getQuestionTypes();
@@ -52,8 +55,18 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
-  trackById(index: number, obj: any): any {
-    return index;
+  addQuestion(form: NgForm) {
+    this.questionInsert.testID = this.editTest.testID;
+    if (!this.questionInsert.question.questionType || !this.questionInsert.question.questionContent || this.questionInsert.question.questionContent.trim().length <= 0 || !this.questionInsert.question.maxScore || this.questionInsert.question.maxScore <= 0 || !this.questionInsert.correctPoints[0].phrase || this.questionInsert.correctPoints[0].phrase.trim().length <= 0 || !this.questionInsert.correctPoints[0].marksWorth) {
+      return;
+    }
+    this.testServ.addQuestion(this.questionInsert as TutorQuestionPojo)
+      .subscribe(success => {
+        form.reset();
+        this.editTest.getQuestions(this.editTest.testID);
+      }, error => {
+        return;
+      });
   }
 
 }

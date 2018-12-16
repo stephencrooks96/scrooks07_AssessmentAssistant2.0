@@ -1,4 +1,4 @@
-<form (submit)="addQuestion()" class='shadow' id='addQuestionForm' name='addQuestionForm' role="form"
+<form #addQuestionForm="ngForm" (submit)="addQuestion(addQuestionForm)" class='shadow' id='addQuestionForm' name='addQuestionForm' role="form"
       style="width: 100%; padding: 5px 10px 5px 10px;">
 
   <fieldset style="height: 95%; width: 100%;">
@@ -42,27 +42,25 @@
 
 
   <fieldset id="markSchemeFieldset" style="height: 95%; width: 100%;">
-    <legend>Mark Scheme</legend>
-    <small class="lead" style="font-size: small;">Here you can allocate marks to
+    <legend><span placement="right" ngbTooltip="Here you can allocate marks to
       some key points you will be looking for, the more you add the
       more Assessment Assistant can do for you. Don't worry if a student's
       answer meets criteria for more of these than the question is
       worth, the system will never allocate more than the maximum marks
-      you have assigned to the question.
-    </small>
+      you have assigned to the question.">Mark Scheme</span></legend>
 
     <div *ngIf="questionInsert.correctPoints.length > 0">
-      <fieldset *ngFor="let correctPoint of questionInsert.correctPoints; index as i">
+      <fieldset *ngFor="let correctPoint of questionInsert.correctPoints; let i = index">
         <legend>Mark Allocation</legend>
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="phrase{{[i]}}">Phrase</label>
-            <input [(ngModel)]="[i].phrase" class="form-control" id="phrase{{[i]}}" name="phrase{{[i]}}"
+            <input [(ngModel)]="correctPoint.phrase" class="form-control" id="phrase{{[i]}}" name="phrase{{[i]}}"
                    type="text"/>
           </div>
           <div class="form-group col-md-6">
             <label for="marksWorth{{[i]}}">Allocated Mark</label>
-            <input [(ngModel)]="[i].marksWorth" class="form-control" id="marksWorth{{[i]}}" name="marksWorth{{[i]}}"
+            <input [(ngModel)]="correctPoint.marksWorth" class="form-control" id="marksWorth{{[i]}}" name="marksWorth{{[i]}}"
                    type="number">
           </div>
         </div>
@@ -71,19 +69,19 @@
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="feedback{{[i]}}">Feedback to give</label>
-            <textarea [(ngModel)]="[i].feedback" class="form-control" id="feedback{{[i]}}"
+            <textarea [(ngModel)]="correctPoint.feedback" class="form-control" id="feedback{{[i]}}"
                       rows="3"
                       style="display: block;
     width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"
                       name="feedback{{[i]}}"></textarea>
           </div>
           <div class="form-group col-md-6">
-            <label for="{{[i]}}alternatives{{[j]}}">Alternative Phrases <i class="fas fa-plus-circle"></i></label>
-            <div *ngIf="[i].alternatives.length > 0">
-              <input *ngFor="let alt of [i].alternatives; index as j" [(ngModel)]="[j].alternativePhrase"
+            <label>Alternative Phrases <a (click)="addAlternative([i])"><i class="fas fa-plus-circle"></i></a></label>
+
+              <input *ngFor="let alt of correctPoint.alternatives; let j = index" [(ngModel)]="alt.alternativePhrase"
                      class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
                      type="text">
-            </div>
+
           </div>
         </div>
       </fieldset>
