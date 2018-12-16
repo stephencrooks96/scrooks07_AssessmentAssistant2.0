@@ -24,8 +24,10 @@ export class EditTestComponent implements OnInit {
   moduleTutor = new ModuleWithTutorFE();
   questionTypesToShow: QuestionType[];
   questionInsert = new TutorQuestionPojo();
-  showAdd = false;
+  showAdd = true;
   showExist = false;
+  showDetail = false;
+  questions : TutorQuestionPojo[];
 
   constructor(private router: Router, private route: ActivatedRoute, private testServ: TestService) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
@@ -36,11 +38,16 @@ export class EditTestComponent implements OnInit {
     this.getQuestionTypes();
     this.questionInsert.correctPoints = [];
     this.addCorrectPoint();
+    this.getQuestions(this.testID);
   }
 
   getByTestID(testID) {
     return this.testServ.getByTestID(testID)
       .subscribe(test => this.test = test);
+  }
+
+  getQuestions(testID) {
+    return this.testServ.getQuestions(testID).subscribe(questions => this.questions = questions);
   }
 
 

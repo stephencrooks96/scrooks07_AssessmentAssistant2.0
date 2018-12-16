@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {AppComponent} from "../app.component";
-import {ModuleFE, QuestionType, Tests} from "../modelObjs/objects.model";
+import {ModuleFE, Question, QuestionType, Tests, TutorQuestionPojo} from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
 
 @Injectable({
@@ -32,6 +32,18 @@ export class TestService {
     return this.http.get<Tests>(this.app.url + "/tests/getByTestIDTutorView?testID=" + testID, {headers: headers})
       .pipe(
         tap(_ => console.log('Test fetched from server.'))
+      );
+  }
+
+  getQuestions(testID): Observable<TutorQuestionPojo[]> {
+    let headers = new HttpHeaders({
+      'Accept': 'application/json',
+      'Authorization': 'Basic ' + localStorage.getItem("creds")
+    });
+    console.log(headers);
+    return this.http.get<TutorQuestionPojo[]>(this.app.url + "/tests/getQuestionsByTestIDTutorView?testID=" + testID, {headers: headers})
+      .pipe(
+        tap(_ => console.log('Questions fetched from server.'))
       );
   }
 

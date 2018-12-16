@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="container">
+<div class="container" style="width: 90%; max-width: 90%;">
 
   <nav aria-label="breadcrumb" class="breadcrumbs">
     <ol class="breadcrumb">
@@ -8,130 +8,42 @@
       <li aria-current="page" class="breadcrumb-item active">{{test.testTitle}}</li>
     </ol>
   </nav>
-  <div class="title">
-    <h1 *ngIf="test" class="display-3">{{test.testTitle}}</h1>
-    <h4 *ngIf="test" class="text-muted">Starts: {{test.startDateTime}}</h4>
-    <h4 *ngIf="test" class="text-muted">Ends: {{test.endDateTime}}</h4>
-  </div>
 
-  <div aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-    <button (click)="showAdd = !showAdd; showExist = false" class="btn btn-secondary alert-dark" type="button">Add new
-      Question
-    </button>
-    <button (click)="showExist = !showExist; showAdd = false" class="btn btn-secondary alert-dark" type="button">Choose
-      one you have used before
-    </button>
-  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <h3 *ngIf="test">{{test.testTitle}}</h3>
+      <p *ngIf="test">Start: {{test.startDateTime}}</p>
+      <p *ngIf="test">End: {{test.endDateTime}}</p>
 
-  <div *ngIf='showAdd' id="questionForm">
-    <form (submit)="addQuestion()" class='shadow' id='addQuestionForm' name='addQuestionForm' role="form"
-          style="width: 100%; padding: 5px 10px 5px 10px;">
-
-      <fieldset style="height: 95%; width: 100%;">
-        <legend>Question</legend>
-
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="questionTypes">Question Type</label>
-
-            <select #questionType="ngModel" [(ngModel)]="questionInsert.question.questionType" class="form-control"
-                    id="questionTypes"
-                    name="questionTypesModel">
-              <option *ngFor="let q of questionTypesToShow" [value]="q.questionTypeID">{{q.questionType}}</option>
-            </select>
-
-          </div>
-          <div class="form-group col-md-6">
-            <label for="maxScore">Score</label>
-            <input #maxScore="ngModel" [(ngModel)]="questionInsert.question.maxScore" class="form-control" id="maxScore"
-                   min="1"
-                   name="maxScore" type="number"/>
-          </div>
-        </div>
-
-
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label for="questionContent">Question Content</label>
-            <textarea [(ngModel)]="questionInsert.question.questionContent" class="form-control" id="questionContent"
-                      name="questionContent" rows="3"
-                      style="display: block;
-    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
-            <button class="btn btn-secondary" style="margin-top: 5px;" type="button">Add Image</button>
-          </div>
-          <div class="form-group col-md-6">
-          </div>
-        </div>
-
-
-      </fieldset>
-
-
-      <fieldset id="markSchemeFieldset" style="height: 95%; width: 100%;">
-        <legend>Mark Scheme</legend>
-        <small class="lead" style="font-size: small;">Here you can allocate marks to
-          some key points you will be looking for, the more you add the
-          more Assessment Assistant can do for you. Don't worry if a student's
-          answer meets criteria for more of these than the question is
-          worth, the system will never allocate more than the maximum marks
-          you have assigned to the question.
-        </small>
-
-        <div *ngIf="questionInsert.correctPoints.length > 0">
-          <fieldset *ngFor="let correctPoint of questionInsert.correctPoints; index as i">
-            <legend>Mark Allocation</legend>
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="phrase{{[i]}}">Phrase</label>
-                <input [(ngModel)]="[i].phrase" class="form-control" id="phrase{{[i]}}" name="phrase{{[i]}}"
-                       type="text"/>
-              </div>
-              <div class="form-group col-md-6">
-                <label for="marksWorth{{[i]}}">Allocated Mark</label>
-                <input [(ngModel)]="[i].marksWorth" class="form-control" id="marksWorth{{[i]}}" name="marksWorth{{[i]}}"
-                       type="number">
-              </div>
-            </div>
-
-
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label for="feedback{{[i]}}">Feedback to give</label>
-                <textarea [(ngModel)]="[i].feedback" class="form-control" id="feedback{{[i]}}"
-                          rows="3"
-                          style="display: block;
-    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"
-                          name="feedback{{[i]}}"></textarea>
-              </div>
-              <div class="form-group col-md-6">
-                <label for="{{[i]}}alternatives{{[j]}}">Alternative Phrases <i class="fas fa-plus-circle"></i></label>
-                <div *ngIf="[i].alternatives.length > 0">
-                  <input *ngFor="let alt of [i].alternatives; index as j" [(ngModel)]="[j].alternativePhrase"
-                         class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
-                         type="text">
-                </div>
-              </div>
-            </div>
-          </fieldset>
-        </div>
-
-        <button (click)="addCorrectPoint()" class="btn btn-secondary" id='correctPointButton'>Add more to mark
-          scheme...
+      <h3>Questions <span>
+      <div aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+        <button (click)="showAdd = true; showExist = false; showDetail= false;" class="btn btn-dark"
+                type="button">New
         </button>
+        <button (click)="showExist = true; showAdd = false; showDetail = false;" class="btn btn-dark"
+                type="button">Reuse
+        </button>
+      </div>
+      </span></h3>
+      <div class="panel panel-default default-pre-scrollable">
+        <table class="table-striped">
+          <tr *ngFor="let question of questions; let rowIndex = index">
+            <td>{{rowIndex}}</td>
+            <td>{{question.questionContent}}</td>
+            <td>
+              <button type="button" class="btn btn-info"
+                      (click)="questionDetail = question; showExist = false; showAdd = false; showDetail = true;">Info
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
 
-      </fieldset>
-
-
-      <input class="shadow button" id="addQuestionButton" name='addQuestionButton'
-             type="submit" value="Save"/>
-    </form>
-
+    <div class="col-sm-8">
+      <app-question-detail *ngIf="showDetail"><!--[question]="questionDetail"--></app-question-detail>
+      <app-add-question *ngIf="showAdd"></app-add-question>
+      <app-old-question *ngIf="showExist"></app-old-question>
+    </div>
   </div>
-  <div data-ng-show='!showQuestionsForms' id="questionBank"></div>
-
 </div>
-
-
-
-
-

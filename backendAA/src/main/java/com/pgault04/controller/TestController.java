@@ -41,6 +41,12 @@ public class TestController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/getQuestionsByTestIDTutorView", method = RequestMethod.GET)
+    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(Principal principal, Long testID) {
+        return testServ.getQuestionsByTestIDTutorView(principal.getName(), testID);
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/getQuestionTypes", method = RequestMethod.GET)
     public List<QuestionType> getQuestionTypes() {
         return questionTypeRepo.selectAll();

@@ -24,18 +24,14 @@ public class TutorQuestionPojo {
 
 	private List<CorrectPoint> correctPoints;
 
-	private List<Alternative> alternatives;
-
 	public TutorQuestionPojo() {
 	}
 
-	public TutorQuestionPojo(Long testID, Question question, List<Option> options, List<CorrectPoint> correctPoints,
-							 List<Alternative> alternatives) {
+	public TutorQuestionPojo(Long testID, Question question, List<Option> options, List<CorrectPoint> correctPoints) {
 		this.setTestID(testID);
 		this.setQuestion(question);
 		this.setOptions(options);
 		this.setCorrectPoints(correctPoints);
-		this.setAlternatives(alternatives);
 	}
 
 	public List<Option> getOptions() {
@@ -89,21 +85,6 @@ public class TutorQuestionPojo {
 	 */
 	public void setCorrectPoints(List<CorrectPoint> correctPoints) {
 		this.correctPoints = correctPoints;
-	}
-
-	/**
-	 * @return the alternatives
-	 */
-	public List<Alternative> getAlternatives() {
-		return alternatives;
-	}
-
-	/**
-	 * @param alternatives
-	 *            the alternatives to set
-	 */
-	public void setAlternatives(List<Alternative> alternatives) {
-		this.alternatives = alternatives;
 	}
 
 }

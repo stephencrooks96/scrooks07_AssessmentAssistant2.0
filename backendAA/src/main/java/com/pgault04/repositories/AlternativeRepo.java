@@ -94,10 +94,13 @@ public class AlternativeRepo {
 		log.debug("AlternativeRepo selectByAlternativeID: " + alternativeID);
 		String selectByQuestionIDSQL = selectSQL + "alternativeID=?";
 		List<Alternative> alternatives = tmpl.query(selectByQuestionIDSQL,
-				new BeanPropertyRowMapper<Alternative>(Alternative.class), alternativeID);
+				new BeanPropertyRowMapper<>(Alternative.class), alternativeID);
 
-		log.debug("Query for Alternative: #" + alternativeID + ", number of items: " + alternatives.size());
-		return alternatives.get(0);
+		if (alternatives != null && alternatives.size() > 0) {
+			log.debug("Query for Alternative: #" + alternativeID + ", number of items: " + alternatives.size());
+			return alternatives.get(0);
+		}
+		return null;
 	}
 
 	/**
@@ -105,17 +108,15 @@ public class AlternativeRepo {
 	 * @param correctPointID
 	 * @return correctPoint
 	 */
-	public List<CorrectPoint> selectByCorrectPointID(Long correctPointID) {
+	public List<Alternative> selectByCorrectPointID(Long correctPointID) {
 		log.debug("CorrectPointRepo selectByCorrectPointID: " + correctPointID);
-		String selectByCorrectPointIDSQL = selectSQL + "answerID=?";
-		List<CorrectPoint> correctPoints = tmpl.query(selectByCorrectPointIDSQL,
-				new BeanPropertyRowMapper<CorrectPoint>(CorrectPoint.class), correctPointID);
+		String selectByCorrectPointIDSQL = selectSQL + "correctPointID=?";
+		List<Alternative> alternatives = tmpl.query(selectByCorrectPointIDSQL,
+				new BeanPropertyRowMapper<>(Alternative.class), correctPointID);
 
-		log.debug("Query for correct point: #" + correctPointID + ", number of items: " + correctPoints.size());
-		return correctPoints;
+		log.debug("Query for alternatives, number of items: " + alternatives.size());
+		return alternatives;
 	}
-
-	
 
 	/**
 	 * 

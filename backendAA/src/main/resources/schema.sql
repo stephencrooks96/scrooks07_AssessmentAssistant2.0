@@ -77,6 +77,17 @@ CREATE TABLE IF NOT EXISTS ModuleAssociation (
   associationType int(11) NOT NULL
 );
 
+--
+-- Table structure for table Options
+--
+
+CREATE TABLE IF NOT EXISTS OptionTbl (
+  optionID int(11) NOT NULL AUTO_INCREMENT,
+  questionID int(11) NOT NULL,
+  optionContent text NOT NULL,
+  correct tinyint(1) NOT NULL
+  );
+
 -- --------------------------------------------------------
 
 --

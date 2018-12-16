@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,6 +40,12 @@ public class TestService {
 
     @Autowired
     CorrectPointRepo cpRepo;
+
+    @Autowired
+    AlternativeRepo alternativeRepo;
+
+    @Autowired
+    OptionRepo optionRepo;
 
     /**
      * Method primes input data to be entered in to the database Ensures data size
@@ -86,6 +93,41 @@ public class TestService {
             return primeTestForUserView(test);
         }
         return null;
+    }
+
+    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) {
+
+        List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
+        if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
+            List<TutorQuestionPojo> tutorQuestions = new LinkedList<>();
+            for (TestQuestion tq : tqs) {
+                Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
+                if (q == null) {
+                    continue;
+                } else {
+                    TutorQuestionPojo tutorQuestion = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
+                    tutorQuestions.add(tutorQuestion);
+                }
+            }
+            return tutorQuestions;
+        }
+        return null;
+    }
+
+    public List<Option> findOptions(Long questionID) {
+        return optionRepo.selectByQuestionID(questionID);
+    }
+
+    public List<CorrectPoint> findCorrectPoints(Long questionID) {
+        List<CorrectPoint> correctPoints = cpRepo.selectByQuestionID(questionID);
+        for (CorrectPoint cp : correctPoints) {
+            cp.setAlternatives(findAlternatives(cp.getCorrectPointID()));
+        }
+        return correctPoints;
+    }
+
+    public List<Alternative> findAlternatives(Long correctPointID) {
+        return alternativeRepo.selectByCorrectPointID(correctPointID);
     }
 
     public Tests primeTestForUserView(Tests test) {

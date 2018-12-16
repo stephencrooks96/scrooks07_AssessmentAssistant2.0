@@ -24,6 +24,9 @@ import {AuthorizationService} from "./services/authorization.service";
 import {Ng2GoogleChartsModule} from 'ng2-google-charts';
 import {ViewProgressComponent} from './view-progress/view-progress.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { QuestionDetailComponent } from './question-detail/question-detail.component';
+import { AddQuestionComponent } from './add-question/add-question.component';
+import { OldQuestionComponent } from './old-question/old-question.component';
 
 
 @NgModule({
@@ -44,7 +47,10 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
     AddModuleComponent,
     EditAttendeesComponent,
     AdminAreaComponent,
-    ViewProgressComponent
+    ViewProgressComponent,
+    QuestionDetailComponent,
+    AddQuestionComponent,
+    OldQuestionComponent
   ],
   imports: [
     BrowserModule,
