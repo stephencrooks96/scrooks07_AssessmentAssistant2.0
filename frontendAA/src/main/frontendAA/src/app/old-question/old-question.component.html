@@ -1,3 +1,30 @@
-<p>
-  old-question works!
-</p>
+<h3><span ngbTooltip="Scroll down to see more" placement="right">Old Questions</span></h3>
+<div class="pre-scrollable">
+  <div *ngIf="oldQuestions">
+    <ngb-accordion [closeOthers]="true" #oldQs="ngbAccordion" activeIds="ngb-panel-0" class="rounded dark">
+      <ngb-panel class="rounded dark" *ngFor="let oldQuestion of oldQuestions"
+                 title="{{oldQuestion.question.questionContent}}" style="text-decoration: none;">
+        <ng-template ngbPanelContent class="rounded dark">
+          <div><span><h5><b>Content: </b>{{oldQuestion.question.questionContent}}</h5></span></div>
+          <div *ngFor="let type of questionTypesToShow">
+            <div *ngIf="type.questionTypeID == oldQuestion.question.questionType">
+              <span><h5><b>Type: </b>{{type.questionType}}</h5></span></div>
+          </div>
+
+          <div><span><h5><b>Score: </b>{{oldQuestion.question.maxScore}}</h5></span></div>
+          <h4>Mark Allocations:</h4>
+          <div *ngFor="let correctPoint of oldQuestion.correctPoints">
+            <div><span><h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5></span></div>
+            <div><span><h5><b>Alternative Phrases: </b></h5></span></div>
+            <ol>
+              <li *ngFor="let alt of correctPoint.alternatives">
+                {{alt.alternativePhrase}}
+              </li>
+            </ol>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </div>
+
+</div>

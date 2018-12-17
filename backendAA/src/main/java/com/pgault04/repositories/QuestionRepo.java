@@ -95,6 +95,18 @@ public class QuestionRepo {
         return null;
     }
 
+
+    public List<Question> selectByCreatorID(Long creatorID) {
+        log.debug("QuestionRepo selectByCreatorID: " + creatorID);
+        String selectByCreatorIDSQL = selectSQL + "creatorID=?";
+        List<Question> questions = tmpl.query(selectByCreatorIDSQL,
+                new BeanPropertyRowMapper<>(Question.class), creatorID);
+
+        log.debug("Query for question with creator id: #" + creatorID + ", number of items: " + questions.size());
+            return questions;
+
+    }
+
     /**
      *
      * @param question

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {QuestionType, TutorQuestionPojo} from "../modelObjs/objects.model";
+import {TestService} from "../services/test.service";
 
 @Component({
   selector: 'app-question-detail',
@@ -7,9 +9,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class QuestionDetailComponent implements OnInit {
 
-  constructor() { }
+  @Input() questionDetail : TutorQuestionPojo;
+  questionTypesToShow : QuestionType[];
+  edit = false;
+
+  constructor(private testServ: TestService) {
+    this.getQuestionTypes();
+  }
 
   ngOnInit() {
+  }
+
+  getQuestionTypes() {
+    return this.testServ.getQuestionTypes()
+      .subscribe(questionTypes => this.questionTypesToShow = questionTypes);
   }
 
 }

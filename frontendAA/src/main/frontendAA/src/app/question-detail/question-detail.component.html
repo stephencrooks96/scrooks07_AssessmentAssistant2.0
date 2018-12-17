@@ -1,3 +1,32 @@
-<p>
-  question-detail works!
-</p>
+<h3><span ngbTooltip="Scroll down to see more" placement="right">Question Info </span><span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+              <button (click)="edit = !edit" class="btn btn-primary btn-sm" type="button">Edit</button>
+              <button class="btn btn-danger btn-sm" type="button">Remove</button>
+            </span></h3>
+<div class="pre-scrollable">
+  <div class="panel panel-default default" *ngIf="questionDetail">
+    <div class="panel-body">
+      <div><span><h5><b>Content: </b>{{questionDetail.question.questionContent}}</h5></span></div>
+      <div *ngFor="let type of questionTypesToShow">
+        <div *ngIf="type.questionTypeID == questionDetail.question.questionType">
+          <span><h5><b>Type: </b>{{type.questionType}}</h5></span></div>
+      </div>
+    </div>
+    <div><span><h5><b>Score: </b>{{questionDetail.question.maxScore}}</h5></span></div>
+
+    <h4>Mark Allocations:</h4>
+    <ngb-accordion [closeOthers]="true" #markAllocations="ngbAccordion" activeIds="ngb-panel-0" class="rounded dark">
+      <ngb-panel class="rounded dark" *ngFor="let correctPoint of questionDetail.correctPoints" title="{{correctPoint.phrase}}" style="text-decoration: none;">
+        <ng-template ngbPanelContent class="rounded dark">
+          <div><span><h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5></span></div>
+
+          <div><span><h5><b>Alternative Phrases: </b></h5></span></div>
+          <ol>
+            <li *ngFor="let alt of correctPoint.alternatives">
+              {{alt.alternativePhrase}}
+            </li>
+          </ol>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </div>
+</div>

@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * @author Paul Gault - 40126005
+ * @since December 2018
  */
 @Service
 public class TestService {
@@ -56,8 +58,8 @@ public class TestService {
      * permission, ensures test is not scheduled for release immediately, ensures
      * results are not readied for publish immediately.
      *
-     * @param test
-     * @param username
+     * @param test     - the test
+     * @param username - the principal user
      * @return Test object or null
      */
     public Tests addTest(Tests test, String username) {
@@ -85,26 +87,36 @@ public class TestService {
         return null;
     }
 
+    /**
+     * Performs necessary actions required to get the test id for view by tutor and ensures that the request is made by the tutor
+     *
+     * @param username - the principal user
+     * @param testID   - the test id number
+     * @return the test
+     */
     public Tests getByTestIDTutorView(String username, Long testID) {
-
         Tests test = testRepo.selectByTestID(testID);
-
         if ("tutor".equals(modServ.checkValidAssociation(username, test.getModuleID()))) {
             return primeTestForUserView(test);
         }
         return null;
     }
 
+    /**
+     * Performs the necessary actions required to get the questions currently used by this test and output all the data needed by a tutor
+     * also ensure the request is made by the tutor
+     *
+     * @param username - the principal user
+     * @param testID   - the test
+     * @return the list of questions being used by this test
+     */
     public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) {
-
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
         if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
             List<TutorQuestionPojo> tutorQuestions = new LinkedList<>();
             for (TestQuestion tq : tqs) {
                 Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
-                if (q == null) {
-                    continue;
-                } else {
+                if (q != null) {
                     TutorQuestionPojo tutorQuestion = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
                     tutorQuestions.add(tutorQuestion);
                 }
@@ -114,10 +126,48 @@ public class TestService {
         return null;
     }
 
+    /**
+     * Performs the necessary actions need to all the questions written by the tutor that aren't currently being used by this given test
+     *
+     * @param username - the principal user
+     * @param testID   - the test
+     * @return the questions not currently being used by this test
+     */
+    public List<TutorQuestionPojo> getOldQuestions(String username, Long testID) {
+
+        List<TutorQuestionPojo> currents = getQuestionsByTestIDTutorView(username, testID);
+        List<Question> allQuestions = questionRepo.selectByCreatorID(userRepo.selectByUsername(username).getUserID());
+        List<TutorQuestionPojo> allTutorQuestions = new LinkedList<>();
+        List<TutorQuestionPojo> tutorQuestionsToShow = new ArrayList<>();
+
+        for (Question q : allQuestions) {
+            TutorQuestionPojo tq = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
+            allTutorQuestions.add(tq);
+        }
+        for (TutorQuestionPojo tq : allTutorQuestions) {
+            if (!currents.contains(tq)) {
+                tutorQuestionsToShow.add(tq);
+            }
+        }
+        return tutorQuestionsToShow;
+    }
+
+    /**
+     * Finds all the necessary options that are associated with this question, if it is a question that uses this type of input
+     *
+     * @param questionID - the question
+     * @return the answerable options for this question
+     */
     public List<Option> findOptions(Long questionID) {
         return optionRepo.selectByQuestionID(questionID);
     }
 
+    /**
+     * Find all the correct points that associated with this question
+     *
+     * @param questionID the questions id
+     * @return the correct points for the question
+     */
     public List<CorrectPoint> findCorrectPoints(Long questionID) {
         List<CorrectPoint> correctPoints = cpRepo.selectByQuestionID(questionID);
         for (CorrectPoint cp : correctPoints) {
@@ -126,10 +176,22 @@ public class TestService {
         return correctPoints;
     }
 
+    /**
+     * finds all the alternatives that are equivalent to given correct points
+     *
+     * @param correctPointID - the correct point
+     * @return - its alternatives
+     */
     public List<Alternative> findAlternatives(Long correctPointID) {
         return alternativeRepo.selectByCorrectPointID(correctPointID);
     }
 
+    /**
+     * Primes the test dates to make them readable by the users on the front end
+     *
+     * @param test - the test
+     * @return the test after alteration
+     */
     public Tests primeTestForUserView(Tests test) {
         if (test != null) {
             try {
@@ -146,9 +208,12 @@ public class TestService {
     }
 
     /**
-     * @param questionData
-     * @param username
-     * @return
+     * Carries out actions need to enter a question in to the database
+     *
+     * @param questionData - collection of all question data available to tutor
+     * @param username     - the principal user
+     * @return the collection of all question data available to tutor after insertion
+     * @throws Exception generic
      */
     public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
 
@@ -164,8 +229,12 @@ public class TestService {
     }
 
     /**
-     * @param correctPoints
-     * @return
+     * Carries out actions needed to add correct points in to the database
+     *
+     * @param correctPoints - the correct points
+     * @param questionID    - the id of the question
+     * @return the correct points
+     * @throws Exception generic
      */
     public List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID) throws Exception {
         if (correctPoints != null && correctPoints.size() > 0) {
@@ -179,9 +248,17 @@ public class TestService {
         return correctPoints;
     }
 
+    /**
+     * Carries out actions need to input alternatives in to the database
+     *
+     * @param correctPointID - the correct points
+     * @param alternatives   - the alternative phrases
+     * @return the list of alternatives
+     * @throws Exception generic
+     */
     public List<Alternative> addAlternatives(Long correctPointID, List<Alternative> alternatives) throws Exception {
         if (alternatives != null && alternatives.size() > 0) {
-            for (Alternative alt: alternatives) {
+            for (Alternative alt : alternatives) {
                 alt.setCorrectPointID(correctPointID);
                 alt.setAlternativeID(-1L);
                 Alternative returned = alternativeRepo.insert(alt);

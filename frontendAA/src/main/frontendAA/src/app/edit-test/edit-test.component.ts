@@ -26,6 +26,7 @@ export class EditTestComponent implements OnInit {
   showExist = false;
   showDetail = false;
   questions : TutorQuestionPojo[];
+  questionDetail = new TutorQuestionPojo();
 
   constructor(private router: Router, private route: ActivatedRoute, private testServ: TestService) {
     this.testID = +this.route.snapshot.paramMap.get('testID');

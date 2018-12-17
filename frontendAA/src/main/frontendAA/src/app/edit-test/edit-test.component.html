@@ -15,15 +15,13 @@
       <p *ngIf="test">Start: {{test.startDateTime}}</p>
       <p *ngIf="test">End: {{test.endDateTime}}</p>
 
-      <h3>Questions <span>
-      <div aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-        <button (click)="showAdd = true; showExist = false; showDetail= false;" class="btn btn-dark"
-                type="button">New
+      <h3>Questions <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+        <button (click)="showAdd = true; showExist = false; showDetail= false;" class="btn btn-dark btn-sm"
+                type="button" placement="top" ngbTooltip="Add a new question">New
         </button>
-        <button (click)="showExist = true; showAdd = false; showDetail = false;" class="btn btn-dark"
-                type="button">Reuse
+        <button (click)="showExist = true; showAdd = false; showDetail = false;" class="btn btn-dark btn-sm"
+                type="button" placement="bottom" ngbTooltip="Use one you have before">Reuse
         </button>
-      </div>
       </span></h3>
       <div class="panel panel-default default-pre-scrollable">
         <table class="table-striped">
@@ -31,7 +29,7 @@
             <td>{{rowIndex + 1}}</td>
             <td style="padding-left: 10px;">{{tutorQuestion.question.questionContent}}</td>
             <td>
-              <button type="button" class="btn btn-info"
+              <button type="button" class="btn btn-dark"
                       (click)="questionDetail = tutorQuestion; showExist = false; showAdd = false; showDetail = true;">Info
               </button>
             </td>
@@ -40,8 +38,8 @@
       </div>
     </div>
 
-    <div class="col-sm-8">
-      <app-question-detail *ngIf="showDetail"><!--[question]="questionDetail"--></app-question-detail>
+    <div class="col-sm-8" style="height: 500px;">
+      <app-question-detail *ngIf="showDetail" [questionDetail]="questionDetail"></app-question-detail>
       <app-add-question *ngIf="showAdd"></app-add-question>
       <app-old-question *ngIf="showExist"></app-old-question>
     </div>
