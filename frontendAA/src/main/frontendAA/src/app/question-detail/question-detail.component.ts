@@ -49,9 +49,7 @@ export class QuestionDetailComponent implements OnInit {
    * @param modal
    */
   open(modal) {
-    this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
-      this.closeResult = `Closed with: ${result}`;
-    });
+    this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'});
   }
 
 }

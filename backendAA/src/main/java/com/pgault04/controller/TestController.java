@@ -158,4 +158,18 @@ public class TestController {
         logger.info("Request made to remove question #{} from test #{} by {}", questionID, testID, principal.getName());
         return testService.removeQuestionFromTest(testID, questionID, principal.getName());
     }
+
+    /**
+     * Provides an entry point for requests made by a user to delete a given test
+     *
+     * @param testID    the test's id
+     * @param principal the user
+     * @return true or false on whether the test is deleted or not
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/deleteTest", method = RequestMethod.DELETE)
+    public Boolean deleteTest(Long testID, Principal principal) {
+        logger.info("Request made to delete test #{} by {}", testID, principal.getName());
+        return testService.deleteTest(testID, principal.getName());
+    }
 }

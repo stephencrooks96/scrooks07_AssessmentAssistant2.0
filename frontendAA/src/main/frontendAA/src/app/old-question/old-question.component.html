@@ -1,5 +1,14 @@
-<h3><span ngbTooltip="Scroll down to see more" placement="top">Old Questions<span *ngIf="oldQuestions" style="font-size: small;"> - Total: {{oldQuestions.length}}</span></span></h3>
+<h3>
+  <span ngbTooltip="Scroll down to see more" placement="top">
+    Your Questions
+    <span *ngIf="oldQuestions" style="font-size: small;"> - Total: {{oldQuestions.length}}</span>
+  </span>
+</h3>
+
 <div class="pre-scrollable">
+  <div class="title">
+    <h1 class="display-4" *ngIf="!oldQuestions || oldQuestions && oldQuestions.length == 0">Nothing to show</h1>
+  </div>
   <div *ngIf="oldQuestions">
     <ngb-accordion [closeOthers]="true" #oldQs="ngbAccordion" activeIds="ngb-panel-0" class="rounded dark">
       <ngb-panel class="rounded dark" *ngFor="let oldQuestion of oldQuestions"
@@ -22,7 +31,9 @@
               </li>
             </ol>
           </div>
-          <button type="button" class="btn btn-success" (click)="addExistingQuestion(oldQuestion.question.questionID)">Add this question to the test</button>
+          <button type="button" class="btn btn-success" (click)="addExistingQuestion(oldQuestion.question.questionID)">
+            Add this question to the test
+          </button>
         </ng-template>
       </ngb-panel>
     </ngb-accordion>

@@ -314,4 +314,22 @@ public class TestService {
         }
         return false;
     }
+
+    /**
+     * Method to carry out necessary actions to delete a test from the database
+     * Requires that the user requesting the delete is the tutor of the module the test belongs to
+     *
+     * @param testID   the test's id
+     * @param username the user
+     * @return true or false on whether the test is deleted of not
+     */
+    public Boolean deleteTest(Long testID, String username) {
+
+        if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
+            testRepo.delete(testID);
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -1,8 +1,11 @@
-<form #addQuestionForm="ngForm" (submit)="addQuestion(addQuestionForm)" class='shadow' id='addQuestionForm'
+<h3>
+  <span ngbTooltip="Scrollable" placement="top">New Question</span>
+</h3>
+<form #addQuestionForm="ngForm" (submit)="addQuestion(addQuestionForm)" class='shadow pre-scrollable' id='addQuestionForm'
       name='addQuestionForm' role="form"
       style="width: 100%; padding: 5px 10px 5px 10px;">
 
-  <fieldset style="height: 95%; width: 100%;">
+  <fieldset style="width: 100%;">
     <legend>Question</legend>
 
     <div class="form-row">
@@ -32,7 +35,7 @@
                   name="questionContent" rows="3"
                   style="display: block;
     width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
-        <button class="btn btn-secondary" style="margin-top: 5px;" type="button">Add Image</button>
+        <button class="btn btn-dark" style="margin-top: 5px;" type="button">Add Image</button>
       </div>
       <div class="form-group col-md-6">
       </div>
@@ -42,7 +45,7 @@
   </fieldset>
 
 
-  <fieldset id="markSchemeFieldset" style="height: 95%; width: 100%;">
+  <fieldset id="markSchemeFieldset" style="width: 100%;">
     <legend><span ngbTooltip="Add some information on what you are looking for in the answer. The more you add the more the system can help you mark."
                   placement="bottom">Mark Scheme</span>
     </legend>
@@ -88,13 +91,13 @@
       </fieldset>
     </div>
 
-    <button (click)="addCorrectPoint()" class="btn btn-secondary" id='correctPointButton'>Add more to mark
+    <button (click)="addCorrectPoint()" class="btn btn-dark" id='correctPointButton'>Add more to mark
       scheme...
     </button>
 
   </fieldset>
 
 
-  <input class="shadow button" id="addQuestionButton" name='addQuestionButton'
+  <input class="shadow button btn-dark" id="addQuestionButton" name='addQuestionButton'
          type="submit" value="Save"/>
 </form>

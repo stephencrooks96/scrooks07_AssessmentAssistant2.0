@@ -106,4 +106,15 @@ export class TestService {
         tap(_ => console.log(`Question id=${questionID} removed from test id=${testID}`))
       );
   }
+
+  /**
+   *
+   * @param testID
+   */
+  deleteTest(testID: number): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/deleteTest?testID=" + testID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log(`Test with id=${testID} deleted.`))
+      );
+  }
 }

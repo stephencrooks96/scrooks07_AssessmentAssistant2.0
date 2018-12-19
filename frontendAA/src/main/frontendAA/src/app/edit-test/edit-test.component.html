@@ -1,4 +1,5 @@
 <app-header></app-header>
+
 <div class="container" style="width: 90%; max-width: 90%;">
 
   <nav aria-label="breadcrumb" class="breadcrumbs">
@@ -10,14 +11,36 @@
   </nav>
 
   <div class="row">
+
     <div class="col-sm-4">
-      <h3 *ngIf="test">{{test.testTitle}}</h3>
+      <!-- Template from ngBootstrap -->
+      <ng-template #AreYouSureTestDeletion let-modal>
+        <div class="modal-header">
+          <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h5>Are you sure you want to delete this test?</h5>
+          <h5>This cannot be undone but any new questions you have added will remain in your question bank.</h5>
+        </div>
+        <div class="modal-footer">
+          <button (click)="modal.close(); deleteTest(testID);" class="btn btn-outline-dark" type="button">Yes, I'm sure</button>
+        </div>
+      </ng-template>
+      <h3 *ngIf="test">
+        {{test.testTitle}}
+        <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+              <button (click)="edit = !edit" class="btn btn-primary btn-sm" type="button">Edit</button>
+              <button class="btn btn-danger btn-sm" type="button" (click)="open(AreYouSureTestDeletion)">Delete</button>
+        </span>
+      </h3>
       <p *ngIf="test">Start: {{test.startDateTime}}</p>
       <p *ngIf="test">End: {{test.endDateTime}}</p>
 
       <h3>Questions <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
         <button (click)="showAdd = true; showExist = false; showDetail= false;" class="btn btn-dark btn-sm"
-                type="button" placement="top" ngbTooltip="Add a new question">New
+                type="button" placement="bottom" ngbTooltip="Add a new question">New
         </button>
         <button (click)="showExist = true; showAdd = false; showDetail = false;" class="btn btn-dark btn-sm"
                 type="button" placement="bottom" ngbTooltip="Use one you have before">Reuse

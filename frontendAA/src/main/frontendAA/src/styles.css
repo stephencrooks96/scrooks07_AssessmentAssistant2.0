@@ -76,4 +76,6 @@ body {
 .pre-scrollable {
   max-height: 550px;
   height: 550px;
+  background-color: #bdbdbd;
+  border-radius: 5px;
 }
