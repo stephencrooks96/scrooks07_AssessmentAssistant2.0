@@ -123,4 +123,19 @@ public class TestController {
             return null;
         }
     }
+
+    /**
+     * Rest mapping allowing for requests to be made to remove a question from a test by a tutor
+     *
+     * @param testID - the test's id
+     * @param questionID - the question's id
+     * @param principal - the user making the request
+     * @return boolean flag indicating status of request
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/removeQuestionFromTest", method = RequestMethod.DELETE)
+    public Boolean removeQuestionFromTest(Long testID, Long questionID, Principal principal) {
+        logger.info("Request made to remove question #{} from test #{} by {}", questionID, testID, principal.getName());
+        return testService.removeQuestionFromTest(testID, questionID, principal.getName());
+    }
 }

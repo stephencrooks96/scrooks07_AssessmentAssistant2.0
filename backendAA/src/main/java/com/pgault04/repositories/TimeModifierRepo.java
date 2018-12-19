@@ -1,12 +1,8 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pgault04.entities.TimeModifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,95 +10,89 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.TimeModifier;
+import java.util.List;
 
+/**
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class TimeModifierRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 1;
+    private static final Logger log = LogManager.getLogger(TimeModifierRepo.class);
 
-	private static final Logger log = LoggerFactory.getLogger(TimeModifierRepo.class);
+    private final String insertSQL = "INSERT INTO TimeModifier (userID, timeModifier) values (:userID, :timeModifier)";
+    private final String updateSQL = "UPDATE TimeModifier SET userID=:userID, timeModifier=:timeModifier WHERE userID=:userID";
+    private final String selectSQL = "SELECT * FROM TimeModifier WHERE ";
 
-	private String tableName = "TimeModifier";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (userID, timeModifier) values (:userID, :timeModifier)";
+    private String tableName = "TimeModifier";
+    private String deleteSQL = "DELETE FROM TimeModifier WHERE userID=?";
 
-	private final String updateSQL = "UPDATE " + tableName + " SET userID=:userID, " + "timeModifier=:timeModifier "
-			+ "WHERE userID=:userID";
+    /**
+     * @return the number of records in the table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * Inserts/Updates records in the table
+     *
+     * @param timeModifier object
+     * @return object after insertion
+     */
+    public TimeModifier insert(TimeModifier timeModifier) {
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(timeModifier);
+        if (selectByUserID(timeModifier.getUserID()) == null) {
+            // insert
+            log.debug("Inserting new timeModifier...");
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE userID=?";
+            namedparamTmpl.update(insertSQL, namedParams);
 
-	@Autowired
-	JdbcTemplate tmpl;
+            // inserted
+            log.debug("New timeModifier inserted: {}", timeModifier.toString());
+        } else {
+            log.debug("Updating timeModifier: {}", timeModifier.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("JdbcRepo returning timeModifier: {}", timeModifier);
+        return timeModifier;
+    }
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+    /**
+     * Select from the database for a given user
+     *
+     * @param userID the users id
+     * @return the time modifier
+     */
+    public TimeModifier selectByUserID(Long userID) {
+        log.debug("TimeModifierRepo selectByUserID: #{}", userID);
+        String selectByUserIDSQL = selectSQL + "userID=?";
+        List<TimeModifier> timeModifiers = tmpl.query(selectByUserIDSQL,
+                new BeanPropertyRowMapper<>(TimeModifier.class), userID);
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+        if (timeModifiers != null && timeModifiers.size() > 0) {
+            log.debug("Query for timeModifier: #{}, number of items: {}", userID, timeModifiers.size());
+            return timeModifiers.get(0);
+        }
+        return null;
+    }
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public TimeModifier insert(TimeModifier timeModifier) {
+    /**
+     * Deletes a record from the table
+     *
+     * @param timeModifierID the id
+     */
+    public void delete(Long timeModifierID) {
+        log.debug("TimeModifierRepo delete #{}", timeModifierID);
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(timeModifier);
+        tmpl.update(deleteSQL, timeModifierID);
+        log.debug("TimeModifier deleted from database #{}", timeModifierID);
 
-		if (selectByUserID(timeModifier.getUserID()).size() < INSERT_CHECKER_CONSTANT) {
-
-			// insert
-			log.debug("Inserting new timeModifier...");
-
-			namedparamTmpl.update(insertSQL, namedParams);
-
-			// inserted
-			log.debug("New timeModifier inserted: " + timeModifier.toString());
-		} else {
-			log.debug("Updating timeModifier: " + timeModifier.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning timeModifier: " + timeModifier);
-		return timeModifier;
-
-	}
-
-	/**
-	 * 
-	 * @param timeModifierID
-	 * @return timeModifiers
-	 */
-	public List<TimeModifier> selectByUserID(Long userID) {
-		log.debug("TimeModifierRepo selectByUserID: " + userID);
-		String selectByUserIDSQL = selectSQL + "userID=?";
-		List<TimeModifier> timeModifiers = tmpl.query(selectByUserIDSQL,
-				new BeanPropertyRowMapper<TimeModifier>(TimeModifier.class), userID);
-
-		log.debug("Query for timeModifier: #" + userID + ", number of items: " + timeModifiers.size());
-		return timeModifiers;
-	}
-
-	/**
-	 * 
-	 * @param timeModifier
-	 */
-	public void delete(Long timeModifierID) {
-		log.debug("TimeModifierRepo delete...");
-
-		tmpl.update(deleteSQL, timeModifierID);
-		log.debug("TimeModifier deleted from database.");
-
-	}
+    }
 }

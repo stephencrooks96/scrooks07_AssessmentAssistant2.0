@@ -1,14 +1,14 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 public class QuestionType {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long questionTypeID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -16,18 +16,15 @@ public class QuestionType {
 	private String questionType;
 
 	/**
-	 * 
+	 * Default constructor
 	 */
-	public QuestionType() {
-		// TODO Auto-generated constructor stub
-	}
+	public QuestionType() {}
 
 	/**
-	 * @param questionTypeID
-	 * @param questionType
+	 * constructor with args
+	 * @param questionType the question type
 	 */
 	public QuestionType(String questionType) {
-
 		this.setQuestionType(questionType);
 	}
 
@@ -61,4 +58,15 @@ public class QuestionType {
 		this.questionType = questionType;
 	}
 
+	/**
+	 * @return the object as a string
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("QuestionType{");
+		sb.append("questionTypeID=").append(questionTypeID);
+		sb.append(", questionType='").append(questionType).append('\'');
+		sb.append('}');
+		return sb.toString();
+	}
 }

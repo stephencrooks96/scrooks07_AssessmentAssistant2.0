@@ -8,13 +8,12 @@ import com.pgault04.entities.Option;
 import com.pgault04.entities.Question;
 
 /**
- * Inner class for facilitating the retrieval of form data from the front-end
+ * Class for facilitating the retrieval of form data from the front-end
  * 
  * @author Paul Gault - 40126005
+ * @since November 2018
  */
 public class TutorQuestionPojo {
-
-	private static final long LONG_INITIAL = -1L;
 
 	private Long testID;
 
@@ -24,9 +23,18 @@ public class TutorQuestionPojo {
 
 	private List<CorrectPoint> correctPoints;
 
-	public TutorQuestionPojo() {
-	}
+	/**
+	 * Default constructor
+	 */
+	public TutorQuestionPojo() {}
 
+	/**
+	 * Constructor with args
+	 * @param testID the test
+	 * @param question the question
+	 * @param options the options
+	 * @param correctPoints the correct points
+	 */
 	public TutorQuestionPojo(Long testID, Question question, List<Option> options, List<CorrectPoint> correctPoints) {
 		this.setTestID(testID);
 		this.setQuestion(question);
@@ -34,10 +42,16 @@ public class TutorQuestionPojo {
 		this.setCorrectPoints(correctPoints);
 	}
 
+	/**
+	 * @return the options
+	 */
 	public List<Option> getOptions() {
 		return options;
 	}
 
+	/**
+	 * @param options the options to set
+	 */
 	public void setOptions(List<Option> options) {
 		this.options = options;
 	}
@@ -87,4 +101,17 @@ public class TutorQuestionPojo {
 		this.correctPoints = correctPoints;
 	}
 
+	/**
+	 * @return the object as string
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("TutorQuestionPojo{");
+		sb.append("testID=").append(testID);
+		sb.append(", question=").append(question.toString());
+		sb.append(", options=").append(options);
+		sb.append(", correctPoints=").append(correctPoints);
+		sb.append('}');
+		return sb.toString();
+	}
 }

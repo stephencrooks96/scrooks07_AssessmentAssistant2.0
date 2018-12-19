@@ -1,6 +1,24 @@
-<h3><span ngbTooltip="Scroll down to see more" placement="right">Question Info </span><span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+<!-- Template from ngBootstrap -->
+<ng-template #AreYouSureQuestionRemoval let-modal>
+  <div class="modal-header">
+    <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <h5>Are you sure you want to remove this question from the test?</h5>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close(); removeQuestion(questionDetail.question.questionID, testID); editTest.showAdd = true; editTest.showDetail = false;" class="btn btn-outline-dark" type="button">Yes</button>
+  </div>
+</ng-template>
+
+<h3><span ngbTooltip="Scroll down to see more" placement="right">Question Info </span><span aria-label="Basic example"
+                                                                                            class="btn-group"
+                                                                                            role="group"
+                                                                                            style="margin-bottom: 5px;">
               <button (click)="edit = !edit" class="btn btn-primary btn-sm" type="button">Edit</button>
-              <button class="btn btn-danger btn-sm" type="button">Remove</button>
+              <button class="btn btn-danger btn-sm" type="button" (click)="open(AreYouSureQuestionRemoval)">Remove</button>
             </span></h3>
 <div class="pre-scrollable">
   <div class="panel panel-default default" *ngIf="questionDetail">
@@ -15,7 +33,8 @@
 
     <h4>Mark Allocations:</h4>
     <ngb-accordion [closeOthers]="true" #markAllocations="ngbAccordion" activeIds="ngb-panel-0" class="rounded dark">
-      <ngb-panel class="rounded dark" *ngFor="let correctPoint of questionDetail.correctPoints" title="{{correctPoint.phrase}}" style="text-decoration: none;">
+      <ngb-panel class="rounded dark" *ngFor="let correctPoint of questionDetail.correctPoints"
+                 title="{{correctPoint.phrase}}" style="text-decoration: none;">
         <ng-template ngbPanelContent class="rounded dark">
           <div><span><h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5></span></div>
 

@@ -4,12 +4,16 @@
 package com.pgault04.entities;
 
 /**
- * @author paulgault
+ * @author Paul Gault 40126005
+ * @since November 2018
  *
  */
 
 public class Answer {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long answerID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -26,25 +30,19 @@ public class Answer {
 
 	private Integer score;
 
-	private String feedback;
-
-	private String marksGainedFor;
-
 	/**
-	 * 
+	 * The default constructor
 	 */
 	public Answer() {
 	}
 
 	/**
-	 * @param answerID
-	 * @param questionID
-	 * @param answererID
-	 * @param markerID
-	 * @param content
-	 * @param score
-	 * @param feedback
-	 * @param marksGainedFor
+	 * Constructor with args
+	 * @param questionID the question
+	 * @param answererID the answerer
+	 * @param markerID the marker
+	 * @param content the answers content
+	 * @param score the score given
 	 */
 	public Answer(Long questionID, Long answererID, Long markerID, Long testID, String content, Integer score) {
 		this.setQuestionID(questionID);
@@ -158,7 +156,22 @@ public class Answer {
 	public void setTestID(Long testID) {
 		this.testID = testID;
 	}
-	
-	
 
+	/**
+	 *
+	 * @return the string for this object
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Answer{");
+		sb.append("answerID=").append(answerID);
+		sb.append(", questionID=").append(questionID);
+		sb.append(", answererID=").append(answererID);
+		sb.append(", markerID=").append(markerID);
+		sb.append(", testID=").append(testID);
+		sb.append(", content='").append(content).append('\'');
+		sb.append(", score=").append(score);
+		sb.append('}');
+		return sb.toString();
+	}
 }

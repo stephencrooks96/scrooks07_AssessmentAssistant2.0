@@ -1,14 +1,14 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 public class ModuleAssociation {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long associationID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -20,16 +20,16 @@ public class ModuleAssociation {
 	private Long associationType;
 
 	/**
-	 * 
+	 * Default constructor
 	 */
 	public ModuleAssociation() {
 	}
 
 	/**
-	 * @param associationID
-	 * @param moduleID
-	 * @param userID
-	 * @param associationType
+	 * Constructor with args
+	 * @param moduleID the module
+	 * @param userID the user
+	 * @param associationType the users association to the module
 	 */
 	public ModuleAssociation(Long moduleID, Long userID, Long associationType) {
 		this.setModuleID(moduleID);
@@ -97,4 +97,17 @@ public class ModuleAssociation {
 		this.associationType = associationType;
 	}
 
+	/**
+	 * @return the object as a string
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("ModuleAssociation{");
+		sb.append("associationID=").append(associationID);
+		sb.append(", moduleID=").append(moduleID);
+		sb.append(", userID=").append(userID);
+		sb.append(", associationType=").append(associationType);
+		sb.append('}');
+		return sb.toString();
+	}
 }

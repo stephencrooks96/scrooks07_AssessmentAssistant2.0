@@ -1,14 +1,14 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 public class Tests {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long testID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -28,18 +28,19 @@ public class Tests {
 	private Integer publishGrades;
 
 	/**
-	 * 
+	 * Default constructor
 	 */
-	public Tests() {
-		// TODO Auto-generated constructor stub
-	}
+	public Tests() {}
 
 	/**
-	 * @param testID
-	 * @param moduleID
-	 * @param startDateTime
-	 * @param endDateTime
-	 * @param maxScore
+	 * Constructor with args
+	 * @param moduleID the module
+	 * @param testTitle the tests title
+	 * @param startDateTime start time
+	 * @param endDateTime end time
+	 * @param publishResults whether result should be available to students
+	 * @param scheduled whether the test is ready for release
+	 * @param publishGrades whether grades should be published to students
 	 */
 	public Tests(Long moduleID, String testTitle, String startDateTime, String endDateTime, Integer publishResults,
 			Integer scheduled, Integer publishGrades) {
@@ -52,10 +53,16 @@ public class Tests {
 		this.setPublishGrades(publishGrades);
 	}
 
+	/**
+	 * @return the publishGrades
+	 */
 	public Integer getPublishGrades() {
 		return publishGrades;
 	}
 
+	/**
+	 * @param publishGrades the publishGrades to set
+	 */
 	public void setPublishGrades(Integer publishGrades) {
 		this.publishGrades = publishGrades;
 	}
@@ -158,16 +165,21 @@ public class Tests {
 		this.scheduled = scheduled;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 * @return the object as string
 	 */
 	@Override
 	public String toString() {
-		return "Tests [testID=" + testID + ", moduleID=" + moduleID + ", testTitle=" + testTitle + ", startDateTime="
-				+ startDateTime + ", endDateTime=" + endDateTime + ", publishResults=" + publishResults + ", scheduled="
-				+ scheduled + "]";
+		final StringBuilder sb = new StringBuilder("Tests{");
+		sb.append("testID=").append(testID);
+		sb.append(", moduleID=").append(moduleID);
+		sb.append(", testTitle='").append(testTitle).append('\'');
+		sb.append(", startDateTime='").append(startDateTime).append('\'');
+		sb.append(", endDateTime='").append(endDateTime).append('\'');
+		sb.append(", publishResults=").append(publishResults);
+		sb.append(", scheduled=").append(scheduled);
+		sb.append(", publishGrades=").append(publishGrades);
+		sb.append('}');
+		return sb.toString();
 	}
-	
-	
-
 }

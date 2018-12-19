@@ -1,14 +1,15 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 /**
- * @author paulgault
- *
+ * Class to represent association types
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 public class AssociationType {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long associationTypeID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -16,15 +17,14 @@ public class AssociationType {
 	private String associationType;
 
 	/**
-	 * 
+	 * Default constructor
 	 */
 	public AssociationType() {
 	}
 
 	/**
-	 * @param associationTypeID
-	 * @param associationType
-	 * @param description
+	 * Constructor with args
+	 * @param associationType the association type
 	 */
 	public AssociationType(String associationType) {
 		this.setAssociationType(associationType);
@@ -60,6 +60,15 @@ public class AssociationType {
 		this.associationType = associationType;
 	}
 
-	
-
+	/**
+	 * @return the string
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("AssociationType{");
+		sb.append("associationTypeID=").append(associationTypeID);
+		sb.append(", associationType='").append(associationType).append('\'');
+		sb.append('}');
+		return sb.toString();
+	}
 }

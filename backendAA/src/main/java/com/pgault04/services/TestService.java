@@ -136,20 +136,24 @@ public class TestService {
     public List<TutorQuestionPojo> getOldQuestions(String username, Long testID) {
 
         List<TutorQuestionPojo> currents = getQuestionsByTestIDTutorView(username, testID);
-        List<Question> allQuestions = questionRepo.selectByCreatorID(userRepo.selectByUsername(username).getUserID());
         List<TutorQuestionPojo> allTutorQuestions = new LinkedList<>();
-        List<TutorQuestionPojo> tutorQuestionsToShow = new ArrayList<>();
+        List<TutorQuestionPojo> tutorQuestionsToRemove = new ArrayList<>();
 
-        for (Question q : allQuestions) {
+        for (Question q : questionRepo.selectByCreatorID(userRepo.selectByUsername(username).getUserID())) {
             TutorQuestionPojo tq = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
             allTutorQuestions.add(tq);
         }
-        for (TutorQuestionPojo tq : allTutorQuestions) {
-            if (!currents.contains(tq)) {
-                tutorQuestionsToShow.add(tq);
+
+        for (TutorQuestionPojo next : allTutorQuestions) {
+            for (TutorQuestionPojo c : currents) {
+                if (next.getQuestion().getQuestionID().equals(c.getQuestion().getQuestionID())) {
+                    tutorQuestionsToRemove.add(next);
+                }
             }
         }
-        return tutorQuestionsToShow;
+
+        allTutorQuestions.removeAll(tutorQuestionsToRemove);
+        return allTutorQuestions;
     }
 
     /**
@@ -266,5 +270,28 @@ public class TestService {
             }
         }
         return alternatives;
+    }
+
+    /**
+     * Method to carry out necessary actions needed for removing a question from a test,
+     * checks that the users making the request is the tutor before allowing
+     *
+     * @param testID     - the test id
+     * @param questionID - the questions id
+     * @param username   - the user who requests removal
+     * @return boolean indicating whether request was completed of not
+     */
+    public Boolean removeQuestionFromTest(Long testID, Long questionID, String username) {
+
+        if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
+            List<TestQuestion> testQuestions = testQuestionRepo.selectByTestID(testID);
+            for (TestQuestion tq : testQuestions) {
+                if (tq.getQuestionID().equals(questionID)) {
+                    testQuestionRepo.delete(tq.getTestQuestionID());
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

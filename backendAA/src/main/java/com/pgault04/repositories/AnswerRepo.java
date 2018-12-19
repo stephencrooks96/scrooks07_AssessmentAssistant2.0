@@ -1,12 +1,8 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pgault04.entities.Answer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,161 +12,157 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.Answer;
+import java.util.List;
+import java.util.Objects;
 
 @Component
 public class AnswerRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 0;
+    /**
+     * Logs useful info for problem resolution
+     */
+    private static final Logger log = LogManager.getLogger(AnswerRepo.class);
 
-	private static final Logger log = LoggerFactory.getLogger(AnswerRepo.class);
+    private static final int INSERT_CHECKER_CONSTANT = 0;
 
-	private String tableName = "Answer";
+    private final String insertSQL = "INSERT INTO Answer (questionID, answererID, markerID, testID, content, score) values (:questionID, :answererID, :markerID, :testID, :content, :score)";
+    private final String updateSQL = "UPDATE Answer SET questionID=:questionID, answererID=:answererID, markerID=:markerID, testID=:testID, content=:content, score=:score WHERE answerID=:answerID";
+    private final String selectSQL = "SELECT * FROM Answer WHERE ";
 
-	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (questionID, answererID, markerID, testID, content, score) values (:questionID, :answererID, :markerID, :testID, :content, :score)";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String updateSQL = "UPDATE " + tableName + " SET questionID=:questionID, "
-			+ "answererID=:answererID, markerID=:markerID, testID=:testID, content=:content, score=:score "
-			+ "WHERE answerID=:answerID";
+    private String tableName = "Answer";
+    private String deleteSQL = "DELETE FROM Answer WHERE answerID=?";
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * @return the number of rows in the table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE answerID=?";
+    /**
+     * Inserts or updates the alternative in db based on a check of the id
+     *
+     * @param answer the answer
+     * @return the returned answer after insertion
+     */
+    public Answer insert(Answer answer) {
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(answer);
+        if (answer.getAnswerID() < INSERT_CHECKER_CONSTANT) {
+            // insert
+            log.debug("Inserting new answer...");
 
-	@Autowired
-	JdbcTemplate tmpl;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedparamTmpl.update(insertSQL, namedParams, keyHolder);
+            answer.setAnswerID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+            // inserted
+            log.debug("New answer inserted: {}", answer.toString());
+        } else {
+            log.debug("Updating answer: {}", answer.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("AnswerRepo returning answer: {}", answer.toString());
+        return answer;
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+    }
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public Answer insert(Answer answer) {
+    /**
+     * Method for selecting answer by its unique id
+     *
+     * @param answerID the answer id
+     * @return the returned answer
+     */
+    public Answer selectByAnswerID(Long answerID) {
+        log.debug("AnswerRepo selectByAnswerID: {}", answerID);
+        String selectByAnswerIDSQL = selectSQL + "answerID=?";
+        List<Answer> answers = tmpl.query(selectByAnswerIDSQL, new BeanPropertyRowMapper<>(Answer.class),
+                answerID);
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(answer);
+        if (answers != null && answers.size() > 0) {
+            log.debug("Query for answer: #{}, number of items: {}", answerID, answers.size());
+            return answers.get(0);
+        }
+        return null;
+    }
 
-		if (answer.getAnswerID() < INSERT_CHECKER_CONSTANT) {
+    /**
+     * Method to select answers by their question id
+     *
+     * @param questionID the question id
+     * @return the list of answers
+     */
+    public List<Answer> selectByQuestionID(Long questionID) {
+        log.debug("AnswerRepo selectByQuestionID: {}", questionID);
+        String selectByQuestionIDSQL = selectSQL + "questionID=?";
+        List<Answer> answers = tmpl.query(selectByQuestionIDSQL, new BeanPropertyRowMapper<>(Answer.class),
+                questionID);
 
-			// insert
-			log.debug("Inserting new answer...");
+        log.debug("Query for question: #{}, number of items: {}", questionID, answers.size());
+        return answers;
+    }
 
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+    /**
+     * Method to select answers by the test id
+     *
+     * @param testID the test id
+     * @return the list of answers
+     */
+    public List<Answer> selectByTestID(Long testID) {
+        log.debug("AnswerRepo selectByTestID: {}", testID);
+        String selectByTestIDSQL = selectSQL + "testID=?";
+        List<Answer> answers = tmpl.query(selectByTestIDSQL, new BeanPropertyRowMapper<>(Answer.class),
+                testID);
 
-			namedparamTmpl.update(insertSQL, namedParams, keyHolder);
-			answer.setAnswerID(keyHolder.getKey().longValue());
+        log.debug("Query for test: #{}, number of items: {}", testID, answers.size());
+        return answers;
+    }
 
-			// inserted
-			log.debug("New answer inserted: " + answer.toString());
-		} else {
-			log.debug("Updating answer: " + answer.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning answer: " + answer);
-		return answer;
+    /**
+     * Selects the answered by a given answerer
+     *
+     * @param answererID the answerer's id
+     * @return the list of answers
+     */
+    public List<Answer> selectByAnswererID(Long answererID) {
+        log.debug("AnswerRepo selectByAnswererID: {}", answererID);
+        String selectByAnswererIDSQL = selectSQL + "answererID=?";
+        List<Answer> answers = tmpl.query(selectByAnswererIDSQL, new BeanPropertyRowMapper<>(Answer.class),
+                answererID);
 
-	}
+        log.debug("Query for question: #{}, number of items: {}", answererID, answers.size());
+        return answers;
+    }
 
-	/**
-	 * 
-	 * @param answerID
-	 * @return answers
-	 */
-	public List<Answer> selectByAnswerID(Long answerID) {
-		log.debug("AnswerRepo selectByAnswerID: " + answerID);
-		String selectByAnswerIDSQL = selectSQL + "answerID=?";
-		List<Answer> answers = tmpl.query(selectByAnswerIDSQL, new BeanPropertyRowMapper<Answer>(Answer.class),
-				answerID);
+    /**
+     * Selects the answers by a given marker
+     *
+     * @param markerID the markers id
+     * @return the list of answers
+     */
+    public List<Answer> selectByMarkerID(Long markerID) {
+        log.debug("AnswerRepo selectByMarkerID: {}", markerID);
+        String selectByMarkerIDSQL = selectSQL + "markerID=?";
+        List<Answer> answers = tmpl.query(selectByMarkerIDSQL, new BeanPropertyRowMapper<>(Answer.class),
+                markerID);
 
-		log.debug("Query for answer: #" + answerID + ", number of items: " + answers.size());
-		return answers;
-	}
-	
-	
+        log.debug("Query for question: #{}, number of items: {}", markerID, answers.size());
+        return answers;
+    }
 
-	/**
-	 * 
-	 * @param answerID
-	 * @return answers
-	 */
-	public List<Answer> selectByQuestionID(Long questionID) {
-		log.debug("AnswerRepo selectByQuestionID: " + questionID);
-		String selectByQuestionIDSQL = selectSQL + "questionID=?";
-		List<Answer> answers = tmpl.query(selectByQuestionIDSQL, new BeanPropertyRowMapper<Answer>(Answer.class),
-				questionID);
+    /**
+     * Method to delete an answer from the database
+     *
+     * @param answerID the answer id
+     */
+    public void delete(Long answerID) {
+        log.debug("AnswerRepo delete #{}", answerID);
+        tmpl.update(deleteSQL, answerID);
+        log.debug("Answer #{} deleted from database.", answerID);
 
-		log.debug("Query for question: #" + questionID + ", number of items: " + answers.size());
-		return answers;
-	}
-	
-	/**
-	 * 
-	 * @param answerID
-	 * @return answers
-	 */
-	public List<Answer> selectByTestID(Long testID) {
-		log.debug("AnswerRepo selectByTestID: " + testID);
-		String selectByTestIDSQL = selectSQL + "testID=?";
-		List<Answer> answers = tmpl.query(selectByTestIDSQL, new BeanPropertyRowMapper<Answer>(Answer.class),
-				testID);
-
-		log.debug("Query for test: #" + testID + ", number of items: " + answers.size());
-		return answers;
-	}
-
-	/**
-	 * 
-	 * @param answerID
-	 * @return answers
-	 */
-	public List<Answer> selectByAnswererID(Long answererID) {
-		log.debug("AnswerRepo selectByAnswererID: " + answererID);
-		String selectByAnswererIDSQL = selectSQL + "answererID=?";
-		List<Answer> answers = tmpl.query(selectByAnswererIDSQL, new BeanPropertyRowMapper<Answer>(Answer.class),
-				answererID);
-
-		log.debug("Query for question: #" + answererID + ", number of items: " + answers.size());
-		return answers;
-	}
-
-	/**
-	 * 
-	 * @param answerID
-	 * @return answers
-	 */
-	public List<Answer> selectByMarkerID(Long markerID) {
-		log.debug("AnswerRepo selectByMarkerID: " + markerID);
-		String selectByMarkerIDSQL = selectSQL + "markerID=?";
-		List<Answer> answers = tmpl.query(selectByMarkerIDSQL, new BeanPropertyRowMapper<Answer>(Answer.class),
-				markerID);
-
-		log.debug("Query for question: #" + markerID + ", number of items: " + answers.size());
-		return answers;
-	}
-
-	/**
-	 * 
-	 * @param answer
-	 */
-	public void delete(Long answerID) {
-		log.debug("AnswerRepo delete...");
-
-		tmpl.update(deleteSQL, answerID);
-		log.debug("Answer deleted from database.");
-
-	}
+    }
 }

@@ -1,14 +1,14 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 public class TestResult {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long testResultID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -20,17 +20,15 @@ public class TestResult {
 	private Integer testScore;
 
 	/**
-	 * 
+	 * Default constructor
 	 */
-	public TestResult() {
-		// TODO Auto-generated constructor stub
-	}
+	public TestResult() {}
 
 	/**
-	 * @param testResultID
-	 * @param testID
-	 * @param studentID
-	 * @param testScore
+	 * Constructor with args
+	 * @param testID the test
+	 * @param studentID the student
+	 * @param testScore their score
 	 */
 	public TestResult(Long testID, Long studentID, Integer testScore) {
 		this.setTestID(testID);
@@ -98,4 +96,17 @@ public class TestResult {
 		this.testScore = testScore;
 	}
 
+	/**
+	 * @return the object as string
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("TestResult{");
+		sb.append("testResultID=").append(testResultID);
+		sb.append(", testID=").append(testID);
+		sb.append(", studentID=").append(studentID);
+		sb.append(", testScore=").append(testScore);
+		sb.append('}');
+		return sb.toString();
+	}
 }

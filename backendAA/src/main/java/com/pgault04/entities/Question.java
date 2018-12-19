@@ -1,14 +1,14 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 public class Question {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long questionType;
@@ -24,19 +24,16 @@ public class Question {
 	private Long creatorID;
 
 	/**
-	 * 
+	 * Default constructor
 	 */
-	public Question() {
-		// TODO Auto-generated constructor stub
-	}
+	public Question() {}
 
 	/**
-	 * @param questionType
-	 * @param questionID
-	 * @param questionContent
-	 * @param questionFigure
-	 * @param maxScore
-	 * @param modelAnswerID
+	 * The constructor with args
+	 * @param questionType the questions type
+	 * @param questionContent the content of the question
+	 * @param questionFigure an image to accompany the question
+	 * @param maxScore the marks for this question
 	 */
 	public Question(Long questionType, String questionContent, String questionFigure, Integer maxScore,
 			Long creatorID) {
@@ -136,15 +133,19 @@ public class Question {
 		this.creatorID = creatorID;
 	}
 
+	/**
+	 * @return the object as a string
+	 */
 	@Override
 	public String toString() {
-		return "Question{" +
-				"questionType=" + questionType +
-				", questionID=" + questionID +
-				", questionContent='" + questionContent + '\'' +
-				", questionFigure='" + questionFigure + '\'' +
-				", maxScore=" + maxScore +
-				", creatorID=" + creatorID +
-				'}';
+		final StringBuilder sb = new StringBuilder("Question{");
+		sb.append("questionType=").append(questionType);
+		sb.append(", questionID=").append(questionID);
+		sb.append(", questionContent='").append(questionContent).append('\'');
+		sb.append(", questionFigure='").append(questionFigure).append('\'');
+		sb.append(", maxScore=").append(maxScore);
+		sb.append(", creatorID=").append(creatorID);
+		sb.append('}');
+		return sb.toString();
 	}
 }

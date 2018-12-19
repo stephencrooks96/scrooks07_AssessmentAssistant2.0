@@ -39,20 +39,12 @@ public class TestTestResultRepo {
 
 	private TestResult testResult;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
 
 		testResult = new TestResult(TEST_ID_IN_DB, USER_ID_IN_DB, 100);
 	}
 
-
-
-	/**
-	 * Test method for Row Count
-	 */
 	@Test
 	public void testRowCount() {
 
@@ -66,19 +58,15 @@ public class TestTestResultRepo {
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TestsRepo#insert(pgault04.entities.Tests)}.
-	 */
 	@Test
 	public void testInsert() {
 
 		// Inserts one test to table
 		TestResult returnedTestResult = testResultRepo.insert(testResult);
 
-		List<TestResult> testResults = testResultRepo.selectByTestResultID(returnedTestResult.getTestResultID());
+		TestResult testResults = testResultRepo.selectByTestResultID(returnedTestResult.getTestResultID());
 
-		assertEquals(1, testResults.size());
+		assertNotNull(testResults);
 
 		// Updates the test in the table
 		returnedTestResult.setTestScore(99);
@@ -88,28 +76,21 @@ public class TestTestResultRepo {
 
 		testResults = testResultRepo.selectByTestResultID(returnedTestResult.getTestResultID());
 
-		assertEquals(99, testResults.get(0).getTestScore().intValue());
+		assertEquals(99, testResults.getTestScore().intValue());
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TestsRepo#selectByTestsID(java.lang.Long)}.
-	 */
 	@Test
 	public void testSelectByTestResultID() {
 		// Inserts one test to table
 		TestResult returnedTestResult = testResultRepo.insert(testResult);
 
-		List<TestResult> testResults = testResultRepo.selectByTestResultID(returnedTestResult.getTestResultID());
+		TestResult testResults = testResultRepo.selectByTestResultID(returnedTestResult.getTestResultID());
 
-		assertEquals(1, testResults.size());
+		assertNotNull(testResults);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TestsRepo#selectByUsername(java.lang.String)}.
-	 */
+
 	@Test
 	public void testSelectByTestID() {
 		// Inserts one test to table
@@ -120,10 +101,7 @@ public class TestTestResultRepo {
 		assertTrue(testResults.size() > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TestsRepo#selectByFirstName(java.lang.String)}.
-	 */
+
 	@Test
 	public void testSelectByStudentID() {
 		// Inserts one test to table
@@ -134,10 +112,7 @@ public class TestTestResultRepo {
 		assertTrue(testResults.size() > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TestsRepo#delete(java.lang.Long)}.
-	 */
+
 	@Test
 	public void testDelete() {
 		// Inserts one test to table

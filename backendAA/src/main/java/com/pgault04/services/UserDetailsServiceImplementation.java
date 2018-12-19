@@ -60,7 +60,6 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
             logger.debug("{}: not found.", username);
             throw new UsernameNotFoundException(username);
         }
-        logger.info("{} found and returned.", username);
         return new User(user.getUsername(), user.getPassword(), grantList);
     }
 }

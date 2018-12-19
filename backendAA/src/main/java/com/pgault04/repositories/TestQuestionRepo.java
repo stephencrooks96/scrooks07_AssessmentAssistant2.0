@@ -1,12 +1,8 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pgault04.entities.TestQuestion;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,127 +12,123 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.TestQuestion;
+import java.util.List;
+import java.util.Objects;
 
+/**
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class TestQuestionRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 0;
+    private static final int INSERT_CHECKER_CONSTANT = 0;
 
-	private static final Logger log = LoggerFactory.getLogger(TestQuestionRepo.class);
+    private static final Logger log = LogManager.getLogger(TestQuestionRepo.class);
 
-	private String tableName = "TestQuestion";
+    private final String insertSQL = "INSERT INTO TestQuestion (testID, questionID) values (:testID, :questionID)";
+    private final String updateSQL = "UPDATE TestQuestion SET questionID=:questionID, testID=:testID WHERE testQuestionID=:testQuestionID";
+    private final String selectSQL = "SELECT * FROM TestQuestion WHERE ";
 
-	private final String insertSQL = "INSERT INTO " + tableName + " (testID, questionID) values (:testID, :questionID)";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String updateSQL = "UPDATE " + tableName + " SET questionID=:questionID, testID=:testID "
-			+ "WHERE testQuestionID=:testQuestionID";
+    private String tableName = "TestQuestion";
+    private String deleteSQL = "DELETE FROM TestQuestion WHERE testQuestionID=?";
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * @return the number of records in the table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE testQuestionID=?";
+    /**
+     * Inserts/Updates TestQuestion record in table
+     *
+     * @param testQuestion object
+     * @return object after insertion
+     */
+    public TestQuestion insert(TestQuestion testQuestion) {
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(testQuestion);
+        if (testQuestion.getTestQuestionID() < INSERT_CHECKER_CONSTANT) {
+            // insert
+            log.debug("Inserting new testQuestion...");
 
-	@Autowired
-	JdbcTemplate tmpl;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedparamTmpl.update(insertSQL, namedParams, keyHolder);
+            testQuestion.setTestQuestionID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+            // inserted
+            log.debug("New associationType inserted: {}", testQuestion.toString());
+        } else {
+            log.debug("Updating associationType: {}", testQuestion.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("JdbcRepo returning associationType: {}", testQuestion);
+        return testQuestion;
+    }
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+    /**
+     * Selects the test question by its id
+     *
+     * @param testQuestionID object
+     * @return list of test questions
+     */
+    public List<TestQuestion> selectByTestQuestionID(Long testQuestionID) {
+        log.debug("TestQuestionRepo selectByTestQuestion: #{}", testQuestionID);
+        String selectByTestQuestionIDSQL = selectSQL + "testQuestionID=?";
+        List<TestQuestion> testQuestions = tmpl.query(selectByTestQuestionIDSQL,
+                new BeanPropertyRowMapper<>(TestQuestion.class), testQuestionID);
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public TestQuestion insert(TestQuestion testQuestion) {
+        log.debug("Query for testQuestion: #{}, number of items: {}", testQuestionID, testQuestions.size());
+        return testQuestions;
+    }
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(testQuestion);
+    /**
+     * Selects the test questions for a given test id
+     *
+     * @param testID the tests id
+     * @return the list of test questions
+     */
+    public List<TestQuestion> selectByTestID(Long testID) {
+        log.debug("TestQuestionRepo selectByTestID: #{}", testID);
+        String selectByTestIDSQL = selectSQL + "testID=?";
+        List<TestQuestion> testQuestions = tmpl.query(selectByTestIDSQL,
+                new BeanPropertyRowMapper<>(TestQuestion.class), testID);
 
-		if (testQuestion.getTestQuestionID() < INSERT_CHECKER_CONSTANT) {
+        log.debug("Query for testID: #{}, number of items: {}", testID, testQuestions.size());
+        return testQuestions;
+    }
 
-			// insert
-			log.debug("Inserting new testQuestion...");
+    /**
+     * Selects the test questions by a question id
+     *
+     * @param questionID the question id
+     * @return the list of test questions
+     */
+    public List<TestQuestion> selectByQuestionID(Long questionID) {
+        log.debug("TestQuestionRepo selectByQuestionID: #{}", questionID);
+        String selectByQuestionIDSQL = selectSQL + "questionID=?";
+        List<TestQuestion> testQuestions = tmpl.query(selectByQuestionIDSQL,
+                new BeanPropertyRowMapper<>(TestQuestion.class), questionID);
 
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+        log.debug("Query for questionID: #{}, number of items: {}", questionID, testQuestions.size());
+        return testQuestions;
+    }
 
-			namedparamTmpl.update(insertSQL, namedParams, keyHolder);
-			testQuestion.setTestQuestionID(keyHolder.getKey().longValue());
+    /**
+     * Deletes a test question from the database
+     *
+     * @param testQuestionID the items id
+     */
+    public void delete(Long testQuestionID) {
+        log.debug("TestQuestionRepo delete #{}", testQuestionID);
 
-			// inserted
-			log.debug("New associationType inserted: " + testQuestion.toString());
-		} else {
-			log.debug("Updating associationType: " + testQuestion.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning associationType: " + testQuestion);
-		return testQuestion;
+        tmpl.update(deleteSQL, testQuestionID);
+        log.debug("TestQuestion deleted from database #{}", testQuestionID);
 
-	}
-
-	/**
-	 * 
-	 * @param associationTypeID
-	 * @return associationTypes
-	 */
-	public List<TestQuestion> selectByTestQuestionID(Long testQuestionID) {
-		log.debug("TestQuestionRepo selectByTestQuestion: " + testQuestionID);
-		String selectByTestQuestionIDSQL = selectSQL + "testQuestionID=?";
-		List<TestQuestion> testQuestions = tmpl.query(selectByTestQuestionIDSQL,
-				new BeanPropertyRowMapper<TestQuestion>(TestQuestion.class), testQuestionID);
-
-		log.debug("Query for testQuestion: #" + testQuestionID + ", number of items: " + testQuestions.size());
-		return testQuestions;
-	}
-
-	/**
-	 * 
-	 * @param email
-	 * @return associationTypes
-	 */
-	public List<TestQuestion> selectByTestID(Long testID) {
-		log.debug("TestQuestionRepo selectByTestID: " + testID);
-		String selectByTestIDSQL = selectSQL + "testID=?";
-		List<TestQuestion> testQuestions = tmpl.query(selectByTestIDSQL,
-				new BeanPropertyRowMapper<TestQuestion>(TestQuestion.class), testID);
-
-		log.debug("Query for testID: " + testID + ", number of items: " + testQuestions.size());
-		return testQuestions;
-	}
-
-	/**
-	 * 
-	 * @param email
-	 * @return associationTypes
-	 */
-	public List<TestQuestion> selectByQuestionID(Long questionID) {
-		log.debug("TestQuestionRepo selectByQuestionID: " + questionID);
-		String selectByQuestionIDSQL = selectSQL + "questionID=?";
-		List<TestQuestion> testQuestions = tmpl.query(selectByQuestionIDSQL,
-				new BeanPropertyRowMapper<TestQuestion>(TestQuestion.class), questionID);
-
-		log.debug("Query for questionID: " + questionID + ", number of items: " + testQuestions.size());
-		return testQuestions;
-	}
-
-	/**
-	 * 
-	 * @param associationType
-	 */
-	public void delete(Long testQuestionID) {
-		log.debug("TestQuestionRepo delete...");
-
-		tmpl.update(deleteSQL, testQuestionID);
-		log.debug("TestQuestion deleted from database.");
-
-	}
+    }
 }

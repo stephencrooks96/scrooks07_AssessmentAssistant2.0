@@ -1,12 +1,8 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pgault04.entities.TestResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,127 +12,125 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.TestResult;
+import java.util.List;
+import java.util.Objects;
 
+/**
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class TestResultRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 0;
+    private static final int INSERT_CHECKER_CONSTANT = 0;
 
-	private static final Logger log = LoggerFactory.getLogger(TestResultRepo.class);
+    private static final Logger log = LogManager.getLogger(TestResultRepo.class);
 
-	private String tableName = "TestResult";
+    private final String insertSQL = "INSERT INTO TestResult (testID, studentID, testScore) values (:testID, :studentID, :testScore)";
+    private final String updateSQL = "UPDATE TestResult SET testID=:testID, studentID=:studentID, testScore=:testScore WHERE testResultID=:testResultID";
+    private final String selectSQL = "SELECT * FROM TestResult WHERE ";
 
-	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (testID, studentID, testScore) values (:testID, :studentID, :testScore)";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String updateSQL = "UPDATE " + tableName + " SET testID=:testID, "
-			+ "studentID=:studentID, testScore=:testScore " + "WHERE testResultID=:testResultID";
+    private String tableName = "TestResult";
+    private String deleteSQL = "DELETE FROM TestResult WHERE testResultID=?";
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * @return the number of records in the table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE testResultID=?";
+    /**
+     * Inserts/Updates records in the table
+     *
+     * @param testResult the object
+     * @return the object after insertion
+     */
+    public TestResult insert(TestResult testResult) {
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(testResult);
+        if (testResult.getTestResultID() < INSERT_CHECKER_CONSTANT) {
+            // insert
+            log.debug("Inserting new test...");
 
-	@Autowired
-	JdbcTemplate tmpl;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedparamTmpl.update(insertSQL, namedParams, keyHolder);
+            testResult.setTestResultID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+            // inserted
+            log.debug("New tests inserted: {}", testResult.toString());
+        } else {
+            log.debug("Updating test: {}", testResult.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("JdbcRepo returning test: {}", testResult);
+        return testResult;
+    }
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+    /**
+     * Selects record from row based on its id
+     *
+     * @param testResultID the id
+     * @return the object
+     */
+    public TestResult selectByTestResultID(Long testResultID) {
+        log.debug("TestResultRepo selectByTestResultID: #{}", testResultID);
+        String selectByTestResultIDSQL = selectSQL + "testResultID=?";
+        List<TestResult> tests = tmpl.query(selectByTestResultIDSQL,
+                new BeanPropertyRowMapper<>(TestResult.class), testResultID);
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public TestResult insert(TestResult testResult) {
+        if (tests != null && tests.size() > 0) {
+            log.debug("Query for test result: #{}, number of items: {}", testResultID, tests.size());
+            return tests.get(0);
+        }
+        return null;
+    }
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(testResult);
+    /**
+     * Selects the results by given test
+     *
+     * @param testID the test id
+     * @return the list of results
+     */
+    public List<TestResult> selectByTestID(Long testID) {
+        log.debug("TestsRepo selectByTestID: #{}", testID);
+        String selectByTestIDSQL = selectSQL + "testID=?";
+        List<TestResult> tests = tmpl.query(selectByTestIDSQL, new BeanPropertyRowMapper<>(TestResult.class), testID);
 
-		if (testResult.getTestResultID() < INSERT_CHECKER_CONSTANT) {
+        log.debug("Query for test: #{}, number of items: {}", testID, tests.size());
+        return tests;
+    }
 
-			// insert
-			log.debug("Inserting new test...");
+    /**
+     * Selects results by a student
+     *
+     * @param studentID the students id
+     * @return the list of results
+     */
+    public List<TestResult> selectByStudentID(Long studentID) {
+        log.debug("TestResultRepo selectByStudentID: #{}", studentID);
+        String selectByStudentIDSQL = selectSQL + "studentID=?";
+        List<TestResult> tests = tmpl.query(selectByStudentIDSQL,
+                new BeanPropertyRowMapper<>(TestResult.class), studentID);
 
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+        log.debug("Query for student: #{}, number of items: {}", studentID, tests.size());
+        return tests;
+    }
 
-			namedparamTmpl.update(insertSQL, namedParams, keyHolder);
-			testResult.setTestResultID(keyHolder.getKey().longValue());
+    /**
+     * Deletes record from database
+     *
+     * @param testResultID the id
+     */
+    public void delete(Long testResultID) {
+        log.debug("TestResultRepo delete #{}", testResultID);
 
-			// inserted
-			log.debug("New tests inserted: " + testResult.toString());
-		} else {
-			log.debug("Updating test: " + testResult.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning test: " + testResult);
-		return testResult;
+        tmpl.update(deleteSQL, testResultID);
+        log.debug("TestResult deleted from database #{}", testResultID);
 
-	}
-
-	/**
-	 * 
-	 * @param testsID
-	 * @return testss
-	 */
-	public List<TestResult> selectByTestResultID(Long testResultID) {
-		log.debug("TestResultRepo selectByTestResultID: " + testResultID);
-		String selectByTestResultIDSQL = selectSQL + "testResultID=?";
-		List<TestResult> tests = tmpl.query(selectByTestResultIDSQL,
-				new BeanPropertyRowMapper<TestResult>(TestResult.class), testResultID);
-
-		log.debug("Query for test result: #" + testResultID + ", number of items: " + tests.size());
-		return tests;
-	}
-
-	/**
-	 * 
-	 * @param testsID
-	 * @return testss
-	 */
-	public List<TestResult> selectByTestID(Long testID) {
-		log.debug("TestsRepo selectByTestID: " + testID);
-		String selectByTestIDSQL = selectSQL + "testID=?";
-		List<TestResult> tests = tmpl.query(selectByTestIDSQL, new BeanPropertyRowMapper<TestResult>(TestResult.class), testID);
-
-		log.debug("Query for test: #" + testID + ", number of items: " + tests.size());
-		return tests;
-	}
-
-	/**
-	 * 
-	 * @param email
-	 * @return testss
-	 */
-	public List<TestResult> selectByStudentID(Long studentID) {
-		log.debug("TestResultRepo selectByStudentID: " + studentID);
-		String selectByStudentIDSQL = selectSQL + "studentID=?";
-		List<TestResult> tests = tmpl.query(selectByStudentIDSQL,
-				new BeanPropertyRowMapper<TestResult>(TestResult.class), studentID);
-
-		log.debug("Query for student: " + studentID + ", number of items: " + tests.size());
-		return tests;
-	}
-
-	/**
-	 * 
-	 * @param tests
-	 */
-	public void delete(Long testResultID) {
-		log.debug("TestResultRepo delete...");
-
-		tmpl.update(deleteSQL, testResultID);
-		log.debug("TestResult deleted from database.");
-
-	}
+    }
 }

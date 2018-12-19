@@ -1,12 +1,8 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pgault04.entities.Tests;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,149 +12,141 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.Tests;
+import java.util.List;
+import java.util.Objects;
 
+/**
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class TestsRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 0;
+    private static final int INSERT_CHECKER_CONSTANT = 0;
 
-	private static final Logger log = LoggerFactory.getLogger(TestsRepo.class);
+    private static final Logger log = LogManager.getLogger(TestsRepo.class);
 
-	private String tableName = "Tests";
+    private final String insertSQL = "INSERT INTO Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (:moduleID, :testTitle, :startDateTime, :endDateTime, :publishResults, :scheduled, :publishGrades)";
+    private final String updateSQL = "UPDATE Tests SET moduleID=:moduleID, testTitle=:testTitle, startDateTime=:startDateTime, endDateTime=:endDateTime, publishResults=:publishResults, scheduled=:scheduled, publishGrades=:publishGrades WHERE testID=:testID";
+    private final String selectSQL = "SELECT * FROM Tests WHERE ";
 
-	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (:moduleID, :testTitle, :startDateTime, :endDateTime, :publishResults, :scheduled, :publishGrades)";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String updateSQL = "UPDATE " + tableName + " SET moduleID=:moduleID, testTitle=:testTitle, "
-			+ "startDateTime=:startDateTime, endDateTime=:endDateTime, publishResults=:publishResults, scheduled=:scheduled, publishGrades=:publishGrades " + "WHERE testID=:testID";
+    private String tableName = "Tests";
+    private String deleteSQL = "DELETE FROM Tests WHERE testID=?";
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * @return the number of records in the table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE testID=?";
+    /**
+     * Insert/Update record in tests table
+     *
+     * @param test object
+     * @return object after insertion
+     */
+    public Tests insert(Tests test) {
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(test);
+        if (test.getTestID() < INSERT_CHECKER_CONSTANT) {
+            // insert
+            log.debug("Inserting new test...");
 
-	@Autowired
-	JdbcTemplate tmpl;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedparamTmpl.update(insertSQL, namedParams, keyHolder);
+            test.setTestID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+            // inserted
+            log.debug("New tests inserted: {}", test.toString());
+        } else {
+            log.debug("Updating test: {}", test.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("JdbcRepo returning test: {}", test);
+        return test;
+    }
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+    /**
+     * Selects test by its id
+     *
+     * @param testID the id
+     * @return the test object
+     */
+    public Tests selectByTestID(Long testID) {
+        log.debug("TestsRepo selectByTestID: #{}", testID);
+        String selectByTestIDSQL = selectSQL + "testID=?";
+        List<Tests> tests = tmpl.query(selectByTestIDSQL, new BeanPropertyRowMapper<>(Tests.class), testID);
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public Tests insert(Tests test) {
+        log.debug("Query for test: #{}, number of items: {}", testID, tests.size());
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(test);
+        if (tests.size() > 0) {
+            return tests.get(0);
+        }
+        return null;
+    }
 
-		if (test.getTestID() < INSERT_CHECKER_CONSTANT) {
+    /**
+     * Selects tests by module id
+     *
+     * @param moduleID the module id
+     * @return list of tests belonging to the module
+     */
+    public List<Tests> selectByModuleID(Long moduleID) {
+        log.debug("TestsRepo selectByModuleID: #{}", moduleID);
+        String selectByModuleIDSQL = selectSQL + "moduleID=?";
+        List<Tests> tests = tmpl.query(selectByModuleIDSQL, new BeanPropertyRowMapper<>(Tests.class), moduleID);
 
-			// insert
-			log.debug("Inserting new test...");
+        log.debug("Query for tests - module id: #{}, number of items: {}", moduleID, tests.size());
+        return tests;
+    }
 
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+    /**
+     * Selects tests from database based on their start time
+     *
+     * @param startDateTime the start time
+     * @return list of tests
+     */
+    public List<Tests> selectByStartDateTime(String startDateTime) {
+        log.debug("TestsRepo selectByStartDateTime: #{}", startDateTime);
+        String selectByStartDateTimeSQL = selectSQL + "startDateTime=?";
+        List<Tests> tests = tmpl.query(selectByStartDateTimeSQL, new BeanPropertyRowMapper<>(Tests.class),
+                startDateTime);
 
-			namedparamTmpl.update(insertSQL, namedParams, keyHolder);
-			test.setTestID(keyHolder.getKey().longValue());
+        log.debug("Query for start date time: {}, number of items: {}", startDateTime, tests.size());
+        return tests;
+    }
 
-			// inserted
-			log.debug("New tests inserted: " + test.toString());
-		} else {
-			log.debug("Updating test: " + test.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning test: " + test);
-		return test;
+    /**
+     * Select from the database based on the end time
+     *
+     * @param endDateTime end time
+     * @return list of tests
+     */
+    public List<Tests> selectByEndDateTime(String endDateTime) {
+        log.debug("TestsRepo selectByEndDateTime: {}", endDateTime);
+        String selectByEndDateTimeSQL = selectSQL + "endDateTime=?";
+        List<Tests> tests = tmpl.query(selectByEndDateTimeSQL, new BeanPropertyRowMapper<>(Tests.class),
+                endDateTime);
 
-	}
+        log.debug("Query for end date time: {}, number of items: {}", endDateTime, tests.size());
+        return tests;
+    }
 
-	/**
-	 * 
-	 * @param testsID
-	 * @return testss
-	 */
-	public Tests selectByTestID(Long testID) {
-		log.debug("TestsRepo selectByTestID: " + testID);
-		String selectByTestIDSQL = selectSQL + "testID=?";
-		List<Tests> tests = tmpl.query(selectByTestIDSQL, new BeanPropertyRowMapper<Tests>(Tests.class), testID);
+    /**
+     * Deletes a test from the database
+     *
+     * @param testID the test id
+     */
+    public void delete(Long testID) {
+        log.debug("TestsRepo delete #{}", testID);
 
-		log.debug("Query for test: #" + testID + ", number of items: " + tests.size());
-		
-		if (tests != null && tests.size() > 0) {
-			return tests.get(0);
-		} 
-		
-		return null;
-		
-	}
+        tmpl.update(deleteSQL, testID);
+        log.debug("Tests deleted from database #{}", testID);
 
-	/**
-	 * 
-	 * @param email
-	 * @return testss
-	 */
-	public List<Tests> selectByModuleID(Long moduleID) {
-		log.debug("TestsRepo selectByModuleID: " + moduleID);
-		String selectByModuleIDSQL = selectSQL + "moduleID=?";
-		List<Tests> tests = tmpl.query(selectByModuleIDSQL, new BeanPropertyRowMapper<Tests>(Tests.class), moduleID);
-
-		log.debug("Query for email: " + moduleID + ", number of items: " + tests.size());
-		return tests;
-	}
-
-	/**
-	 * 
-	 * @param start
-	 *            date time
-	 * @return testss
-	 */
-	public List<Tests> selectByStartDateTime(String startDateTime) {
-		log.debug("TestsRepo selectByStartDateTime: " + startDateTime);
-		String selectByStartDateTimeSQL = selectSQL + "startDateTime=?";
-		List<Tests> tests = tmpl.query(selectByStartDateTimeSQL, new BeanPropertyRowMapper<Tests>(Tests.class),
-				startDateTime);
-
-		log.debug("Query for start date time: " + startDateTime + ", number of items: " + tests.size());
-		return tests;
-	}
-
-	/**
-	 * 
-	 * @param end
-	 *            date time
-	 * @return tests
-	 */
-	public List<Tests> selectByEndDateTime(String endDateTime) {
-		log.debug("TestsRepo selectByEndDateTime: " + endDateTime);
-		String selectByEndDateTimeSQL = selectSQL + "endDateTime=?";
-		List<Tests> tests = tmpl.query(selectByEndDateTimeSQL, new BeanPropertyRowMapper<Tests>(Tests.class),
-				endDateTime);
-
-		log.debug("Query for end date time: " + endDateTime + ", number of items: " + tests.size());
-		return tests;
-	}
-
-	/**
-	 * 
-	 * @param tests
-	 */
-	public void delete(Long testID) {
-		log.debug("TestsRepo delete...");
-
-		tmpl.update(deleteSQL, testID);
-		log.debug("Tests deleted from database.");
-
-	}
+    }
 }

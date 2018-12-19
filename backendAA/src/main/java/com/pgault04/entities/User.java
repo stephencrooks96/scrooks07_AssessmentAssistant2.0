@@ -1,18 +1,17 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 import org.springframework.stereotype.Component;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
-
 @Component
 public class User {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long userID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -32,15 +31,16 @@ public class User {
 	/**
 	 * Default constructor
 	 */
-	public User() {
-	}
+	public User() {}
 
 	/**
-	 * @param userID
-	 * @param username
-	 * @param firstName
-	 * @param lastName
-	 * @param userType
+	 * Constructor with args
+	 * @param username the users username
+	 * @param password the users password
+	 * @param firstName the users first name
+	 * @param lastName the users last name
+	 * @param enabled whether the user is enabled or not
+	 * @param userRoleID the users user role
 	 */
 	public User(String username, String password, String firstName, String lastName, Integer enabled, Long userRoleID) {
 		this.setUsername(username);
@@ -141,18 +141,34 @@ public class User {
 	}
 
 	/**
-	 * @return the userType
+	 * @return the userRoleID
 	 */
 	public Long getUserRoleID() {
 		return userRoleID;
 	}
 
 	/**
-	 * @param userType
-	 *            the userType to set
+	 * @param userRoleID
+	 *            the userRoleID to set
 	 */
 	public void setUserRoleID(Long userRoleID) {
 		this.userRoleID = userRoleID;
 	}
 
+	/**
+	 * @return the object as string
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("User{");
+		sb.append("userID=").append(userID);
+		sb.append(", username='").append(username).append('\'');
+		sb.append(", password='").append(password).append('\'');
+		sb.append(", firstName='").append(firstName).append('\'');
+		sb.append(", lastName='").append(lastName).append('\'');
+		sb.append(", enabled=").append(enabled);
+		sb.append(", userRoleID=").append(userRoleID);
+		sb.append('}');
+		return sb.toString();
+	}
 }

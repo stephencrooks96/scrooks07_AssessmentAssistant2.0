@@ -1,12 +1,8 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pgault04.entities.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,144 +12,127 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.Message;
+import java.util.List;
+import java.util.Objects;
 
+/**
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class MessageRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 0;
+    private static final int INSERT_CHECKER_CONSTANT = 0;
 
-	private static final Logger log = LoggerFactory.getLogger(MessageRepo.class);
+    private static final Logger log = LogManager.getLogger(MessageRepo.class);
 
-	private String tableName = "Message";
+    private final String insertSQL = "INSERT INTO Message (content, recipientID, senderID, messageTimestamp, newMessage) values (:content, :recipientID, :senderID, :messageTimestamp, :newMessage)";
+    private final String updateSQL = "UPDATE Message SET content=:content, recipientID=:recipientID, senderID=:senderID, messageTimestamp=:messageTimestamp, newMessage=:newMessage WHERE messageID=:messageID";
+    private final String selectSQL = "SELECT * FROM Message WHERE ";
 
-	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (content, recipientID, senderID, messageTimestamp, newMessage) values (:content, :recipientID, :senderID, :messageTimestamp, :newMessage)";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String updateSQL = "UPDATE " + tableName + " SET content=:content, "
-			+ "recipientID=:recipientID, senderID=:senderID, messageTimestamp=:messageTimestamp, newMessage=:newMessage "
-			+ "WHERE messageID=:messageID";
+    private String tableName = "Message";
+    private String deleteSQL = "DELETE FROM Message WHERE messageID=?";
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * @return the number of rows in the table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE messageID=?";
+    /**
+     * Method to insert and update records in the Message table
+     *
+     * @param message the message to update/insert
+     * @return the returned message after insertion
+     */
+    public Message insert(Message message) {
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(message);
+        if (message.getMessageID() < INSERT_CHECKER_CONSTANT) {
+            // insert
+            log.debug("Inserting new message...");
 
-	@Autowired
-	JdbcTemplate tmpl;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedparamTmpl.update(insertSQL, namedParams, keyHolder);
+            message.setMessageID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+            // inserted
+            log.debug("New message inserted: {}", message.toString());
+        } else {
+            log.debug("Updating message: {}", message.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("MessageRepo returning message: {}", message);
+        return message;
+    }
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+    /**
+     * Selects message from the database based on it's id
+     *
+     * @param messageID the message's id
+     * @return the returned message
+     */
+    public Message selectByMessageID(Long messageID) {
+        log.debug("MessageRepo selectByMessageID: {}", messageID);
+        String selectByMessageIDSQL = selectSQL + "messageID=?";
+        List<Message> messages = tmpl.query(selectByMessageIDSQL, new BeanPropertyRowMapper<>(Message.class),
+                messageID);
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public Message insert(Message message) {
+        if (messages != null && messages.size() > 0) {
+            log.debug("Query for message: #{}, number of items: {}", messageID, messages.size());
+            return messages.get(0);
+        }
+        return null;
+    }
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(message);
 
-		if (message.getMessageID() < INSERT_CHECKER_CONSTANT) {
+    /**
+     * Selects a list of message based on who received them
+     *
+     * @param recipientID the recipient's id
+     * @return the list of messages
+     */
+    public List<Message> selectByRecipientID(Long recipientID) {
+        log.debug("MessageRepo selectByRecipientID: {}", recipientID);
+        String selectByRecipientIDSQL = selectSQL + "recipientID=?";
+        List<Message> messages = tmpl.query(selectByRecipientIDSQL, new BeanPropertyRowMapper<>(Message.class),
+                recipientID);
 
-			// insert
-			log.debug("Inserting new message...");
+        log.debug("Query for recipientID: #{}, number of items: {}", recipientID, messages.size());
+        return messages;
+    }
 
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+    /**
+     * Selects a list of messages based on who sent them
+     *
+     * @param senderID the sender's id
+     * @return the list of messages
+     */
+    public List<Message> selectBySenderID(Long senderID) {
+        log.debug("MessageRepo selectBySenderID: {}", senderID);
+        String selectBySenderIDSQL = selectSQL + "senderID=?";
+        List<Message> messages = tmpl.query(selectBySenderIDSQL, new BeanPropertyRowMapper<>(Message.class),
+                senderID);
 
-			namedparamTmpl.update(insertSQL, namedParams, keyHolder);
-			message.setMessageID(keyHolder.getKey().longValue());
+        log.debug("Query for senderID: #{}, number of items: {}", senderID, messages.size());
+        return messages;
+    }
 
-			// inserted
-			log.debug("New message inserted: " + message.toString());
-		} else {
-			log.debug("Updating message: " + message.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning message: " + message);
-		return message;
+    /**
+     * Deletes a message from the database
+     *
+     * @param messageID the message id
+     */
+    public void delete(Long messageID) {
+        log.debug("MessageRepo delete #{}", messageID);
 
-	}
+        tmpl.update(deleteSQL, messageID);
+        log.debug("Message deleted from database #{}", messageID);
 
-	/**
-	 * 
-	 * @param messageID
-	 * @return messages
-	 */
-	public List<Message> selectByMessageID(Long messageID) {
-		log.debug("MessageRepo selectByMessageID: " + messageID);
-		String selectByMessageIDSQL = selectSQL + "messageID=?";
-		List<Message> messages = tmpl.query(selectByMessageIDSQL, new BeanPropertyRowMapper<Message>(Message.class),
-				messageID);
-
-		log.debug("Query for message: #" + messageID + ", number of items: " + messages.size());
-		return messages;
-	}
-
-	/**
-	 * 
-	 * @param recipientID
-	 * @return messages
-	 */
-	public List<Message> selectByRecipientID(Long recipientID) {
-		log.debug("MessageRepo selectByRecipientID: " + recipientID);
-		String selectByRecipientIDSQL = selectSQL + "recipientID=?";
-		List<Message> messages = tmpl.query(selectByRecipientIDSQL, new BeanPropertyRowMapper<Message>(Message.class),
-				recipientID);
-
-		log.debug("Query for recipientID: " + recipientID + ", number of items: " + messages.size());
-		return messages;
-	}
-
-	/**
-	 * 
-	 * @param senderID
-	 * @return messages
-	 */
-	public List<Message> selectBySenderID(Long senderID) {
-		log.debug("MessageRepo selectBySenderID: " + senderID);
-		String selectBySenderIDSQL = selectSQL + "senderID=?";
-		List<Message> messages = tmpl.query(selectBySenderIDSQL, new BeanPropertyRowMapper<Message>(Message.class),
-				senderID);
-
-		log.debug("Query for senderID: " + senderID + ", number of items: " + messages.size());
-		return messages;
-	}
-
-	/**
-	 * 
-	 * @param newMessage
-	 * @return messages
-	 */
-	public List<Message> selectByNewMessage(Integer newMessage) {
-		log.debug("MessageRepo selectByNewMessage: " + newMessage);
-		String selectByNewMessageSQL = selectSQL + "newMessage=?";
-		List<Message> messages = tmpl.query(selectByNewMessageSQL, new BeanPropertyRowMapper<Message>(Message.class),
-				newMessage);
-
-		log.debug("Query for first name: " + newMessage + ", number of items: " + messages.size());
-		return messages;
-	}
-
-	/**
-	 * 
-	 * @param message
-	 */
-	public void delete(Long messageID) {
-		log.debug("MessageRepo delete...");
-
-		tmpl.update(deleteSQL, messageID);
-		log.debug("Message deleted from database.");
-
-	}
+    }
 }

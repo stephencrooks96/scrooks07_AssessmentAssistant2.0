@@ -3,10 +3,14 @@ package com.pgault04.entities;
 /**
  * 
  * @author Paul Gault - 40126005
+ * @since November 2018
  *
  */
 public class Alternative {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long ALTERNATIVE_ID_INITIAL = -1L;
 
 	private Long alternativeID = ALTERNATIVE_ID_INITIAL;
@@ -15,8 +19,17 @@ public class Alternative {
 
 	private String alternativePhrase;
 
+	/**
+	 * Default constructor
+	 */
 	public Alternative() {}
 
+	/**
+	 * Constructor with args
+	 *
+	 * @param correctPointID the correct point id
+	 * @param alternativePhrase the alternative phrase
+	 */
 	public Alternative(Long correctPointID, String alternativePhrase) {
 		this.setCorrectPointID(correctPointID);
 		this.setAlternativePhrase(alternativePhrase);
@@ -67,15 +80,16 @@ public class Alternative {
 		this.alternativePhrase = alternativePhrase;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
+	/**
+	 * @return the object as a string
 	 */
 	@Override
 	public String toString() {
-		return "Alternative [alternativeID=" + alternativeID + ", correctPointID=" + correctPointID
-				+ ", alternativePhrase=" + alternativePhrase + "]";
+		final StringBuilder sb = new StringBuilder("Alternative{");
+		sb.append("alternativeID=").append(alternativeID);
+		sb.append(", correctPointID=").append(correctPointID);
+		sb.append(", alternativePhrase='").append(alternativePhrase).append('\'');
+		sb.append('}');
+		return sb.toString();
 	}
-
 }

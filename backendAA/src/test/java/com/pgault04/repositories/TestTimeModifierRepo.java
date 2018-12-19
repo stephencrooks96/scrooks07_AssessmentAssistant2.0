@@ -38,9 +38,7 @@ public class TestTimeModifierRepo {
 	private TimeModifier timeModifierObj;
 	private Double timeModifier;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
+
 	@Before
 	public void setUp() throws Exception {
 
@@ -48,39 +46,29 @@ public class TestTimeModifierRepo {
 
 		timeModifierObj = new TimeModifier(USER_ID_IN_DB, timeModifier);
 	}
-
-	
-
-	/**
-	 * Test method for Row Count
-	 */
 	@Test
 	public void testRowCount() {
 
-		int rowCountBefore = timeModifierRepo.rowCount().intValue();
+		int rowCountBefore = timeModifierRepo.rowCount();
 		
 		// Inserts one user to table
 		timeModifierRepo.insert(timeModifierObj);
 
 		// Checks one value is registered as in the table
 		assertTrue
-		(timeModifierRepo.rowCount().intValue()  > rowCountBefore);
+		(timeModifierRepo.rowCount() > rowCountBefore);
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TimeModifierRepo#insert(pgault04.entities.TimeModifier)}.
-	 */
 	@Test
 	public void testInsert() {
 
 		// Inserts one user to table
 		timeModifierRepo.insert(timeModifierObj);
 
-		List<TimeModifier> timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
+		TimeModifier timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
 
-		assertEquals(1, timeModifiers.size());
+		assertNotNull(timeModifiers);
 
 		// Updates the user in the table
 		timeModifierObj.setTimeModifier(4.0);
@@ -90,28 +78,20 @@ public class TestTimeModifierRepo {
 
 		timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
 
-		assertEquals(4.0, timeModifiers.get(0).getTimeModifier(), 0);
+		assertEquals(4.0, timeModifiers.getTimeModifier(), 0);
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TimeModifierRepo#selectByUserID(java.lang.Long)}.
-	 */
 	@Test
 	public void testSelectByUserID() {
 		// Inserts one user to table
 		timeModifierRepo.insert(timeModifierObj);
 
-		List<TimeModifier> timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
+		TimeModifier timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
 
-		assertEquals(1, timeModifiers.size());
+		assertNotNull(timeModifiers);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.TimeModifierRepo#delete(java.lang.Long)}.
-	 */
 	@Test
 	public void testDelete() {
 		// Inserts one user to table
@@ -119,9 +99,9 @@ public class TestTimeModifierRepo {
 
 		timeModifierRepo.delete(timeModifierObj.getUserID());
 
-		List<TimeModifier> timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
+		TimeModifier timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
 
-		assertEquals(0, timeModifiers.size());
+		assertNull(timeModifiers);
 	}
 
 }

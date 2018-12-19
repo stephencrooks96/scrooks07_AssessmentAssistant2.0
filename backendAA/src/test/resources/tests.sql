@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS Alternative, Answer, AssociationType, Message, Module, ModuleAssociation, Password, Question, QuestionType, TestQuestion, TestResutlt, Tests, TimeModifier, User, UserRole, UserSessions;
+DROP TABLE IF EXISTS Alternative, Answer, AssociationType, CorrectPoint, Message, Module, Modules, ModuleAssociation, OptionTbl, Password, PasswordReset, Question, QuestionType, TestQuestion, TestResutlt, Tests, TimeModifier, User, Users, UserRole, UserSessions;
 
 CREATE TABLE IF NOT EXISTS Alternative (
   alternativeID int(11) NOT NULL AUTO_INCREMENT,
@@ -53,10 +53,10 @@ CREATE TABLE IF NOT EXISTS Message (
 -- --------------------------------------------------------
 
 --
--- Table structure for table Module
+-- Table structure for table Modules
 --
 
-CREATE TABLE IF NOT EXISTS Module (
+CREATE TABLE IF NOT EXISTS Modules (
   moduleID int(11) NOT NULL AUTO_INCREMENT,
   moduleName varchar(50) NOT NULL,
   moduleDescription varchar(500) NOT NULL,
@@ -91,10 +91,10 @@ CREATE TABLE IF NOT EXISTS OptionTbl (
 -- --------------------------------------------------------
 
 --
--- Table structure for table Password
+-- Table structure for table PasswordReset
 --
 
-CREATE TABLE IF NOT EXISTS Password (
+CREATE TABLE IF NOT EXISTS PasswordReset (
   userID int(11) NOT NULL,
   resetString varchar(10) NOT NULL
   );
@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS TimeModifier (
 -- Table structure for table User
 --
 
-CREATE TABLE IF NOT EXISTS User (
+CREATE TABLE IF NOT EXISTS Users (
   userID int(11) NOT NULL AUTO_INCREMENT,
   username varchar(50) NOT NULL,
   password varchar(200) NOT NULL,
@@ -252,8 +252,8 @@ CREATE INDEX IF NOT EXISTS senderID ON Message (senderID);
 --
 -- Indexes for table Module
 --
-CREATE PRIMARY KEY IF NOT EXISTS moduleID ON Module (moduleID);
-CREATE INDEX IF NOT EXISTS tutorUserID ON Module (tutorUserID);
+CREATE PRIMARY KEY IF NOT EXISTS moduleID ON Modules (moduleID);
+CREATE INDEX IF NOT EXISTS tutorUserID ON Modules (tutorUserID);
 
 --
 -- Indexes for table ModuleAssociation
@@ -271,9 +271,9 @@ CREATE INDEX IF NOT EXISTS questionIDOpt ON OptionTbl (questionID);
 
 
 --
--- Indexes for table Password
+-- Indexes for table PasswordReset
 --
-CREATE PRIMARY KEY IF NOT EXISTS userIDPass ON Password (userID);
+CREATE PRIMARY KEY IF NOT EXISTS userIDPass ON PasswordReset (userID);
 
 --
 -- Indexes for table Question
@@ -315,9 +315,9 @@ CREATE PRIMARY KEY IF NOT EXISTS userIDTim ON TimeModifier (userID);
 --
 -- Indexes for table User
 --
-CREATE PRIMARY KEY IF NOT EXISTS userID ON User (userID);
-CREATE UNIQUE INDEX IF NOT EXISTS username ON User (username);
-CREATE INDEX IF NOT EXISTS userRoleID ON User (userRoleID);
+CREATE PRIMARY KEY IF NOT EXISTS userID ON Users (userID);
+CREATE UNIQUE INDEX IF NOT EXISTS username ON Users (username);
+CREATE INDEX IF NOT EXISTS userRoleID ON Users (userRoleID);
 
 --
 -- Indexes for table UserRole
@@ -336,28 +336,28 @@ CREATE PRIMARY KEY IF NOT EXISTS sessionID ON UserSessions(sessionID);
 -- Constraints for table Answer
 --
 ALTER TABLE Answer ADD FOREIGN KEY (questionID) REFERENCES Question (questionID);
-ALTER TABLE Answer ADD FOREIGN KEY (answererID) REFERENCES User (userID);
-ALTER TABLE Answer ADD FOREIGN KEY (markerID) REFERENCES User (userID);
+ALTER TABLE Answer ADD FOREIGN KEY (answererID) REFERENCES Users (userID);
+ALTER TABLE Answer ADD FOREIGN KEY (markerID) REFERENCES Users (userID);
 ALTER TABLE Answer ADD FOREIGN KEY (testID) REFERENCES Tests (testID);
 
 --
 -- Constraints for table Message
 --
 
-ALTER TABLE Message ADD FOREIGN KEY (recipientID) REFERENCES User (userID);
-ALTER TABLE Message ADD FOREIGN KEY (senderID) REFERENCES User (userID);
+ALTER TABLE Message ADD FOREIGN KEY (recipientID) REFERENCES Users (userID);
+ALTER TABLE Message ADD FOREIGN KEY (senderID) REFERENCES Users (userID);
 
 --
 -- Constraints for table Module
 --
-ALTER TABLE Module ADD FOREIGN KEY (tutorUserID) REFERENCES User (userID);
+ALTER TABLE Modules ADD FOREIGN KEY (tutorUserID) REFERENCES Users (userID);
 
 --
 -- Constraints for table ModuleAssociation
 --
 ALTER TABLE ModuleAssociation ADD FOREIGN KEY (associationType) REFERENCES AssociationType (associationTypeID);
-ALTER TABLE ModuleAssociation ADD FOREIGN KEY (moduleID) REFERENCES Module (moduleID);
-ALTER TABLE ModuleAssociation ADD FOREIGN KEY (userID) REFERENCES User (userID);
+ALTER TABLE ModuleAssociation ADD FOREIGN KEY (moduleID) REFERENCES Modules (moduleID);
+ALTER TABLE ModuleAssociation ADD FOREIGN KEY (userID) REFERENCES Users (userID);
 
 --
 -- Constraints for table OptionTbl
@@ -365,15 +365,15 @@ ALTER TABLE ModuleAssociation ADD FOREIGN KEY (userID) REFERENCES User (userID);
 ALTER TABLE OptionTbl ADD FOREIGN KEY (questionID) REFERENCES Question (questionID);
 
 --
--- Constraints for table Password
+-- Constraints for table PasswordReset
 --
-ALTER TABLE Password ADD FOREIGN KEY (userID) REFERENCES User (userID);
+ALTER TABLE PasswordReset ADD FOREIGN KEY (userID) REFERENCES Users (userID);
 
 --
 -- Constraints for table Question
 --
 ALTER TABLE Question ADD FOREIGN KEY (questionType) REFERENCES QuestionType (questionTypeID);
-ALTER TABLE Question ADD FOREIGN KEY (creatorID) REFERENCES User (userID);
+ALTER TABLE Question ADD FOREIGN KEY (creatorID) REFERENCES Users (userID);
 
 --
 -- Constraints for table TestQuestion
@@ -385,22 +385,22 @@ ALTER TABLE TestQuestion ADD FOREIGN KEY (testID) REFERENCES Tests (testID);
 -- Constraints for table TestResult
 --
 ALTER TABLE TestResult ADD FOREIGN KEY (testID) REFERENCES Tests (testID);
-ALTER TABLE TestResult ADD FOREIGN KEY (studentID) REFERENCES User (userID);
+ALTER TABLE TestResult ADD FOREIGN KEY (studentID) REFERENCES Users (userID);
 
 --
 -- Constraints for table Tests
 --
-ALTER TABLE Tests ADD FOREIGN KEY (moduleID) REFERENCES Module (moduleID);
+ALTER TABLE Tests ADD FOREIGN KEY (moduleID) REFERENCES Modules (moduleID);
 
 --
 -- Constraints for table TimeModifier
 --
-ALTER TABLE TimeModifier ADD FOREIGN KEY (userID) REFERENCES User (userID);
+ALTER TABLE TimeModifier ADD FOREIGN KEY (userID) REFERENCES Users (userID);
 
 --
 -- Constraints for table User
 --
-ALTER TABLE User ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID);
+ALTER TABLE Users ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID);
 
 -- DATA
 
@@ -414,14 +414,14 @@ values ('ROLE_USER');
  
 ---
 
-insert into User (username, password, firstname, lastname, enabled, userRoleID)
+insert into Users (username, password, firstname, lastname, enabled, userRoleID)
 values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'paul', 'gault', 1, 1);
  
-insert into User (username, password, firstname, lastname, enabled, userRoleID)
+insert into Users (username, password, firstname, lastname, enabled, userRoleID)
 values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'richard', 'gault', 1, 2);
  
-insert into Module (moduleName, moduleDescription, tutorUserID, year) values ('Foundation Physics', 'Physics for beginners', 2, 2018);
-insert into Module (moduleName, moduleDescription, tutorUserID, year) values ('Ad Physics', 'Advanced Physics', 2, 2018);
+insert into Modules (moduleName, moduleDescription, tutorUserID, year) values ('Foundation Physics', 'Physics for beginners', 2, 2018);
+insert into Modules (moduleName, moduleDescription, tutorUserID, year) values ('Ad Physics', 'Advanced Physics', 2, 2018);
 
 insert into AssociationType (associationType) values ('tutor');
 insert into AssociationType (associationType) values ('student');

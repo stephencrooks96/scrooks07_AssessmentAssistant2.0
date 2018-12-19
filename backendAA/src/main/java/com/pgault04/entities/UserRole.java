@@ -1,61 +1,67 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 import org.springframework.stereotype.Component;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @Component
 public class UserRole {
 
-	private Long userRoleID = -1L;
-	
-	private String role;
+    private Long userRoleID = -1L;
 
-	public UserRole() {}
+    private String role;
 
-	/**
-	 * 
-	 * @param userRoleID
-	 * @param userRole
-	 */
-	public UserRole(String userRole) {
-		this.setRole(userRole);
-	}
+    public UserRole() {
+    }
 
-	/**
-	 * @return the userRoleID
-	 */
-	public Long getUserRoleID() {
-		return userRoleID;
-	}
+    /**
+     * Constructor with args
+     *
+     * @param userRole the users role
+     */
+    public UserRole(String userRole) {
+        this.setRole(userRole);
+    }
 
-	/**
-	 * @param userRoleID the userRoleID to set
-	 */
-	public void setUserRoleID(Long userRoleID) {
-		this.userRoleID = userRoleID;
-	}
+    /**
+     * @return the userRoleID
+     */
+    public Long getUserRoleID() {
+        return userRoleID;
+    }
 
-	/**
-	 * @return the userRole
-	 */
-	public String getRole() {
-		return role;
-	}
+    /**
+     * @param userRoleID the userRoleID to set
+     */
+    public void setUserRoleID(Long userRoleID) {
+        this.userRoleID = userRoleID;
+    }
 
-	/**
-	 * @param userRole the userRole to set
-	 */
-	public void setRole(String role) {
-		this.role = role;
-	}
-	
-	
-	
-	
+    /**
+     * @return the userRole
+     */
+    public String getRole() {
+        return role;
+    }
+
+    /**
+     * @param role the role to set
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    /**
+     * @return the object as string
+     */
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("UserRole{");
+        sb.append("userRoleID=").append(userRoleID);
+        sb.append(", role='").append(role).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -4,11 +4,15 @@
 package com.pgault04.entities;
 
 /**
- * @author paulgault
+ * @author Paul Gault 40126005
+ * @since November 2018
  *
  */
 public class Message {
 
+	/**
+	 * Used as a checker for insertions and updates
+	 */
 	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
 	private Long messageID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
@@ -30,12 +34,12 @@ public class Message {
 	}
 
 	/**
-	 * @param messageID
-	 * @param content
-	 * @param recipientID
-	 * @param senderID
-	 * @param messageTimeStamp
-	 * @param newMessage
+	 * The constructor with args
+	 * @param content the messages content
+	 * @param recipientID the receiver
+	 * @param senderID the sender
+	 * @param messageTimestamp the timestamp of the message
+	 * @param newMessage whether the message has been read of not
 	 */
 	public Message(String content, Long recipientID, Long senderID, String messageTimestamp, int newMessage) {
 		this.setContent(content);
@@ -113,7 +117,7 @@ public class Message {
 	}
 
 	/**
-	 * @param messageTimeStamp
+	 * @param messageTimestamp
 	 *            the timeStamp to set
 	 */
 	public void setMessageTimestamp(String messageTimestamp) {
@@ -135,4 +139,19 @@ public class Message {
 		this.newMessage = newMessage;
 	}
 
+	/**
+	 * @return the object as a string
+	 */
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Message{");
+		sb.append("messageID=").append(messageID);
+		sb.append(", content='").append(content).append('\'');
+		sb.append(", recipientID=").append(recipientID);
+		sb.append(", senderID=").append(senderID);
+		sb.append(", messageTimestamp='").append(messageTimestamp).append('\'');
+		sb.append(", newMessage=").append(newMessage);
+		sb.append('}');
+		return sb.toString();
+	}
 }

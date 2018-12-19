@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.pgault04.entities.User;
@@ -22,10 +23,14 @@ import com.pgault04.repositories.UserRepo;
 import com.pgault04.repositories.UserRoleRepo;
 import com.pgault04.utilities.PasswordEncrypt;
 
+import javax.transaction.Transactional;
+
 /**
  * @author Paul Gault - 40126005
  *
  */
+@Sql("/tests.sql")
+@Transactional
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class TestUserDetailsSerivceImplementation {
@@ -57,21 +62,6 @@ public class TestUserDetailsSerivceImplementation {
 	@Before
 	public void setUp() throws Exception {
 		
-		tmpl.execute("DELETE FROM TestQuestion");
-		tmpl.execute("DELETE FROM Answer");
-		tmpl.execute("DELETE FROM Question");
-		tmpl.execute("DELETE FROM QuestionType");
-		tmpl.execute("DELETE FROM TestResult");
-		tmpl.execute("DELETE FROM Tests");
-		tmpl.execute("DELETE FROM ModuleAssociation");
-		tmpl.execute("DELETE FROM Module");
-		tmpl.execute("DELETE FROM AssociationType");
-		tmpl.execute("DELETE FROM Message");
-		tmpl.execute("DELETE FROM Password");
-		tmpl.execute("DELETE FROM TimeModifier");
-		tmpl.execute("DELETE FROM User");
-		tmpl.execute("DELETE FROM UserRole");
-
 		this.invalidUserName = "";
 		this.userRole = new UserRole("ROLE_User");
 		this.validUserName = "paul";

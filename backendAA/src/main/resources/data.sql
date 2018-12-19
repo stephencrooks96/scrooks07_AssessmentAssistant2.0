@@ -12,17 +12,17 @@ insert into QuestionType (questionType) values ('Text-based');
 insert into QuestionType (questionType) values ('Multiple-Choice');
 insert into QuestionType (questionType) values ('Insert the word');
 
-insert into User (username, password, firstname, lastname, enabled, userRoleID)
+insert into Users (username, password, firstname, lastname, enabled, userRoleID)
 values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Paul', 'Gault', 1, 1);
  
-insert into User (username, password, firstname, lastname, enabled, userRoleID)
+insert into Users (username, password, firstname, lastname, enabled, userRoleID)
 values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Richard', 'Gault', 1, 2);
 
-insert into User (username, password, firstname, lastname, enabled, userRoleID)
+insert into Users (username, password, firstname, lastname, enabled, userRoleID)
 values ('bart.simpson@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bart', 'Simpson', 1, 2);
  
-insert into Module (moduleName, moduleDescription, tutorUserID, year) values ('Foundation Physics', 'Physics for beginners', 2, 2018);
-insert into Module (moduleName, moduleDescription, tutorUserID, year) values ('Ad Physics', 'Advanced Physics', 2, 2018);
+insert into Modules (moduleName, moduleDescription, tutorUserID, year) values ('Foundation Physics', 'Physics for beginners', 2, 2018);
+insert into Modules (moduleName, moduleDescription, tutorUserID, year) values ('Ad Physics', 'Advanced Physics', 2, 2018);
 
 insert into AssociationType (associationType) values ('tutor');
 insert into AssociationType (associationType) values ('student');

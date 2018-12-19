@@ -1,4 +1,5 @@
-<form #addQuestionForm="ngForm" (submit)="addQuestion(addQuestionForm)" class='shadow' id='addQuestionForm' name='addQuestionForm' role="form"
+<form #addQuestionForm="ngForm" (submit)="addQuestion(addQuestionForm)" class='shadow' id='addQuestionForm'
+      name='addQuestionForm' role="form"
       style="width: 100%; padding: 5px 10px 5px 10px;">
 
   <fieldset style="height: 95%; width: 100%;">
@@ -42,7 +43,9 @@
 
 
   <fieldset id="markSchemeFieldset" style="height: 95%; width: 100%;">
-    <legend><span placement="bottom" ngbTooltip="Add some information on what you are looking for in the answer. The more you add the more the system can help you mark.">Mark Scheme</span></legend>
+    <legend><span ngbTooltip="Add some information on what you are looking for in the answer. The more you add the more the system can help you mark."
+                  placement="bottom">Mark Scheme</span>
+    </legend>
 
     <div *ngIf="questionInsert.correctPoints.length > 0">
       <fieldset *ngFor="let correctPoint of questionInsert.correctPoints; let i = index">
@@ -55,7 +58,8 @@
           </div>
           <div class="form-group col-md-6">
             <label for="marksWorth{{[i]}}">Allocated Mark</label>
-            <input [(ngModel)]="correctPoint.marksWorth" class="form-control" id="marksWorth{{[i]}}" name="marksWorth{{[i]}}"
+            <input [(ngModel)]="correctPoint.marksWorth" class="form-control" id="marksWorth{{[i]}}"
+                   name="marksWorth{{[i]}}"
                    type="number">
           </div>
         </div>
@@ -65,17 +69,19 @@
           <div class="form-group col-md-6">
             <label for="feedback{{[i]}}">Feedback to give</label>
             <textarea [(ngModel)]="correctPoint.feedback" class="form-control" id="feedback{{[i]}}"
+                      name="feedback{{[i]}}"
                       rows="3"
                       style="display: block;
-    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"
-                      name="feedback{{[i]}}"></textarea>
+    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
           </div>
           <div class="form-group col-md-6">
-            <label>Alternative Phrases <a (click)="addAlternative([i])" placement="top" ngbTooltip="Add another alternative."><i class="fas fa-plus-circle"></i></a></label>
+            <label>Alternative Phrases <a (click)="addAlternative([i])" ngbTooltip="Add another alternative."
+                                          placement="top"><i
+              class="fas fa-plus-circle"></i></a></label>
 
-              <input *ngFor="let alt of correctPoint.alternatives; let j = index" [(ngModel)]="alt.alternativePhrase"
-                     class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
-                     type="text">
+            <input *ngFor="let alt of correctPoint.alternatives; let j = index" [(ngModel)]="alt.alternativePhrase"
+                   class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
+                   type="text">
 
           </div>
         </div>

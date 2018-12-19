@@ -11,17 +11,15 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.pgault04.entities.Password;
-
 /**
  * @author paulgault
  *
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TestPassword {
+public class TestPasswordReset {
 
-	private Password passwordObj;
+	private PasswordReset passwordResetObj;
 
 	private Long userID;
 
@@ -32,7 +30,7 @@ public class TestPassword {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		this.passwordObj = new Password();
+		this.passwordResetObj = new PasswordReset();
 
 		this.userID = 1L;
 
@@ -44,7 +42,7 @@ public class TestPassword {
 	 */
 	@Test
 	public void testPasswordDefaultConstructor() {
-		assertNotNull(passwordObj);
+		assertNotNull(passwordResetObj);
 	}
 
 	/**
@@ -53,12 +51,12 @@ public class TestPassword {
 	 */
 	@Test
 	public void testPasswordConstructorWithArgs() {
-		passwordObj = null;
-		passwordObj = new Password(userID, resetString);
+		passwordResetObj = null;
+		passwordResetObj = new PasswordReset(userID, resetString);
 
-		assertNotNull(passwordObj);
-		assertEquals(userID, passwordObj.getUserID());
-		assertEquals(resetString, passwordObj.getResetString());
+		assertNotNull(passwordResetObj);
+		assertEquals(userID, passwordResetObj.getUserID());
+		assertEquals(resetString, passwordResetObj.getResetString());
 
 	}
 
@@ -67,8 +65,8 @@ public class TestPassword {
 	 */
 	@Test
 	public void testGetSetUserID() {
-		passwordObj.setUserID(userID);
-		assertEquals(userID, passwordObj.getUserID());
+		passwordResetObj.setUserID(userID);
+		assertEquals(userID, passwordResetObj.getUserID());
 
 	}
 
@@ -77,8 +75,8 @@ public class TestPassword {
 	 */
 	@Test
 	public void testGetSetResetString() {
-		passwordObj.setResetString(resetString);
-		assertEquals(resetString, passwordObj.getResetString());
+		passwordResetObj.setResetString(resetString);
+		assertEquals(resetString, passwordResetObj.getResetString());
 	}
 
 }

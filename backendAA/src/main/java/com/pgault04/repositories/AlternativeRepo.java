@@ -1,10 +1,6 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
-import java.util.List;
-
+import com.pgault04.entities.Alternative;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,118 +12,117 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.Alternative;
-import com.pgault04.entities.CorrectPoint;
+import java.util.List;
+import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the Alternatives table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class AlternativeRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 0;
+    /**
+     * Logs useful info for problem resolution
+     */
+    private static final Logger log = LogManager.getLogger(AlternativeRepo.class);
 
-	private static final Logger log = LogManager.getLogger(AlternativeRepo.class);
+    private static final int INSERT_CHECKER_CONSTANT = 0;
 
-	private String tableName = "Alternative";
+    private final String insertSQL = "INSERT INTO Alternative (correctPointID, alternativePhrase) values (:correctPointID, :alternativePhrase)";
+    private final String updateSQL = "UPDATE Alternative SET correctPointID=:correctPointID, alternativePhrase=:alternativePhrase WHERE alternativeID=:alternativeID";
+    private final String selectSQL = "SELECT * FROM Alternative WHERE ";
 
-	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (correctPointID, alternativePhrase) values (:correctPointID, :alternativePhrase)";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String updateSQL = "UPDATE " + tableName + " SET correctPointID=:correctPointID, "
-			+ "alternativePhrase=:alternativePhrase " + "WHERE alternativeID=:alternativeID";
+    private String tableName = "Alternative";
+    private String deleteSQL = "DELETE FROM Alternative WHERE alternativeID=?";
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * @return the number of rows in this table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE alternativeID=?";
+    /**
+     * Inserts or updates the alternative in db based on a check of the id
+     *
+     * @param alternative the alternative object
+     * @return the returned alternative object
+     */
+    public Alternative insert(Alternative alternative) {
 
-	@Autowired
-	JdbcTemplate tmpl;
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(alternative);
+        if (alternative.getAlternativeID() < INSERT_CHECKER_CONSTANT) {
+            // insert
+            log.debug("Inserting new alternative...");
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedparamTmpl.update(insertSQL, namedParams, keyHolder);
+            alternative.setAlternativeID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+            // inserted
+            log.info("New alternative inserted: {}", alternative.toString());
+        } else {
+            log.debug("Updating alternative: {}", alternative.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("AlternativeRepo returning alternative: {}", alternative);
+        return alternative;
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public Alternative insert(Alternative alternative) {
+    }
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(alternative);
+    /**
+     * Method to select by alternative id from db
+     *
+     * @param alternativeID the alternative id
+     * @return the found alternative
+     */
+    public Alternative selectByAlternativeID(Long alternativeID) {
+        log.debug("AlternativeRepo selectByAlternativeID: " + alternativeID);
+        String selectByQuestionIDSQL = selectSQL + "alternativeID=?";
+        List<Alternative> alternatives = tmpl.query(selectByQuestionIDSQL,
+                new BeanPropertyRowMapper<>(Alternative.class), alternativeID);
 
-		if (alternative.getAlternativeID() < INSERT_CHECKER_CONSTANT) {
+        if (alternatives != null && alternatives.size() > 0) {
+            log.debug("Query for Alternative: #{}, number of items: {}", alternativeID, alternatives.size());
+            return alternatives.get(0);
+        }
+        return null;
+    }
 
-			// insert
-			log.debug("Inserting new alternative...");
+    /**
+     * Method to select alternatives for a correct point id
+     *
+     * @param correctPointID the correct points id
+     * @return the list of alternatives
+     */
+    public List<Alternative> selectByCorrectPointID(Long correctPointID) {
+        log.debug("CorrectPointRepo selectByCorrectPointID: {}", correctPointID);
+        String selectByCorrectPointIDSQL = selectSQL + "correctPointID=?";
+        List<Alternative> alternatives = tmpl.query(selectByCorrectPointIDSQL,
+                new BeanPropertyRowMapper<>(Alternative.class), correctPointID);
 
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+        log.debug("Query for alternatives, number of items: {}", alternatives.size());
+        return alternatives;
+    }
 
-			namedparamTmpl.update(insertSQL, namedParams, keyHolder);
-			alternative.setAlternativeID(keyHolder.getKey().longValue());
-
-			// inserted
-			log.debug("New alternative inserted: " + alternative.toString());
-		} else {
-			log.debug("Updating alternative: " + alternative.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning alternative: " + alternative);
-		return alternative;
-
-	}
-	
-	/**
-	 * 
-	 * @param alternativeID
-	 * @return alternatives
-	 */
-	public Alternative selectByAlternativeID(Long alternativeID) {
-		log.debug("AlternativeRepo selectByAlternativeID: " + alternativeID);
-		String selectByQuestionIDSQL = selectSQL + "alternativeID=?";
-		List<Alternative> alternatives = tmpl.query(selectByQuestionIDSQL,
-				new BeanPropertyRowMapper<>(Alternative.class), alternativeID);
-
-		if (alternatives != null && alternatives.size() > 0) {
-			log.debug("Query for Alternative: #" + alternativeID + ", number of items: " + alternatives.size());
-			return alternatives.get(0);
-		}
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param correctPointID
-	 * @return correctPoint
-	 */
-	public List<Alternative> selectByCorrectPointID(Long correctPointID) {
-		log.debug("CorrectPointRepo selectByCorrectPointID: " + correctPointID);
-		String selectByCorrectPointIDSQL = selectSQL + "correctPointID=?";
-		List<Alternative> alternatives = tmpl.query(selectByCorrectPointIDSQL,
-				new BeanPropertyRowMapper<>(Alternative.class), correctPointID);
-
-		log.debug("Query for alternatives, number of items: " + alternatives.size());
-		return alternatives;
-	}
-
-	/**
-	 * 
-	 * @param answer
-	 */
-	public void delete(Long alternativeID) {
-		log.debug("AlternativeRepo delete...");
-
-		tmpl.update(deleteSQL, alternativeID);
-		log.debug("Alternative deleted from database.");
-
-	}
+    /**
+     * Method to delete an alternative from the db
+     *
+     * @param alternativeID the alternatives id
+     */
+    public void delete(Long alternativeID) {
+        log.debug("AlternativeRepo delete #{}.", alternativeID);
+        tmpl.update(deleteSQL, alternativeID);
+        log.debug("Alternative #{} deleted from database.", alternativeID);
+    }
 }
 

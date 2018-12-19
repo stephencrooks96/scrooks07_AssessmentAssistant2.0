@@ -1,12 +1,11 @@
 /**
- * 
+ *
  */
 package com.pgault04.repositories;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.pgault04.entities.AssociationType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,131 +15,120 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.pgault04.entities.AssociationType;
+import java.util.List;
+import java.util.Objects;
 
+/**
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class AssociationTypeRepo {
 
-	private static final int INSERT_CHECKER_CONSTANT = 0;
+    private static final int INSERT_CHECKER_CONSTANT = 0;
 
-	private static final Logger log = LoggerFactory.getLogger(AssociationTypeRepo.class);
+    private static final Logger log = LogManager.getLogger(AssociationTypeRepo.class);
 
-	private String tableName = "AssociationType";
+    private final String insertSQL = "INSERT INTO AssociationType (associationType) values (:associationType)";
+    private final String updateSQL = "UPDATE AssociationType SET associationType=:associationType WHERE associationTypeID=:associationTypeID";
+    private final String selectSQL = "SELECT * FROM AssociationType WHERE ";
 
-	private final String insertSQL = "INSERT INTO " + tableName
-			+ " (associationType) values (:associationType)";
+    @Autowired
+    JdbcTemplate tmpl;
+    @Autowired
+    NamedParameterJdbcTemplate namedparamTmpl;
 
-	private final String updateSQL = "UPDATE " + tableName
-			+ " SET associationType=:associationType "
-			+ "WHERE associationTypeID=:associationTypeID";
+    private String tableName = "AssociationType";
+    private String deleteSQL = "DELETE FROM AssociationType WHERE associationTypeID=?";
 
-	private final String selectSQL = "SELECT * FROM " + tableName + " WHERE ";
+    /**
+     * @return the number of rows in the table
+     */
+    public Integer rowCount() {
+        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+    }
 
-	private String deleteSQL = "DELETE FROM " + tableName + " WHERE associationTypeID=?";
+    /**
+     * Method to insert and update an association type in the database
+     * @param associationType the association type
+     * @return the returned association type after insertion
+     */
+    public AssociationType insert(AssociationType associationType) {
+        BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(associationType);
+        if (associationType.getAssociationTypeID() < INSERT_CHECKER_CONSTANT) {
+            // insert
+            log.debug("Inserting new associationType...");
 
-	@Autowired
-	JdbcTemplate tmpl;
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedparamTmpl.update(insertSQL, namedParams, keyHolder);
+            associationType.setAssociationTypeID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-	@Autowired
-	NamedParameterJdbcTemplate namedparamTmpl;
+            // inserted
+            log.debug("New associationType inserted: {}", associationType.toString());
+        } else {
+            log.debug("Updating associationType: {}", associationType.toString());
+            namedparamTmpl.update(updateSQL, namedParams);
+        }
+        log.info("AssociationTypeRepo returning associationType: {}", associationType);
+        return associationType;
 
-	/**
-	 * Finds the amount of records in table
-	 * 
-	 * @return
-	 */
-	public Integer rowCount() {
-		return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-	}
+    }
 
-	/**
-	 * returns the object given if id less than one then it will be inserted,
-	 * otherwise updated
-	 * 
-	 * @param price
-	 * @return
-	 */
-	public AssociationType insert(AssociationType associationType) {
+    /**
+     * Selects all association types from the database
+     * @return the list of association types
+     */
+    public List<AssociationType> selectAll() {
+        log.debug("AssociationTypeRepo selectAll");
+        List<AssociationType> associationTypes = tmpl.query("SELECT * FROM AssociationType", new BeanPropertyRowMapper<>(AssociationType.class));
 
-		BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(associationType);
+        log.debug("Query for associations, number of items: {}", associationTypes.size());
+        return associationTypes;
+    }
 
-		if (associationType.getAssociationTypeID() < INSERT_CHECKER_CONSTANT) {
+    /**
+     * Selects an association type by it's id
+     * @param associationTypeID the association type id
+     * @return the association type
+     */
+    public AssociationType selectByAssociationTypeID(Long associationTypeID) {
+        log.debug("AssociationTypeRepo selectByAssociationTypeID: {}", associationTypeID);
+        String selectByAssociationTypeIDSQL = selectSQL + "associationTypeID=?";
+        List<AssociationType> associationTypes = tmpl.query(selectByAssociationTypeIDSQL,
+                new BeanPropertyRowMapper<>(AssociationType.class), associationTypeID);
 
-			// insert
-			log.debug("Inserting new associationType...");
+        log.debug("Query for associationType: #{}, number of items: {}", associationTypeID, associationTypes.size());
+        if (associationTypes.size() > 0) {
+            return associationTypes.get(0);
+        } else {
+            return null;
+        }
+    }
 
-			KeyHolder keyHolder = new GeneratedKeyHolder();
+    /**
+     * Selects an association type by its string value
+     * @param associationType the string value of the association type
+     * @return list of association types with this name
+     */
+    public List<AssociationType> selectByAssociationType(String associationType) {
+        log.debug("AssociationTypeRepo selectByAssociationType: {}", associationType);
+        String selectByAssociationTypeSQL = selectSQL + "associationType=?";
+        List<AssociationType> associationTypes = tmpl.query(selectByAssociationTypeSQL,
+                new BeanPropertyRowMapper<>(AssociationType.class), associationType);
 
-			namedparamTmpl.update(insertSQL, namedParams, keyHolder);
-			associationType.setAssociationTypeID(keyHolder.getKey().longValue());
+        log.debug("Query for associationType: {}, number of items: {}", associationType, associationTypes.size());
+        return associationTypes;
+    }
 
-			// inserted
-			log.debug("New associationType inserted: " + associationType.toString());
-		} else {
-			log.debug("Updating associationType: " + associationType.toString());
-			namedparamTmpl.update(updateSQL, namedParams);
-		}
-		log.info("JdbcRepo returning associationType: " + associationType);
-		return associationType;
+    /**
+     * Method to delete an association type from the database
+     * @param associationTypeID the id of the item to be deleted
+     */
+    public void delete(Long associationTypeID) {
+        log.debug("AssociationTypeRepo delete #{}", associationTypeID);
 
-	}
+        tmpl.update(deleteSQL, associationTypeID);
+        log.debug("AssociationType deleted from database #{}", associationTypeID);
 
-	/**
-	 * 
-	 * @param associationID
-	 * @return associations
-	 */
-	public List<AssociationType> selectAll() {
-		log.debug("AssociationTypeRepo selectAll");
-		List<AssociationType> associationTypes = tmpl.query("SELECT * FROM AssociationType", new BeanPropertyRowMapper<AssociationType>(AssociationType.class));
-
-		log.debug("Query for associations, number of items: " + associationTypes.size());
-		return associationTypes;
-	}
-	/**
-	 * 
-	 * @param associationTypeID
-	 * @return associationTypes
-	 */
-	public AssociationType selectByAssociationTypeID(Long associationTypeID) {
-		log.debug("AssociationTypeRepo selectByAssociationTypeID: " + associationTypeID);
-		String selectByAssociationTypeIDSQL = selectSQL + "associationTypeID=?";
-		List<AssociationType> associationTypes = tmpl.query(selectByAssociationTypeIDSQL,
-				new BeanPropertyRowMapper<AssociationType>(AssociationType.class), associationTypeID);
-
-		log.debug("Query for associationType: #" + associationTypeID + ", number of items: " + associationTypes.size());
-		if (associationTypes.size() > 0) {
-			return associationTypes.get(0);
-		} else {
-			return null;
-		}
-
-	}
-
-	/**
-	 * 
-	 * @param email
-	 * @return associationTypes
-	 */
-	public List<AssociationType> selectByAssociationType(String associationType) {
-		log.debug("AssociationTypeRepo selectByAssociationType: " + associationType);
-		String selectByAssociationTypeSQL = selectSQL + "associationType=?";
-		List<AssociationType> associationTypes = tmpl.query(selectByAssociationTypeSQL,
-				new BeanPropertyRowMapper<AssociationType>(AssociationType.class), associationType);
-
-		log.debug("Query for associationType: " + associationType + ", number of items: " + associationTypes.size());
-		return associationTypes;
-	}
-
-	/**
-	 * 
-	 * @param associationType
-	 */
-	public void delete(Long associationTypeID) {
-		log.debug("AssociationTypeRepo delete...");
-
-		tmpl.update(deleteSQL, associationTypeID);
-		log.debug("AssociationType deleted from database.");
-
-	}
+    }
 }

@@ -60,29 +60,26 @@ public class TestMessageRepo {
 	@Test
 	public void testRowCount() {
 
-		int rowCountBefore = messageRepo.rowCount().intValue();
+		int rowCountBefore = messageRepo.rowCount();
 		
 		// Inserts one message to table
 		messageRepo.insert(message);
 
 		// Checks one value is registered as in the table
-		assertTrue(messageRepo.rowCount().intValue() > rowCountBefore);
+		assertTrue(messageRepo.rowCount() > rowCountBefore);
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.MessageRepo#insert(pgault04.entities.Message)}.
-	 */
+
 	@Test
 	public void testInsert() {
 
 		// Inserts one message to table
 		Message returnedMessage = messageRepo.insert(message);
 
-		List<Message> messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
+		Message messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
 
-		assertEquals(1, messages.size());
+		assertNotNull(messages);
 
 		// Updates the message in the table
 		returnedMessage.setNewMessage(1);
@@ -92,28 +89,20 @@ public class TestMessageRepo {
 
 		messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
 
-		assertEquals(1, messages.get(0).getNewMessage().intValue());
+		assertEquals(1, messages.getNewMessage().intValue());
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.MessageRepo#selectByMessageID(java.lang.Long)}.
-	 */
 	@Test
 	public void testSelectByMessageID() {
 		// Inserts one message to table
 		Message returnedMessage = messageRepo.insert(message);
 
-		List<Message> messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
+		Message messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
 
-		assertEquals(1, messages.size());
+		assertNotNull(messages);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.MessageRepo#selectByRecipientID(java.lang.String)}.
-	 */
 	@Test
 	public void testSelectByRecipientID() {
 		// Inserts one message to table
@@ -124,10 +113,6 @@ public class TestMessageRepo {
 		assertTrue(messages.size() > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.MessageRepo#selectBySenderID(java.lang.String)}.
-	 */
 	@Test
 	public void testSelectBySenderID() {
 		// Inserts one message to table
@@ -138,24 +123,7 @@ public class TestMessageRepo {
 		assertTrue(messages.size() > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.MessageRepo#selectByNewMessage(java.lang.String)}.
-	 */
-	@Test
-	public void testSelectByNewMessage() {
-		// Inserts one message to table
-		messageRepo.insert(message);
 
-		List<Message> messages = messageRepo.selectByNewMessage(message.getNewMessage());
-
-		assertTrue(messages.size() > 0);
-	}
-
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.MessageRepo#delete(java.lang.Long)}.
-	 */
 	@Test
 	public void testDelete() {
 		// Inserts one message to table
@@ -163,9 +131,9 @@ public class TestMessageRepo {
 
 		messageRepo.delete(returnedMessage.getMessageID());
 
-		List<Message> messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
+		Message messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
 
-		assertEquals(0, messages.size());
+		assertNull(messages);
 	}
 
 }

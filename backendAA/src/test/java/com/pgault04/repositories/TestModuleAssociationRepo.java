@@ -43,9 +43,6 @@ public class TestModuleAssociationRepo {
 	
 	private ModuleAssociation moduleAssociation;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
 
@@ -53,38 +50,29 @@ public class TestModuleAssociationRepo {
 				ASSOCIATION_TYPE_ID_IN_DB);
 	}
 
-	
-
-	/**
-	 * Test method for Row Count
-	 */
 	@Test
 	public void testRowCount() {
 
-		int rowCountBefore = moduleAssociationRepo.rowCount().intValue();
+		int rowCountBefore = moduleAssociationRepo.rowCount();
 		
 		// Inserts one moduleAssociation to table
 		moduleAssociationRepo.insert(moduleAssociation);
 
 		// Checks one value is registered as in the table
-		assertTrue(moduleAssociationRepo.rowCount().intValue() > rowCountBefore);
+		assertTrue(moduleAssociationRepo.rowCount() > rowCountBefore);
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.ModuleAssociationRepo#insert(pgault04.entities.ModuleAssociation)}.
-	 */
 	@Test
 	public void testInsert() {
 
 		// Inserts one moduleAssociation to table
 		ModuleAssociation returnedModuleAssociation = moduleAssociationRepo.insert(moduleAssociation);
 
-		List<ModuleAssociation> moduleAssociations = moduleAssociationRepo
+		ModuleAssociation moduleAssociations = moduleAssociationRepo
 				.selectByAssociationID(returnedModuleAssociation.getAssociationID());
 
-		assertEquals(1, moduleAssociations.size());
+		assertNotNull(moduleAssociations);
 
 		// Updates the moduleAssociation in the table
 		returnedModuleAssociation.setAssociationType(OTHER_ASSOCIATION_TYPE_IN_DB);
@@ -95,29 +83,22 @@ public class TestModuleAssociationRepo {
 		moduleAssociations = moduleAssociationRepo.selectByAssociationID(returnedModuleAssociation.getAssociationID());
 
 		assertEquals(OTHER_ASSOCIATION_TYPE_IN_DB,
-				moduleAssociations.get(0).getAssociationType().intValue());
+				moduleAssociations.getAssociationType().intValue());
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.ModuleAssociationRepo#selectByModuleAssociationID(java.lang.Long)}.
-	 */
+
 	@Test
 	public void testSelectByAssociationID() {
 		// Inserts one moduleAssociation to table
 		ModuleAssociation returnedModuleAssociation = moduleAssociationRepo.insert(moduleAssociation);
 
-		List<ModuleAssociation> moduleAssociations = moduleAssociationRepo
+		ModuleAssociation moduleAssociations = moduleAssociationRepo
 				.selectByAssociationID(returnedModuleAssociation.getAssociationID());
 
-		assertEquals(1, moduleAssociations.size());
+		assertNotNull(moduleAssociations);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.ModuleAssociationRepo#selectByUsername(java.lang.String)}.
-	 */
 	@Test
 	public void testSelectByModuleID() {
 		// Inserts one moduleAssociation to table
@@ -129,10 +110,6 @@ public class TestModuleAssociationRepo {
 		assertTrue(moduleAssociations.size() > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.ModuleAssociationRepo#selectByFirstName(java.lang.String)}.
-	 */
 	@Test
 	public void testSelectByUserID() {
 		// Inserts one moduleAssociation to table
@@ -144,10 +121,6 @@ public class TestModuleAssociationRepo {
 		assertTrue(moduleAssociations.size() > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.ModuleAssociationRepo#selectByLastName(java.lang.String)}.
-	 */
 	@Test
 	public void testSelectByAssociationType() {
 		// Inserts one moduleAssociation to table
@@ -159,10 +132,6 @@ public class TestModuleAssociationRepo {
 		assertTrue(moduleAssociations.size() > 0);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.repositories.ModuleAssociationRepo#delete(java.lang.Long)}.
-	 */
 	@Test
 	public void testDelete() {
 		// Inserts one moduleAssociation to table
@@ -170,10 +139,10 @@ public class TestModuleAssociationRepo {
 
 		moduleAssociationRepo.delete(returnedModuleAssociation.getAssociationID());
 
-		List<ModuleAssociation> moduleAssociations = moduleAssociationRepo
+		ModuleAssociation moduleAssociations = moduleAssociationRepo
 				.selectByAssociationID(returnedModuleAssociation.getAssociationID());
 
-		assertEquals(0, moduleAssociations.size());
+		assertNull(moduleAssociations);
 	}
 
 }

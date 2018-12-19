@@ -14,6 +14,10 @@ export class TestService {
   constructor(private http: HttpClient, private app: AppComponent) {
   }
 
+  /**
+   *
+   * @param test
+   */
   public addTest(test: Tests): Observable<Tests> {
 
     return this.http.post<Tests>(this.app.url + "/tests/addTest", test, {headers: this.app.headers}).pipe(
@@ -21,6 +25,10 @@ export class TestService {
     );
   }
 
+  /**
+   *
+   * @param questionData
+   */
   public addQuestion(questionData: TutorQuestionPojo): Observable<TutorQuestionPojo> {
 
     return this.http.post<TutorQuestionPojo>(this.app.url + "/tests/addQuestion", questionData, {headers: this.app.headers}).pipe(
@@ -28,6 +36,10 @@ export class TestService {
     );
   }
 
+  /**
+   *
+   * @param testID
+   */
   getByTestID(testID): Observable<Tests> {
 
     return this.http.get<Tests>(this.app.url + "/tests/getByTestIDTutorView?testID=" + testID, {headers: this.app.headers})
@@ -36,6 +48,10 @@ export class TestService {
       );
   }
 
+  /**
+   *
+   * @param testID
+   */
   getQuestions(testID): Observable<TutorQuestionPojo[]> {
 
     return this.http.get<TutorQuestionPojo[]>(this.app.url + "/tests/getQuestionsByTestIDTutorView?testID=" + testID, {headers: this.app.headers})
@@ -44,6 +60,10 @@ export class TestService {
       );
   }
 
+  /**
+   *
+   * @param testID
+   */
   getOldQuestions(testID): Observable<TutorQuestionPojo[]> {
 
     return this.http.get<TutorQuestionPojo[]>(this.app.url + "/tests/getOldQuestions?testID=" + testID, {headers: this.app.headers})
@@ -52,11 +72,27 @@ export class TestService {
       );
   }
 
+  /**
+   *
+   */
   getQuestionTypes(): Observable<QuestionType[]> {
 
     return this.http.get<QuestionType[]>(this.app.url + "/tests/getQuestionTypes", {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Question types fetched from server.'))
+      );
+  }
+
+
+  /**
+   *
+   * @param questionID
+   * @param testID
+   */
+  removeQuestion(questionID: number, testID: number): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/removeQuestionFromTest?testID=" + testID + "&questionID=" + questionID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log(`Question id=${questionID} removed from test id=${testID}`))
       );
   }
 }

@@ -1,14 +1,9 @@
 /**
- * 
+ *
  */
 package com.pgault04.repositories;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import com.pgault04.entities.Answer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,12 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.pgault04.entities.Answer;
-import com.pgault04.repositories.AnswerRepo;
+import javax.transaction.Transactional;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
  */
 @Sql("/tests.sql")
 @Transactional
@@ -30,122 +26,122 @@ import com.pgault04.repositories.AnswerRepo;
 @SpringBootTest
 public class TestAnswerRepo {
 
-	private static final long TEST_ID_IN_DB = 1L;
+    private static final long TEST_ID_IN_DB = 1L;
 
-	private static final long MARKER_ID_IN_DB = 1L;
+    private static final long MARKER_ID_IN_DB = 1L;
 
-	private static final long ANSWERER_ID_IN_DB = 1L;
+    private static final long ANSWERER_ID_IN_DB = 1L;
 
-	private static final long QUESTION_ID_IN_DATABASE = 1L;
+    private static final long QUESTION_ID_IN_DATABASE = 1L;
 
-	@Autowired
-	AnswerRepo answerRepo;
+    @Autowired
+    AnswerRepo answerRepo;
 
-	private Answer answer;
+    private Answer answer;
 
-	@Before
-	public void setUp() throws Exception {
-		
-		answer = new Answer(QUESTION_ID_IN_DATABASE, ANSWERER_ID_IN_DB, MARKER_ID_IN_DB, TEST_ID_IN_DB, "content", 100);
-		
-	}
+    @Before
+    public void setUp() throws Exception {
 
-	@Test
-	public void testRowCount() {
+        answer = new Answer(QUESTION_ID_IN_DATABASE, ANSWERER_ID_IN_DB, MARKER_ID_IN_DB, TEST_ID_IN_DB, "content", 100);
 
-		int rowCountBefore = answerRepo.rowCount().intValue();
-		
-		// Inserts one answer to table
-		answerRepo.insert(answer);
+    }
 
-		// Checks one value is registered as in the table
-		assertTrue(answerRepo.rowCount().intValue() > rowCountBefore);
+    @Test
+    public void testRowCount() {
 
-	}
+        int rowCountBefore = answerRepo.rowCount();
 
-	@Test
-	public void testInsert() {
+        // Inserts one answer to table
+        answerRepo.insert(answer);
 
-		// Inserts one answer to table
-		Answer returnedAnswer = answerRepo.insert(answer);
+        // Checks one value is registered as in the table
+        assertTrue(answerRepo.rowCount() > rowCountBefore);
 
-		List<Answer> answers = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+    }
 
-		assertEquals(1, answers.size());
+    @Test
+    public void testInsert() {
 
-		// Updates the answer in the table
-		returnedAnswer.setContent("content 2");
+        // Inserts one answer to table
+        Answer returnedAnswer = answerRepo.insert(answer);
 
-		// Inserts one answer to table
-		answerRepo.insert(returnedAnswer);
+        Answer answer = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
 
-		answers = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+        assertNotNull(answer);
 
-		assertEquals(returnedAnswer.getContent(), answers.get(0).getContent());
+        // Updates the answer in the table
+        returnedAnswer.setContent("content 2");
 
-	}
+        // Inserts one answer to table
+        answerRepo.insert(returnedAnswer);
 
-	@Test
-	public void testSelectByQuestionID() {
-		// Inserts one answer to table
-		Answer returnedAnswer = answerRepo.insert(answer);
+        answer = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
 
-		List<Answer> answers = answerRepo.selectByQuestionID(returnedAnswer.getQuestionID());
+        assertEquals(returnedAnswer.getContent(), answer.getContent());
 
-		assertTrue(answers.size() >= 1);
-	}
+    }
 
-	@Test
-	public void testSelectByTestID() {
-		// Inserts one answer to table
-		Answer returnedAnswer = answerRepo.insert(answer);
+    @Test
+    public void testSelectByQuestionID() {
+        // Inserts one answer to table
+        Answer returnedAnswer = answerRepo.insert(answer);
 
-		List<Answer> answers = answerRepo.selectByTestID(returnedAnswer.getTestID());
+        List<Answer> answers = answerRepo.selectByQuestionID(returnedAnswer.getQuestionID());
 
-		assertTrue(answers.size() >= 1);
-	}
+        assertTrue(answers.size() >= 1);
+    }
 
-	@Test
-	public void testSelectByAnswerID() {
-		// Inserts one answer to table
-		Answer returnedAnswer = answerRepo.insert(answer);
+    @Test
+    public void testSelectByTestID() {
+        // Inserts one answer to table
+        Answer returnedAnswer = answerRepo.insert(answer);
 
-		List<Answer> answers = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+        List<Answer> answers = answerRepo.selectByTestID(returnedAnswer.getTestID());
 
-		assertEquals(1, answers.size());
-	}
+        assertTrue(answers.size() >= 1);
+    }
 
-	@Test
-	public void testSelectByAnswererID() {
-		// Inserts one answer to table
-		answerRepo.insert(answer);
+    @Test
+    public void testSelectByAnswerID() {
+        // Inserts one answer to table
+        Answer returnedAnswer = answerRepo.insert(answer);
 
-		List<Answer> answers = answerRepo.selectByAnswererID(answer.getAnswererID());
+        Answer answer = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
 
-		assertTrue(answers.size() >= 1);
-	}
+        assertNotNull(answer);
+    }
+
+    @Test
+    public void testSelectByAnswererID() {
+        // Inserts one answer to table
+        answerRepo.insert(answer);
+
+        List<Answer> answers = answerRepo.selectByAnswererID(answer.getAnswererID());
+
+        assertTrue(answers.size() >= 1);
+    }
 
 
-	@Test
-	public void testSelectByMarkerID() {
-		// Inserts one answer to table
-		answerRepo.insert(answer);
+    @Test
+    public void testSelectByMarkerID() {
+        // Inserts one answer to table
+        answerRepo.insert(answer);
 
-		List<Answer> answers = answerRepo.selectByMarkerID(answer.getMarkerID());
+        List<Answer> answers = answerRepo.selectByMarkerID(answer.getMarkerID());
 
-		assertTrue(answers.size() >= 1);
-	}
+        assertTrue(answers.size() >= 1);
+    }
 
-	@Test
-	public void testDelete() {
-		// Inserts one answer to table
-		Answer returnedAnswer = answerRepo.insert(answer);
+    @Test
+    public void testDelete() {
+        // Inserts one answer to table
+        Answer returnedAnswer = answerRepo.insert(answer);
 
-		answerRepo.delete(returnedAnswer.getAnswerID());
+        answerRepo.delete(returnedAnswer.getAnswerID());
 
-		List<Answer> answers = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+        Answer answers = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
 
-		assertEquals(0, answers.size());
-	}
+        assertNull(answers);
+    }
 
 }
