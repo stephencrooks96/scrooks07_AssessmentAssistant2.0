@@ -63,14 +63,17 @@ body {
 
 .card .card-header {
   background-color: #343a40;
-  border-radius: 5px;
 }
 
-.card .card-header {
-  background-color: #343a40;
+.card {
   border-radius: 5px;
 }
 
 .card .card-header .mb-0 .btn-link {
   color: white;
+}
+
+.pre-scrollable {
+  max-height: 550px;
+  height: 550px;
 }

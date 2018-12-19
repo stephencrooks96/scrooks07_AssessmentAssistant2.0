@@ -233,6 +233,26 @@ public class TestService {
     }
 
     /**
+     * Carries out actions needed to add an existing question in to a new test
+     * The question must have been created by the requesting user and they
+     * must be a tutor of the module
+     *
+     * @param questionID the id of the question
+     * @param testID     the id of the test
+     * @param username   the user
+     * @return the test question record
+     */
+    public TestQuestion addExistingQuestion(Long questionID, Long testID, String username) {
+
+        Tests test = testRepo.selectByTestID(testID);
+        Question question = questionRepo.selectByQuestionID(questionID);
+        if ("tutor".equalsIgnoreCase(modServ.checkValidAssociation(username, test.getModuleID())) && question.getCreatorID().equals(userRepo.selectByUsername(username).getUserID())) {
+            return testQuestionRepo.insert(new TestQuestion(testID, questionID));
+        }
+        return null;
+    }
+
+    /**
      * Carries out actions needed to add correct points in to the database
      *
      * @param correctPoints - the correct points
@@ -255,8 +275,8 @@ public class TestService {
     /**
      * Carries out actions need to input alternatives in to the database
      *
-     * @param correctPointID - the correct points
-     * @param alternatives   - the alternative phrases
+     * @param correctPointID the correct points
+     * @param alternatives   the alternative phrases
      * @return the list of alternatives
      * @throws Exception generic
      */
@@ -276,9 +296,9 @@ public class TestService {
      * Method to carry out necessary actions needed for removing a question from a test,
      * checks that the users making the request is the tutor before allowing
      *
-     * @param testID     - the test id
-     * @param questionID - the questions id
-     * @param username   - the user who requests removal
+     * @param testID     the test id
+     * @param questionID the questions id
+     * @param username   the user who requests removal
      * @return boolean indicating whether request was completed of not
      */
     public Boolean removeQuestionFromTest(Long testID, Long questionID, String username) {

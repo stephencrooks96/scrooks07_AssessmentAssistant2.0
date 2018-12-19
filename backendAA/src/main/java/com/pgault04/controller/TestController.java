@@ -1,6 +1,7 @@
 package com.pgault04.controller;
 
 import com.pgault04.entities.QuestionType;
+import com.pgault04.entities.TestQuestion;
 import com.pgault04.entities.Tests;
 import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.QuestionTypeRepo;
@@ -83,9 +84,9 @@ public class TestController {
     /**
      * Gets the questions written by the user that are not currently being used in the given test
      *
-     * @param principal - the principal user
-     * @param testID    - the test id
-     * @return - the list of questions
+     * @param principal the principal user
+     * @param testID    the test id
+     * @return the list of questions
      */
     @CrossOrigin
     @RequestMapping(value = "/getOldQuestions", method = RequestMethod.GET)
@@ -110,7 +111,7 @@ public class TestController {
      * Adds a new question to the database
      *
      * @param questionData the data input by the tutor
-     * @param principal    - the principal user (the tutor in this case)
+     * @param principal    the principal user (the tutor in this case)
      * @return the inserted question
      */
     @CrossOrigin
@@ -125,11 +126,30 @@ public class TestController {
     }
 
     /**
+     * Provides an entry point for requests made to add a question that a user has used before to another test they are creating
+     *
+     * @param questionID the id of the question to add
+     * @param testID     the id of the test to add to
+     * @param principal  the user
+     * @return the object representing the record in the TestQuestion table after addition
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/addExistingQuestion", method = RequestMethod.GET)
+    public TestQuestion addExistingQuestion(Long questionID, Long testID, Principal principal) {
+        logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, principal.getName());
+        try {
+            return testService.addExistingQuestion(questionID, testID, principal.getName());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Rest mapping allowing for requests to be made to remove a question from a test by a tutor
      *
-     * @param testID - the test's id
+     * @param testID     - the test's id
      * @param questionID - the question's id
-     * @param principal - the user making the request
+     * @param principal  - the user making the request
      * @return boolean flag indicating status of request
      */
     @CrossOrigin

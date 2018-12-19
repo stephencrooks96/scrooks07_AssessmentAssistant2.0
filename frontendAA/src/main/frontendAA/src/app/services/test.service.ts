@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {AppComponent} from "../app.component";
-import {QuestionType, Tests, TutorQuestionPojo} from "../modelObjs/objects.model";
+import {Question, QuestionType, Tests, TutorQuestionPojo} from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
 
 
@@ -33,6 +33,17 @@ export class TestService {
 
     return this.http.post<TutorQuestionPojo>(this.app.url + "/tests/addQuestion", questionData, {headers: this.app.headers}).pipe(
       tap((question: TutorQuestionPojo) => console.log(`Added question with id=${question.question.questionID}`))
+    );
+  }
+
+  /**
+   *
+   * @param questionID
+   * @param testID
+   */
+  public addExistingQuestion(questionID, testID): Observable<Question> {
+    return this.http.get<Question>(this.app.url + "/tests/addExistingQuestion?questionID=" + questionID + "&testID=" + testID, {headers: this.app.headers}).pipe(
+      tap((question: Question) => console.log(`Added question with id=${question.questionID} to test with id=${testID}`))
     );
   }
 

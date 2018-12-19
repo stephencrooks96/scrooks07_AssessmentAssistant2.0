@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {QuestionType, TutorQuestionPojo} from "../modelObjs/objects.model";
 import {TestService} from "../services/test.service";
 import {EditTestComponent} from "../edit-test/edit-test.component";
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector: 'app-old-question',
@@ -12,11 +13,14 @@ export class OldQuestionComponent implements OnInit {
 
   oldQuestions : TutorQuestionPojo[];
   questionTypesToShow : QuestionType[];
-  constructor(private testServ : TestService, private editTest: EditTestComponent) { }
+  testID : number;
+  constructor(private testServ : TestService, private editTest: EditTestComponent) {
+    this.testID = this.editTest.testID;
+  }
 
   ngOnInit() {
     this.getQuestionTypes();
-    this.getOldQuestions(this.editTest.testID);
+    this.getOldQuestions(this.testID);
   }
 
   getOldQuestions(testID) {
@@ -26,6 +30,16 @@ export class OldQuestionComponent implements OnInit {
   getQuestionTypes() {
     return this.testServ.getQuestionTypes()
       .subscribe(questionTypes => this.questionTypesToShow = questionTypes);
+  }
+
+  addExistingQuestion(questionID) {
+    this.testServ.addExistingQuestion(questionID, this.testID)
+      .subscribe(success => {
+        this.editTest.getQuestions(this.testID);
+        this.getOldQuestions(this.testID);
+      }, error => {
+        return;
+      });
   }
 
 }
