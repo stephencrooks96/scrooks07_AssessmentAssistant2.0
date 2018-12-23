@@ -1,3 +1,68 @@
-<p>
-  add-test works!
-</p>
+<div class="modHomeInner" id="addTest">
+  <div class="title">
+    <h5 class="display-5">Add Test</h5>
+  </div>
+  <form (submit)="addTest()" id="addTestForm" name='addTestForm'
+        role="form" style="padding-left: 25%;">
+
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-2">
+          <label class="form-control-lg" for="testTitle" style="font-size: 1.75rem;">Title</label>
+        </div>
+        <div class="cols-sm-9">
+
+          <p style="font-size: x-small; margin-bottom: 2px;" *ngIf="titleError">Must be between 1-50 characters long.</p>
+          <input #testTitle="ngModel" [(ngModel)]="testInsert.testTitle" aria-describedby="testTitleHelp"
+                 class="form-control-lg" id="testTitle"
+                 maxlength="50" minlength="1" name="testTitle" required type="text" style="margin-right: 10px;" [ngStyle]="{'border-color' : checkTitle}"/>
+
+          </div>
+        </div>
+      </div>
+
+    <div class="form-group">
+
+      <div class="row">
+        <div class="col-sm-2">
+          <label class="form-control-lg" for="startDate" style="font-size: 1.75rem;">Start</label>
+        </div>
+
+        <div class="col-sm-9" style="padding-left: 0;">
+
+          <p style="font-size: x-small; margin-bottom: 1px;" *ngIf="dateError">Start date must be before end date.</p>
+          <p style="font-size: x-small; margin-bottom: 2px;" *ngIf="startDateError">Valid date range 365 days from today.</p>
+          <input #startDate="ngModel" [(ngModel)]="testInsert.startDateTime" aria-describedby="startDateHelp"
+                 class="form-control-lg" id="startDate"
+                 name="startDate" required type="datetime-local" min="{{today | date:'yyyy-MM-ddTHH:mm'}}" max="{{nextYear | date:'yyyy-MM-ddTHH:mm'}}" style="margin-right: 10px;" [ngStyle]="{'border-color' : checkStartDate}"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+
+      <div class="row">
+        <div class="col-sm-2">
+          <label class="form-control-lg" for="endDate" style="font-size: 1.75rem;">End</label>
+        </div>
+        <div class="col-sm-9" style="padding-left: 0;">
+
+          <p style="font-size: x-small; margin-bottom: 2px;" *ngIf="endDateError">Valid date range 365 days from today.</p>
+          <input #endDate="ngModel" [(ngModel)]="testInsert.endDateTime" aria-describedby="endDateHelp"
+                 class="form-control-lg" id="endDate"
+                 name="endDate" required type="datetime-local" min="{{today | date:'yyyy-MM-ddTHH:mm'}}" max="{{nextYear | date:'yyyy-MM-ddTHH:mm'}}" style="margin-right: 10px;" [ngStyle]="{'border-color' : checkEndDate}"/>
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-sm-2">
+      </div>
+      <div class="col-sm-9">
+        <button class="btn btn-dark" id="loginButton" type="submit">Save and add questions...</button>
+      </div>
+    </div>
+  </form>
+</div>

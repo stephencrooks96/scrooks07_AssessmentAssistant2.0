@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
 import static org.junit.Assert.*;
@@ -21,8 +18,8 @@ import com.pgault04.entities.TimeModifier;
 import com.pgault04.repositories.TimeModifierRepo;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @Sql("/tests.sql")
 @Transactional
@@ -38,57 +35,40 @@ public class TestTimeModifierRepo {
 	private TimeModifier timeModifierObj;
 	private Double timeModifier;
 
-
 	@Before
 	public void setUp() throws Exception {
-
 		this.timeModifier = 5.0;
-
 		timeModifierObj = new TimeModifier(USER_ID_IN_DB, timeModifier);
 	}
+
 	@Test
 	public void testRowCount() {
-
 		int rowCountBefore = timeModifierRepo.rowCount();
-		
 		// Inserts one user to table
 		timeModifierRepo.insert(timeModifierObj);
-
 		// Checks one value is registered as in the table
-		assertTrue
-		(timeModifierRepo.rowCount() > rowCountBefore);
-
+		assertTrue(timeModifierRepo.rowCount() > rowCountBefore);
 	}
 
 	@Test
 	public void testInsert() {
-
 		// Inserts one user to table
 		timeModifierRepo.insert(timeModifierObj);
-
 		TimeModifier timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
-
 		assertNotNull(timeModifiers);
-
 		// Updates the user in the table
 		timeModifierObj.setTimeModifier(4.0);
-
 		// Inserts one user to table
 		timeModifierRepo.insert(timeModifierObj);
-
 		timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
-
 		assertEquals(4.0, timeModifiers.getTimeModifier(), 0);
-
 	}
 
 	@Test
 	public void testSelectByUserID() {
 		// Inserts one user to table
 		timeModifierRepo.insert(timeModifierObj);
-
 		TimeModifier timeModifiers = timeModifierRepo.selectByUserID(timeModifierObj.getUserID());
-
 		assertNotNull(timeModifiers);
 	}
 
@@ -103,5 +83,4 @@ public class TestTimeModifierRepo {
 
 		assertNull(timeModifiers);
 	}
-
 }

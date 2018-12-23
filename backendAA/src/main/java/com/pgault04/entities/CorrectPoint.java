@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 import java.util.List;

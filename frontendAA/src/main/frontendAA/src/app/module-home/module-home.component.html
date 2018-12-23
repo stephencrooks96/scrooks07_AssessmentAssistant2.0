@@ -106,8 +106,8 @@
              addTestCheck = false;
              scheduledTestCheck = false;
              markingCheck = false;
-             testDraftCheck = false;
-             reviewMarkingCheck = true"
+             reviewMarkingCheck = true;
+             testDraftCheck = false"
              class="nav-link" href="#">Review
             Marking</a>
         </li>
@@ -235,94 +235,7 @@
     </div>
 
     <div *ngIf="addTestCheck">
-      <div *ngIf="'tutor' == moduleAssoc" class="modHomeInner" id="addTest">
-        <div class="title">
-          <h5 class="display-5">Add Test</h5>
-        </div>
-        <form (submit)="addTest()" id="addTestForm" name='addTestForm'
-              role="form" style="padding-left: 25%;">
-
-          <div class="form-group">
-            <div class="row">
-              <div class="col-sm-2">
-                <label class="form-control-lg" for="testTitle" style="font-size: 1.75rem;">Title</label>
-              </div>
-              <div class="cols-sm-9">
-                <div *ngIf="testTitle.invalid && (testTitle.dirty || testTitle.touched)"
-                     class="alert alert-danger" role="alert">
-
-                  <div *ngIf="testTitle.errors.required">
-                    Test needs a title.
-                  </div>
-                  <div *ngIf="testTitle.errors.minlength">
-                    Title must be at least 1 character long.
-                  </div>
-                  <div *ngIf="testTitle.errors.maxlength">
-                    Title must not be over 50 characters long.
-                  </div>
-                </div>
-                <input #testTitle="ngModel" [(ngModel)]="testInsert.testTitle" aria-describedby="testTitleHelp"
-                       class="form-control-lg" id="testTitle"
-                       maxlength="50" minlength="1" name="testTitle" required type="text"/>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="form-group">
-
-            <div class="row">
-              <div class="col-sm-2">
-                <label class="form-control-lg" for="startDate" style="font-size: 1.75rem;">Start</label>
-              </div>
-
-              <div class="col-sm-9" style="padding-left: 0;">
-                <div *ngIf="startDate.invalid && (startDate.dirty || startDate.touched)"
-                     class="alert alert-danger" role="alert">
-
-                  <div *ngIf="startDate.errors.required">
-                    Test needs a start date.
-                  </div>
-                </div>
-                <input #startDate="ngModel" [(ngModel)]="testInsert.startDateTime" aria-describedby="startDateHelp"
-                       class="form-control-lg" id="startDate"
-                       name="startDate" required type="datetime-local"/>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-
-            <div class="row">
-              <div class="col-sm-2">
-                <label class="form-control-lg" for="endDate" style="font-size: 1.75rem;">End</label>
-              </div>
-              <div class="col-sm-9" style="padding-left: 0;">
-                <div *ngIf="endDate.invalid && (endDate.dirty || endDate.touched)"
-                     class="alert alert-danger" role="alert">
-
-                  <div *ngIf="endDate.errors.required">
-                    Test needs a end date.
-                  </div>
-                </div>
-                <input #endDate="ngModel" [(ngModel)]="testInsert.endDateTime" aria-describedby="endDateHelp"
-                       class="form-control-lg" id="endDate"
-                       name="endDate" required type="datetime-local"/>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="row">
-            <div class="col-sm-2">
-            </div>
-            <div class="col-sm-9">
-              <button class="btn btn-dark" id="loginButton" type="submit">Save and add questions...</button>
-            </div>
-          </div>
-
-        </form>
-      </div>
+      <app-add-test *ngIf="'tutor' == moduleAssoc"></app-add-test>
     </div>
 
 
@@ -377,7 +290,8 @@
                   <div ngbDropdown class="d-inline-block">
                     <button class="btn btn-dark" ngbDropdownToggle>Tests</button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                      <button class="dropdown-item" *ngFor="let testMarking of marking" (click)="show = testMarking.test.testID">{{testMarking.test.testTitle}}</button>
+                      <button class="dropdown-item" *ngFor="let testMarking of marking"
+                              (click)="show = testMarking.test.testID">{{testMarking.test.testTitle}}</button>
                     </div>
                   </div>
                 </div>
@@ -517,5 +431,5 @@
     </div>
   </div>
 
-</div>
 
+</div>

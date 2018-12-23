@@ -172,4 +172,18 @@ public class TestController {
         logger.info("Request made to delete test #{} by {}", testID, principal.getName());
         return testService.deleteTest(testID, principal.getName());
     }
+
+    /**
+     * Provides an entry point to this backend app for users wanting to schedule a test for release to students
+     *
+     * @param testID    the test's id
+     * @param principal the user making the request
+     * @return true/false flag
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/scheduleTest", method = RequestMethod.GET)
+    public Boolean scheduleTest(Long testID, Principal principal) {
+        logger.info("Request made to schedule test #{} by {}", testID, principal.getName());
+        return testService.scheduleTest(testID, principal.getName());
+    }
 }

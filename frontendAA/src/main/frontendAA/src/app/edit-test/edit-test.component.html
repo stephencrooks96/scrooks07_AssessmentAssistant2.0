@@ -38,6 +38,22 @@
       <p *ngIf="test">Start: {{test.startDateTime}}</p>
       <p *ngIf="test">End: {{test.endDateTime}}</p>
 
+      <button type="button" class="btn btn-success" (click)="open(AreYouSureTestScheduling)" style="margin-bottom: 10px;">Schedule to go live</button>
+      <!-- Template from ngBootstrap -->
+      <ng-template #AreYouSureTestScheduling let-modal>
+        <div class="modal-header">
+          <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h5>Are you sure this test is ready?</h5>
+        </div>
+        <div class="modal-footer">
+          <button (click)="modal.close(); scheduleTest(testID);" class="btn btn-outline-dark" type="button">Yes, I'm sure</button>
+        </div>
+      </ng-template>
+
       <h3>Questions <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
         <button (click)="showAdd = true; showExist = false; showDetail= false;" class="btn btn-dark btn-sm"
                 type="button" placement="bottom" ngbTooltip="Add a new question">New

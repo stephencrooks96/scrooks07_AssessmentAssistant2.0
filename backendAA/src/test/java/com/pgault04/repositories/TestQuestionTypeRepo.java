@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
 import static org.junit.Assert.*;
@@ -21,8 +18,8 @@ import com.pgault04.entities.QuestionType;
 import com.pgault04.repositories.QuestionTypeRepo;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @Sql("/tests.sql")
 @Transactional
@@ -38,56 +35,45 @@ public class TestQuestionTypeRepo {
 
 	@Before
 	public void setUp() throws Exception {
-
 		this.questionType = "questionType";
 		questionTypeObj = new QuestionType(questionType);
-
 	}
 
 	@Test
 	public void testRowCount() {
-
 		int rowCountBefore = questionTypeRepo.rowCount();
-		
 		// Inserts one questionType to table
 		questionTypeRepo.insert(questionTypeObj);
-
 		// Checks one value is registered as in the table
 		assertTrue(questionTypeRepo.rowCount() > rowCountBefore);
-
 	}
 
 	@Test
 	public void testInsert() {
-
 		// Inserts one questionType to table
 		QuestionType returnedQuestionType = questionTypeRepo.insert(questionTypeObj);
-
 		QuestionType questionTypes = questionTypeRepo
 				.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
-
 		assertNotNull(questionTypes);
-
 		// Updates the questionType in the table
 		returnedQuestionType.setQuestionType("quesType");
-
 		// Inserts one questionType to table
 		questionTypeRepo.insert(returnedQuestionType);
-
 		questionTypes = questionTypeRepo.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
-
 		assertEquals("quesType", questionTypes.getQuestionType());
+	}
 
+	@Test
+	public void testSelectAll() {
+		assertNotNull(questionTypeRepo.selectAll());
 	}
 
 	@Test
 	public void testSelectByQuestionTypeID() {
 		// Inserts one questionType to table
 		QuestionType returnedQuestionType = questionTypeRepo.insert(questionTypeObj);
-
 		QuestionType questionTypes = questionTypeRepo
 				.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
-
 		assertNotNull(questionTypes);
 	}
 
@@ -95,9 +81,7 @@ public class TestQuestionTypeRepo {
 	public void testSelectByQuestionType() {
 		// Inserts one questionType to table
 		questionTypeRepo.insert(questionTypeObj);
-
 		List<QuestionType> questionTypes = questionTypeRepo.selectByQuestionType(questionTypeObj.getQuestionType());
-
 		assertEquals(1, questionTypes.size());
 	}
 
@@ -105,13 +89,9 @@ public class TestQuestionTypeRepo {
 	public void testDelete() {
 		// Inserts one questionType to table
 		QuestionType returnedQuestionType = questionTypeRepo.insert(questionTypeObj);
-
 		questionTypeRepo.delete(returnedQuestionType.getQuestionTypeID());
-
 		QuestionType questionTypes = questionTypeRepo
 				.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
-
 		assertNull(questionTypes);
 	}
-
 }

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.repositories;
 
 import static org.junit.Assert.*;
@@ -22,8 +19,8 @@ import com.pgault04.repositories.QuestionRepo;
 import com.pgault04.repositories.QuestionTypeRepo;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @Sql("/tests.sql")
 @Transactional
@@ -45,81 +42,62 @@ public class UnitTestQuestionRepo {
 	private String questionContent, questionFigure;
 	private Integer maxScore;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
-
 		this.questionContent = "content";
 		this.questionFigure = "questionFigure";
 		this.maxScore = 100;
-
 		questionObj = new Question(QUESTION_TYPE_ID_IN_DB, questionContent, questionFigure, maxScore,
 				USER_ID_IN_DB);
-
 	}
 
-	/**
-	 * Test method for Row Count
-	 */
 	@Test
 	public void testRowCount() {
-
-		int rowCountBefore = questionRepo.rowCount().intValue();
-		
+		int rowCountBefore = questionRepo.rowCount();
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-
 		// Checks one value is registered as in the table
-		assertTrue(questionRepo.rowCount().intValue() > rowCountBefore);
-
+		assertTrue(questionRepo.rowCount() > rowCountBefore);
 	}
-
 
 	@Test
 	public void testInsert() {
-
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-
 		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
-
 		assertNotNull(questions);
-
 		// Updates the user in the table
 		questionObj.setQuestionContent("content2");
-
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-
 		questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
-
 		assertEquals("content2", questions.getQuestionContent());
-
 	}
-
 
 	@Test
 	public void testSelectByQuestionID() {
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-
 		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
-
 		assertNotNull(questions);
+	}
+
+	@Test
+	public void testSelectByCreatorID() {
+		// Inserts one user to table
+		questionRepo.insert(questionObj);
+		List<Question> questions = questionRepo.selectByCreatorID(questionObj.getCreatorID());
+		for (Question q : questions) {
+			assertEquals(USER_ID_IN_DB, q.getCreatorID(), 0.0);
+		}
 	}
 
 	@Test
 	public void testDelete() {
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-
 		questionRepo.delete(questionObj.getQuestionID());
-
 		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
-
 		assertNull(questions);
 	}
-
 }

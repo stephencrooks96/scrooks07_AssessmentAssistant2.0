@@ -15,6 +15,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Paul Gault 40126005
+ * @since December 2018
+ */
 @Component
 public class CorrectPointRepo {
 
@@ -73,7 +77,7 @@ public class CorrectPointRepo {
      */
     public CorrectPoint selectByCorrectPointID(Long correctPointID) {
         log.debug("CorrectPointRepo selectByCorrectPointID: {}", correctPointID);
-        String selectByCorrectPointIDSQL = selectSQL + "answerID=?";
+        String selectByCorrectPointIDSQL = selectSQL + "correctPointID=?";
         List<CorrectPoint> correctPoints = tmpl.query(selectByCorrectPointIDSQL,
                 new BeanPropertyRowMapper<>(CorrectPoint.class), correctPointID);
 

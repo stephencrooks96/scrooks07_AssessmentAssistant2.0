@@ -15,7 +15,7 @@
         <select #questionType="ngModel" [(ngModel)]="questionInsert.question.questionType" class="form-control"
                 id="questionTypes"
                 name="questionTypesModel">
-          <option *ngFor="let q of questionTypesToShow" [value]="q.questionTypeID">{{q.questionType}}</option>
+          <optionContent *ngFor="let q of questionTypesToShow" [value]="q.questionTypeID">{{q.questionType}}</optionContent>
         </select>
 
       </div>

@@ -25,7 +25,6 @@ const routes: Routes = [
   {path: 'addTest/:moduleID', component: AddTestComponent, canActivate: [PermissionsPermission]},
   {path: 'editTest/:testID', component: EditTestComponent, canActivate: [PermissionsPermission]},
   {path: 'reviewMarking/:testID', component: ReviewMarkingComponent, canActivate: [PermissionsPermission]},
-
   {path: '**', redirectTo: '/myModules'}
 ];
 

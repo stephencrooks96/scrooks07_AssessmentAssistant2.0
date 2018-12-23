@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 import static org.junit.Assert.*;
@@ -14,8 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.pgault04.entities.User;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,12 +34,8 @@ public class TestUser {
 
 	private Long userRoleID;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
-
 		this.userObj = new User();
 		this.userID = 1L;
 		this.username = "username";
@@ -53,19 +46,11 @@ public class TestUser {
 		this.userRoleID = 2L;
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#User()}.
-	 */
 	@Test
 	public void testUserDefaultConstructor() {
 		assertNotNull(userObj);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#User(java.lang.Integer, java.lang.String, java.lang.String, java.lang.String, java.lang.Integer)}.
-	 */
 	@Test
 	public void testUserConstructorWithArgs() {
 		userObj = null;
@@ -80,68 +65,46 @@ public class TestUser {
 		assertEquals(userRoleID, userObj.getUserRoleID());
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#getUserID()}.
-	 */
 	@Test
 	public void testGetSetUserID() {
 		userObj.setUserID(userID);
 		assertEquals(userID, userObj.getUserID());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#getUsername()}.
-	 */
 	@Test
 	public void testGetSetUsername() {
 		userObj.setUsername(username);
 		assertEquals(username, userObj.getUsername());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#getFirstName()}.
-	 */
 	@Test
 	public void testGetSetFirstName() {
 		userObj.setFirstName(firstName);
 		assertEquals(firstName, userObj.getFirstName());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#getLastName()}.
-	 */
 	@Test
 	public void testGetSetLastName() {
 		userObj.setLastName(lastName);
 		assertEquals(lastName, userObj.getLastName());
-
 	}
-	
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#getEnabled()}.
-	 */
+
 	@Test
 	public void testGetSetEnabled() {
 		userObj.setEnabled(enabled);
 		assertEquals(enabled, userObj.getEnabled());
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.User#getTutor()}.
-	 */
 	@Test
 	public void testGetSetUserRole() {
 		userObj.setUserRoleID(userRoleID);
 		assertEquals(userRoleID, userObj.getUserRoleID());
 	}
 
+	@Test
+	public void testToString() {
+		userObj = new User(username, password, firstName, lastName, enabled, userRoleID);
+		userObj.setUserID(userID);
+		assertEquals("User{userID=1, username='username', password='password', firstName='firstName', lastName='lastName', enabled=1, userRoleID=2}", userObj.toString());
+	}
 }

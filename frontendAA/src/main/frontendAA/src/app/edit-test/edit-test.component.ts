@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TestService} from "../services/test.service";
 import {ModuleWithTutorFE, Tests, TutorQuestionPojo} from "../modelObjs/objects.model";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {DateFormatter} from "@angular/common/src/pipes/deprecated/intl";
 
 @Component({
   selector: 'app-edit-test',
@@ -22,6 +23,7 @@ export class EditTestComponent implements OnInit {
 
   constructor(private router: Router, private route: ActivatedRoute, private testServ: TestService, private modalService: NgbModal) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
+
   }
 
   ngOnInit() {
@@ -48,6 +50,12 @@ export class EditTestComponent implements OnInit {
 
   deleteTest(testID) {
     this.testServ.deleteTest(testID).subscribe(
+      success => {if (success) {this.router.navigate(['/moduleHome', this.test.moduleID]);}}
+    );
+  }
+
+  scheduleTest(testID) {
+    this.testServ.scheduleTest(testID).subscribe(
       success => {if (success) {this.router.navigate(['/moduleHome', this.test.moduleID]);}}
     );
   }

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 import static org.junit.Assert.*;
@@ -14,8 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.pgault04.entities.TestResult;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,12 +28,8 @@ public class TestTestResult {
 
 	private Integer testScore;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
-
 		this.testResultObj = new TestResult();
 		this.testResultID = 1L;
 		this.testID = 2L;
@@ -44,19 +37,11 @@ public class TestTestResult {
 		this.testScore = 4;
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.TestResult#TestResult()}.
-	 */
 	@Test
 	public void testTestResultDefaultConstructor() {
 		assertNotNull(testResultObj);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.TestResult#TestResult(java.lang.Integer, java.lang.Integer, java.lang.Integer, java.lang.Integer)}.
-	 */
 	@Test
 	public void testTestResultConstructorWithArgs() {
 		testResultObj = null;
@@ -68,47 +53,34 @@ public class TestTestResult {
 		assertEquals(testScore, testResultObj.getTestScore());
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.TestResult#getTestResultID()}.
-	 */
 	@Test
 	public void testGetSetTestResultID() {
 		testResultObj.setTestResultID(testResultID);
 		assertEquals(testResultID, testResultObj.getTestResultID());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.TestResult#getTestID()}.
-	 */
 	@Test
 	public void testGetSetTestID() {
 		testResultObj.setTestID(testID);
 		assertEquals(testID, testResultObj.getTestID());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.TestResult#getStudentID()}.
-	 */
 	@Test
 	public void testGetSetStudentID() {
 		testResultObj.setStudentID(studentID);
 		assertEquals(studentID, testResultObj.getStudentID());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.TestResult#getTestScore()}.
-	 */
 	@Test
 	public void testGetSetTestScore() {
 		testResultObj.setTestScore(testScore);
 		assertEquals(testScore, testResultObj.getTestScore());
 	}
 
+	@Test
+	public void testToString() {
+		testResultObj = new TestResult(testID, studentID, testScore);
+		testResultObj.setTestResultID(testResultID);
+		assertEquals("TestResult{testResultID=1, testID=2, studentID=3, testScore=4}", testResultObj.toString());
+	}
 }

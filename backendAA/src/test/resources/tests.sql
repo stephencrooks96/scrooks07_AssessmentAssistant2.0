@@ -438,6 +438,8 @@ insert into QuestionType (questionType) values ('questionType1');
 
 insert into Question (questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'content', 'figure', 100, 2);
 
+insert into CorrectPoint (questionID, phrase, marksWorth, feedback) values (1, 'phrase', 5.0, 'feedback');
+
 insert into Question (questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'content', 'figure', 100, 2);
 
 insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 1, 2, 2, 'content', 100);

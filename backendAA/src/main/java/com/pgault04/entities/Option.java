@@ -19,7 +19,9 @@ public class Option {
 
     private Long questionID;
 
-    private String option;
+    private String optionContent;
+
+    private  Integer correct;
 
     /**
      * The default constructor
@@ -28,15 +30,24 @@ public class Option {
 
     /**
      * Constructor with args
-     * @param optionID the option's id
      * @param questionID the question
-     * @param option the option text
+     * @param optionContent the optionContent text
      */
-    public Option(Long optionID, Long questionID, String option) {
-        this.setOptionID(optionID);
+    public Option(Long questionID, String optionContent, Integer correct) {
         this.setQuestionID(questionID);
-        this.setOption(option);
+        this.setOptionContent(optionContent);
+        this.setCorrect(correct);
     }
+
+    /**
+     * @return the correct flag
+     */
+    public Integer getCorrect() { return correct; }
+
+    /**
+     * @param correct the correct flag to set
+     */
+    public void setCorrect(Integer correct) { this.correct = correct; }
 
     /**
      * @return the optionID
@@ -67,17 +78,17 @@ public class Option {
     }
 
     /**
-     * @return the option
+     * @return the optionContent
      */
-    public String getOption() {
-        return option;
+    public String getOptionContent() {
+        return optionContent;
     }
 
     /**
-     * @param option the option to set
+     * @param optionContent the optionContent to set
      */
-    public void setOption(String option) {
-        this.option = option;
+    public void setOptionContent(String optionContent) {
+        this.optionContent = optionContent;
     }
 
     /**
@@ -88,7 +99,8 @@ public class Option {
         final StringBuilder sb = new StringBuilder("Option{");
         sb.append("optionID=").append(optionID);
         sb.append(", questionID=").append(questionID);
-        sb.append(", option='").append(option).append('\'');
+        sb.append(", optionContent='").append(optionContent).append('\'');
+        sb.append(", correct=").append(correct);
         sb.append('}');
         return sb.toString();
     }

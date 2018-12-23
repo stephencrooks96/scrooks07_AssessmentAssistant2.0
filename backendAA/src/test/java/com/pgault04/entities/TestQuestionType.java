@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 import static org.junit.Assert.*;
@@ -14,8 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.pgault04.entities.QuestionType;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,9 +24,6 @@ public class TestQuestionType {
 
 	private String questionType;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
 
@@ -38,19 +32,11 @@ public class TestQuestionType {
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.QuestionType#QuestionType()}.
-	 */
 	@Test
 	public void testQuestionTypeDefaultConstructor() {
 		assertNotNull(questionTypeObj);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.QuestionType#QuestionType(java.lang.Integer, java.lang.String)}.
-	 */
 	@Test
 	public void testQuestionTypeConstructorWithArgs() {
 		questionTypeObj = null;
@@ -60,10 +46,6 @@ public class TestQuestionType {
 		assertEquals(questionType, questionTypeObj.getQuestionType());
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.QuestionType#getQuestionTypeID()}.
-	 */
 	@Test
 	public void testGetSetQuestionTypeID() {
 		questionTypeObj.setQuestionTypeID(questionTypeID);
@@ -71,14 +53,16 @@ public class TestQuestionType {
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.QuestionType#getQuestionType()}.
-	 */
 	@Test
 	public void testGetSetQuestionType() {
 		questionTypeObj.setQuestionType(questionType);
 		assertEquals(questionType, questionTypeObj.getQuestionType());
 	}
 
+	@Test
+	public void testToString() {
+		questionTypeObj = new QuestionType(questionType);
+		questionTypeObj.setQuestionTypeID(questionTypeID);
+		assertEquals("QuestionType{questionTypeID=null, questionType='questionType'}", questionTypeObj.toString());
+	}
 }

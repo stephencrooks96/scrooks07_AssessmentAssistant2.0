@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.entities;
 
 import static org.junit.Assert.*;
@@ -14,8 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.pgault04.entities.Question;
 
 /**
- * @author paulgault
- *
+ * @author Paul Gault 40126005
+ * @since November 2018
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -35,12 +32,8 @@ public class UnitTestQuestion {
 	
 	private Long creatorID;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
-
 		this.questionObj = new Question();
 		this.questionType = 1L;
 		this.questionID = 2L;
@@ -50,19 +43,11 @@ public class UnitTestQuestion {
 		this.creatorID = 1L;
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#Question()}.
-	 */
 	@Test
 	public void testQuestionDefaultConstructor() {
 		assertNotNull(questionObj);
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#Question(java.lang.Integer, java.lang.Integer, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Integer)}.
-	 */
 	@Test
 	public void testQuestionConstructorWithArgs() {
 		questionObj = null;
@@ -76,69 +61,46 @@ public class UnitTestQuestion {
 		assertEquals(creatorID, questionObj.getCreatorID());
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#getQuestionType()}.
-	 */
 	@Test
 	public void testGetSetQuestionType() {
 		questionObj.setQuestionType(questionType);
 		assertEquals(questionType, questionObj.getQuestionType());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#getQuestionID()}.
-	 */
 	@Test
 	public void testGetSetQuestionID() {
 		questionObj.setQuestionID(questionID);
 		assertEquals(questionID, questionObj.getQuestionID());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#getQuestionContent()}.
-	 */
 	@Test
 	public void testGetSetQuestionContent() {
 		questionObj.setQuestionContent(questionContent);
 		assertEquals(questionContent, questionObj.getQuestionContent());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#getQuestionFigure()}.
-	 */
 	@Test
 	public void testGetSetQuestionFigure() {
 		questionObj.setQuestionFigure(questionFigure);
 		assertEquals(questionFigure, questionObj.getQuestionFigure());
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#getMaxScore()}.
-	 */
 	@Test
 	public void testGetSetMaxScore() {
 		questionObj.setMaxScore(maxScore);
 		assertEquals(maxScore, questionObj.getMaxScore());
-
 	}
-	
-	/**
-	 * Test method for
-	 * {@link pgault04.entities.Question#getCreatorID()}.
-	 */
+
 	@Test
 	public void testGetSetCreatorID() {
 		questionObj.setCreatorID(creatorID);
 		assertEquals(creatorID, questionObj.getCreatorID());
 	}
 
+	@Test
+	public void testToString() {
+		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, creatorID);
+		questionObj.setQuestionID(questionID);
+		assertEquals("Question{questionType=1, questionID=2, questionContent='questionContent', questionFigure='questionFigure', maxScore=3, creatorID=1}", questionObj.toString());
+	}
 }

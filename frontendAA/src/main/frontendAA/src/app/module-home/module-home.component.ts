@@ -43,7 +43,6 @@ export class ModuleHomeComponent implements OnInit {
   testDraftCheck = false;
   reviewMarkingCheck = false;
   show: number = 0;
-  testInsert = new Tests();
   performanceList: Performance[];
 
   constructor(private modServ: ModulesService, private route: ActivatedRoute, private userServ: UserService, private testService: TestService, private router: Router) {
@@ -61,7 +60,6 @@ export class ModuleHomeComponent implements OnInit {
     this.getMarking(this.moduleID);
     this.getTestDrafts(this.moduleID);
     this.getReviewMarking(this.moduleID);
-
   }
 
   calculateProgress(marked, toBeMarkedByYou, toBeMarkedByTAs): number {
@@ -78,20 +76,6 @@ export class ModuleHomeComponent implements OnInit {
 
     return this.modServ.getModuleAndTutor(moduleID)
       .subscribe(moduleTutor => this.moduleTutor = moduleTutor);
-  }
-
-  addTest() {
-    this.testInsert.testTitle = this.testInsert.testTitle.trim();
-    this.testInsert.moduleID = this.moduleID;
-    if (!this.testInsert.testTitle) {
-      return;
-    }
-    this.testService.addTest(this.testInsert as Tests)
-      .subscribe(test => {
-        this.router.navigate(['/editTest', test.testID]);
-      }, error => {
-        return;
-      });
   }
 
   getModuleAssociation(moduleID) {

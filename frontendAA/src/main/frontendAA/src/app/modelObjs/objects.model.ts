@@ -28,8 +28,8 @@ export class Tests {
 
   testID: number;
   testTitle: string ="";
-  startDateTime: string ="";
-  endDateTime: string ="";
+  startDateTime = new Date();
+  endDateTime = new Date();
   moduleID: number=0;
 }
 

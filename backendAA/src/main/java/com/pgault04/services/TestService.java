@@ -19,6 +19,7 @@ import java.util.List;
 @Service
 public class TestService {
 
+    public static final int SCHEDULED = 1;
     @Autowired
     TestsRepo testRepo;
 
@@ -332,4 +333,20 @@ public class TestService {
         return false;
     }
 
+    /**
+     * Performs necessary actions needed schedule a test for release
+     *
+     * @param testID   the test's id
+     * @param username the user making the request
+     * @return the true/false flag
+     */
+    public Boolean scheduleTest(Long testID, String username) {
+        if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
+            Tests test = testRepo.selectByTestID(testID);
+            test.setScheduled(SCHEDULED);
+            testRepo.insert(test);
+            return true;
+        }
+        return false;
+    }
 }

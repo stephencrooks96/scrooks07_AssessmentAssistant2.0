@@ -94,6 +94,13 @@ export class TestService {
       );
   }
 
+  scheduleTest(testID): Observable<any> {
+    return this.http.get<any>(this.app.url + "/tests/scheduleTest?testID=" + testID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log(`Test with id #${testID} scheduled for release.`))
+      );
+  }
+
 
   /**
    *
