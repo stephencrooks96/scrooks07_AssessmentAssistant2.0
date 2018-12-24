@@ -167,7 +167,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getPerformance", method = RequestMethod.GET)
     public List<Performance> getPerformance(Principal principal, Long moduleID) {
-        return modService.generatePerformance(moduleID, principal);
+        return modService.generatePerformance(moduleID, principal.getName());
     }
 
     /**

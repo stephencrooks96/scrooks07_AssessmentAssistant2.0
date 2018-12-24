@@ -345,13 +345,13 @@ public class ModuleService {
      * @param principal - the user
      * @return the performance data
      */
-    public List<Performance> generatePerformance(Long moduleID, Principal principal) {
+    public List<Performance> generatePerformance(Long moduleID, String username) {
         logger.info("Request made for performance statistics for module with id #{}", moduleID);
-        String check = checkValidAssociation(principal.getName(), moduleID);
+        String check = checkValidAssociation(username, moduleID);
         if (!"teaching assistant".equalsIgnoreCase(check) && check != null) {
 
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
-            User user = userRepo.selectByUsername(principal.getName());
+            User user = userRepo.selectByUsername(username);
             List<Performance> performanceList = new ArrayList<>();
 
             for (Tests test : tests) {

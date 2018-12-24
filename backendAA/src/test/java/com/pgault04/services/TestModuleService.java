@@ -1,9 +1,7 @@
 package com.pgault04.services;
 
 import com.pgault04.entities.*;
-import com.pgault04.pojos.ModuleWithTutor;
-import com.pgault04.pojos.TestAndGrade;
-import com.pgault04.pojos.TestMarking;
+import com.pgault04.pojos.*;
 import com.pgault04.repositories.*;
 import com.pgault04.utilities.StringToDateUtil;
 import org.junit.Before;
@@ -11,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -252,6 +251,35 @@ public class TestModuleService {
         tests = moduleService.reviewMarking(OTHER_USERNAME_IN_DB, module.getModuleID());
         assertNull(tests);
     }
+
+     @Test
+     @Transactional
+     public void testGeneratePerformance() {
+        // Sets test up to be ready for active results
+         testObj.setPublishResults(1);
+         testObj = testsRepo.insert(testObj);
+
+         testQuestionRepo.insert(new TestQuestion(testObj.getTestID(), QUESTION_IN_DB));
+
+         testResultRepo.insert(new TestResult(testObj.getTestID(), USER_IN_DB, 100));
+
+         // Teaching assistant or no association
+         List<Performance> performances = moduleService.generatePerformance(module.getModuleID(), OTHER_USERNAME_IN_DB);
+         assertNull(performances);
+
+         // Tutor association
+         performances = moduleService.generatePerformance(module.getModuleID(), USERNAME_IN_DB);
+         assertEquals(1, performances.size());
+         assertEquals(100, performances.get(0).getClassAverage(), 0.0);
+
+         // Student association
+         modAssoc.setAssociationType(2L);
+         moduleAssociationRepo.insert(modAssoc);
+         performances = moduleService.generatePerformance(module.getModuleID(), USERNAME_IN_DB);
+         assertEquals(1, performances.size());
+         assertEquals(100, performances.get(0).getClassAverage(), 0.0);
+         assertEquals(100, performances.get(0).getTestAndResult().getPercentageScore(), 0.0);
+     }
 
     @Test
     @Transactional
