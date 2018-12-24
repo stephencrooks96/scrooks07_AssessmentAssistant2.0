@@ -1,9 +1,12 @@
 package com.pgault04.services;
 
+import com.pgault04.controller.TestController;
 import com.pgault04.entities.*;
 import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.*;
 import com.pgault04.utilities.StringToDateUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,11 @@ import java.util.List;
 @Service
 public class TestService {
 
+
+    /**
+     * Logs useful info for debugging and analysis needs
+     */
+    private static final Logger logger = LogManager.getLogger(TestService.class);
     public static final int SCHEDULED = 1;
     @Autowired
     TestsRepo testRepo;
@@ -64,6 +72,8 @@ public class TestService {
      * @return Test object or null
      */
     public Tests addTest(Tests test, String username) {
+        logger.info("Request made to add a test to the database by {}", username);
+
         test.setTestID(-1L);
         test.setScheduled(0);
         test.setPublishResults(0);
@@ -96,6 +106,8 @@ public class TestService {
      * @return the test
      */
     public Tests getByTestIDTutorView(String username, Long testID) {
+        logger.info("Request made for test #{} with tutor info by {}", testID, username);
+
         Tests test = testRepo.selectByTestID(testID);
         if ("tutor".equals(modServ.checkValidAssociation(username, test.getModuleID()))) {
             return primeTestForUserView(test);
@@ -112,6 +124,8 @@ public class TestService {
      * @return the list of questions being used by this test
      */
     public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) {
+        logger.info("Request made for questions and all necessary info requited by tutor for test #{} by {}", testID, username);
+
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
         if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
             List<TutorQuestionPojo> tutorQuestions = new LinkedList<>();
@@ -135,6 +149,7 @@ public class TestService {
      * @return the questions not currently being used by this test
      */
     public List<TutorQuestionPojo> getOldQuestions(String username, Long testID) {
+        logger.info("Request made for all old questions that aren't being used by test #{}", testID);
 
         List<TutorQuestionPojo> currents = getQuestionsByTestIDTutorView(username, testID);
         List<TutorQuestionPojo> allTutorQuestions = new LinkedList<>();
@@ -221,6 +236,7 @@ public class TestService {
      * @throws Exception generic
      */
     public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
+        logger.info("Request made to add new question in to the database by {}", username);
 
         Question question = questionData.getQuestion();
         List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
@@ -244,6 +260,7 @@ public class TestService {
      * @return the test question record
      */
     public TestQuestion addExistingQuestion(Long questionID, Long testID, String username) {
+        logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, username);
 
         Tests test = testRepo.selectByTestID(testID);
         Question question = questionRepo.selectByQuestionID(questionID);
@@ -303,6 +320,7 @@ public class TestService {
      * @return boolean indicating whether request was completed of not
      */
     public Boolean removeQuestionFromTest(Long testID, Long questionID, String username) {
+        logger.info("Request made to remove question #{} from test #{} by {}", questionID, testID, username);
 
         if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
             List<TestQuestion> testQuestions = testQuestionRepo.selectByTestID(testID);
@@ -325,6 +343,7 @@ public class TestService {
      * @return true or false on whether the test is deleted of not
      */
     public Boolean deleteTest(Long testID, String username) {
+        logger.info("Request made to delete test #{} by {}", testID, username);
 
         if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
             testRepo.delete(testID);
@@ -341,6 +360,8 @@ public class TestService {
      * @return the true/false flag
      */
     public Boolean scheduleTest(Long testID, String username) {
+        logger.info("Request made to schedule test #{} by {}", testID, username);
+
         if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
             Tests test = testRepo.selectByTestID(testID);
             test.setScheduled(SCHEDULED);

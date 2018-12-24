@@ -36,7 +36,6 @@ public class UserController {
     @CrossOrigin
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     public List<User> findAll() {
-        logger.info("Request made for all users");
         return userRepo.selectAll();
     }
 }

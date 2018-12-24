@@ -36,8 +36,7 @@ public class TestController {
     /**
      * The default constructor need for rest calls
      */
-    public TestController() {
-    }
+    public TestController() {}
 
     /**
      * Adds a new test to the database
@@ -49,7 +48,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/addTest", method = RequestMethod.POST)
     public Tests saveTest(Principal principal, @RequestBody Tests test) {
-        logger.info("Request made to add a test to the database by {}", principal.getName());
         return testService.addTest(test, principal.getName());
     }
 
@@ -63,7 +61,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/getByTestIDTutorView", method = RequestMethod.GET)
     public Tests getByTestIDTutorView(Principal principal, Long testID) {
-        logger.info("Request made for test #{} with tutor info by {}", testID, principal.getName());
         return testService.getByTestIDTutorView(principal.getName(), testID);
     }
 
@@ -77,7 +74,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/getQuestionsByTestIDTutorView", method = RequestMethod.GET)
     public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(Principal principal, Long testID) {
-        logger.info("Request made for questions and all necessary info requited by tutor for test #{} by {}", testID, principal.getName());
         return testService.getQuestionsByTestIDTutorView(principal.getName(), testID);
     }
 
@@ -91,7 +87,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/getOldQuestions", method = RequestMethod.GET)
     public List<TutorQuestionPojo> getOldQuestions(Principal principal, Long testID) {
-        logger.info("Request made for all old questions that aren't being used by test #{}", testID);
         return testService.getOldQuestions(principal.getName(), testID);
     }
 
@@ -103,7 +98,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/getQuestionTypes", method = RequestMethod.GET)
     public List<QuestionType> getQuestionTypes() {
-        logger.info("Request made for list of different question types.");
         return questionTypeRepo.selectAll();
     }
 
@@ -117,12 +111,9 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/addQuestion", method = RequestMethod.POST)
     public TutorQuestionPojo newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
-        logger.info("Request made to add new question in to the database by {}", principal.getName());
         try {
             return testService.newQuestion(questionData, principal.getName());
-        } catch (Exception e) {
-            return null;
-        }
+        } catch (Exception e) { return null; }
     }
 
     /**
@@ -136,12 +127,9 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/addExistingQuestion", method = RequestMethod.GET)
     public TestQuestion addExistingQuestion(Long questionID, Long testID, Principal principal) {
-        logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, principal.getName());
         try {
             return testService.addExistingQuestion(questionID, testID, principal.getName());
-        } catch (Exception e) {
-            return null;
-        }
+        } catch (Exception e) { return null; }
     }
 
     /**
@@ -155,7 +143,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/removeQuestionFromTest", method = RequestMethod.DELETE)
     public Boolean removeQuestionFromTest(Long testID, Long questionID, Principal principal) {
-        logger.info("Request made to remove question #{} from test #{} by {}", questionID, testID, principal.getName());
         return testService.removeQuestionFromTest(testID, questionID, principal.getName());
     }
 
@@ -169,7 +156,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/deleteTest", method = RequestMethod.DELETE)
     public Boolean deleteTest(Long testID, Principal principal) {
-        logger.info("Request made to delete test #{} by {}", testID, principal.getName());
         return testService.deleteTest(testID, principal.getName());
     }
 
@@ -183,7 +169,6 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/scheduleTest", method = RequestMethod.GET)
     public Boolean scheduleTest(Long testID, Principal principal) {
-        logger.info("Request made to schedule test #{} by {}", testID, principal.getName());
         return testService.scheduleTest(testID, principal.getName());
     }
 }

@@ -31,11 +31,6 @@ import java.util.List;
 @RequestMapping("/modules")
 public class ModuleController {
 
-    /**
-     * Logs useful information for debugging and problem resolution
-     */
-    private static final Logger logger = LogManager.getLogger(ModuleController.class);
-
     @Autowired
     ModuleRepo modRepo;
 
@@ -57,7 +52,6 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getByModuleID", method = RequestMethod.GET)
     public Module getModuleByID(Long moduleID) {
-        logger.info("Request made for module information module #{}", moduleID);
         return modRepo.selectByModuleID(moduleID);
     }
 
@@ -70,12 +64,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getModuleAndTutor", method = RequestMethod.GET)
     public ModuleWithTutor getModuleWithTutor(Long moduleID) {
-
-        logger.info("Request made for module with tutor info, module #{}", moduleID);
-        Module m = modRepo.selectByModuleID(moduleID);
-        User u = userRepo.selectByUserID(m.getTutorUserID());
-        u.setPassword(null); // Protects password from outside view
-        return new ModuleWithTutor(u, m);
+        return modService.getModuleWithTutor(moduleID);
     }
 
     /**
@@ -87,16 +76,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getMyModulesWithTutors", method = RequestMethod.GET)
     public List<ModuleWithTutor> getModulesWithTutors(Principal principal) {
-
-        logger.info("Requests for all module and tutor data for modules associated with user {}", principal.getName());
-        List<Module> modules = modService.myModules(principal.getName());
-        List<ModuleWithTutor> modTutors = new ArrayList<>();
-        for (Module m : modules) {
-            User u = userRepo.selectByUserID(m.getTutorUserID());
-            u.setPassword(null); // Protects password from outside view
-            modTutors.add(new ModuleWithTutor(u, m));
-        }
-        return modTutors;
+        return modService.getMyModulesWithTutor(principal.getName());
     }
 
     /**
@@ -109,13 +89,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getActiveTests", method = RequestMethod.GET)
     public List<Tests> getActiveTests(Principal principal, Long moduleID) {
-
-        logger.info("Request made for active tests for module #{}", moduleID);
-        if (modService.checkValidAssociation(principal.getName(), moduleID) != null) {
-            return modService.activeTests(moduleID);
-        } else {
-            return null;
-        }
+        return modService.activeTests(principal.getName(), moduleID);
     }
 
     /**
@@ -128,13 +102,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getActiveResults", method = RequestMethod.GET)
     public List<TestAndGrade> getActiveResults(Principal principal, Long moduleID) {
-
-        logger.info("Request made for active results for module #{}", moduleID);
-        if ("student".equals(modService.checkValidAssociation(principal.getName(), moduleID))) {
-            return modService.activeResults(moduleID, principal.getName());
-        } else {
-            return null;
-        }
+        return modService.activeResults(moduleID, principal.getName());
     }
 
     /**
@@ -147,13 +115,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getScheduledTests", method = RequestMethod.GET)
     public List<Tests> getScheduledTests(Principal principal, Long moduleID) {
-
-        logger.info("Request made for scheduled tests for module with id #{}", moduleID);
-        if ("tutor".equals(modService.checkValidAssociation(principal.getName(), moduleID))) {
-            return modService.scheduledTests(moduleID);
-        } else {
-            return null;
-        }
+        return modService.scheduledTests(principal.getName(), moduleID);
     }
 
     /**
@@ -166,13 +128,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getTestDrafts", method = RequestMethod.GET)
     public List<Tests> getTestDrafts(Principal principal, Long moduleID) {
-
-        logger.info("Request made for drafted tests for module with id #{}", moduleID);
-        if ("tutor".equals(modService.checkValidAssociation(principal.getName(), moduleID))) {
-            return modService.testDrafts(moduleID);
-        } else {
-            return null;
-        }
+        return modService.testDrafts(principal.getName(), moduleID);
     }
 
     /**
@@ -185,13 +141,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getReviewMarking", method = RequestMethod.GET)
     public List<TestMarking> getReviewMarking(Principal principal, Long moduleID) {
-
-        logger.info("Request made for all marking ready to be reviewed for module with id #{}", moduleID);
-        if ("tutor".equals(modService.checkValidAssociation(principal.getName(), moduleID))) {
-            return modService.reviewMarking(moduleID);
-        } else {
-            return null;
-        }
+        return modService.reviewMarking(principal.getName(), moduleID);
     }
 
     /**
@@ -204,14 +154,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getMarking", method = RequestMethod.GET)
     public List<TestMarking> getMarking(Principal principal, Long moduleID) {
-
-        logger.info("Request made for marking info for module with id #{}", moduleID);
-        String check = modService.checkValidAssociation(principal.getName(), moduleID);
-        if (!"student".equals(check) && check != null) {
-            return modService.marking(moduleID, principal.getName(), check);
-        } else {
-            return null;
-        }
+        return modService.marking(moduleID, principal.getName());
     }
 
     /**
@@ -224,14 +167,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getPerformance", method = RequestMethod.GET)
     public List<Performance> getPerformance(Principal principal, Long moduleID) {
-
-        logger.info("Request made for performance statistics for module with id #{}", moduleID);
-        String check = modService.checkValidAssociation(principal.getName(), moduleID);
-        if (!"teaching assistant".equalsIgnoreCase(check) && check != null) {
-            return modService.generatePerformance(moduleID, principal);
-        } else {
-            return null;
-        }
+        return modService.generatePerformance(moduleID, principal);
     }
 
     /**
@@ -244,10 +180,6 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getModuleAssociation", method = RequestMethod.GET)
     public String getModuleAssociation(Principal principal, Long moduleID) {
-
-        logger.info("Request made for {}'s association with module #{}", principal.getName(), moduleID);
         return "\"" + modService.checkValidAssociation(principal.getName(), moduleID) + "\"";
-
     }
-
 }
