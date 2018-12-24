@@ -28,6 +28,8 @@ public class UserController {
     @Autowired
     UserRepo userRepo;
 
+    public UserController() {}
+
     /**
      * Finds all users in the system
      *

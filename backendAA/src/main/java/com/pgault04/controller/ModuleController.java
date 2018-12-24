@@ -43,6 +43,8 @@ public class ModuleController {
     @Autowired
     ModuleService modService;
 
+    public ModuleController() {}
+
     /**
      * Provides interface for user to make requests and have module returned
      *
