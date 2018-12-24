@@ -26,7 +26,7 @@ import com.pgault04.repositories.QuestionTypeRepo;
 @Transactional
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class UnitTestQuestionRepo {
+public class TestQuestionRepoUnitTests {
 
 	private static final long USER_ID_IN_DB = 1L;
 

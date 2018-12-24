@@ -16,7 +16,7 @@ import com.pgault04.entities.Question;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class UnitTestQuestion {
+public class TestQuestionUnitTests {
 
 	private Question questionObj;
 
