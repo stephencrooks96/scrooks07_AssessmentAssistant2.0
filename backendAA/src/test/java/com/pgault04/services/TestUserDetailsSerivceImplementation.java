@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.pgault04.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +24,7 @@ import javax.transaction.Transactional;
 
 /**
  * @author Paul Gault - 40126005
- *
+ * @since November 2018
  */
 @Sql("/tests.sql")
 @Transactional
@@ -55,13 +52,8 @@ public class TestUserDetailsSerivceImplementation {
 
 	private UserRole userRole;
 
-	
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
-		
 		this.invalidUserName = "";
 		this.userRole = new UserRole("ROLE_User");
 		this.validUserName = "paul";
@@ -69,36 +61,21 @@ public class TestUserDetailsSerivceImplementation {
 		this.firstName = "firstName";
 		this.lastName = "lastName";
 		this.enabled = 1;
-
 		userRole = userRoleRepo.insert(userRole);
-
 		user = new User(validUserName, password, firstName, lastName, enabled, userRole.getUserRoleID());
 		userRepo.insert(user);
-
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.pgault04.services.UserDetailsServiceImplementation#loadUserByUsername(java.lang.String)}.
-	 */
 	@Test(expected = UsernameNotFoundException.class)
 	public void testLoadUserByUsernameInvalid() {
-
 		userDetailServ.loadUserByUsername(invalidUserName);
 	}
 
-	/**
-	 * Test method for
-	 * {@link com.pgault04.services.UserDetailsServiceImplementation#loadUserByUsername(java.lang.String)}.
-	 */
 	@Test
 	public void testLoadUserByUsernameValid() {
-
 		UserDetails userDetails = userDetailServ.loadUserByUsername(validUserName);
-
 		assertThat(userDetails.getPassword().matches(PasswordEncrypt.encrypt(password)));
 		assertEquals(validUserName, userDetails.getUsername());
 		assertEquals("[" + userRole.getRole() + "]", userDetails.getAuthorities().toString());
 	}
-
 }

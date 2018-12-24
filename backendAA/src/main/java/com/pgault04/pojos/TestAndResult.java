@@ -39,6 +39,7 @@ public class TestAndResult {
         this.setAnswers(answers);
         Double percentageScore = 0.0;
         for (Question q : questions) {
+            if (q.getMaxScore() != null)
             percentageScore+=q.getMaxScore();
         }
         this.setPercentageScore(percentageScore);
@@ -119,6 +120,7 @@ public class TestAndResult {
      */
     @Override
     public String toString() {
+
         final StringBuilder sb = new StringBuilder("TestAndResult{");
         sb.append("test=").append(test);
         sb.append(", testResult=").append(testResult);
