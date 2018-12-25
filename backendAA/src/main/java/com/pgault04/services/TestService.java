@@ -217,14 +217,10 @@ public class TestService {
             try {
                 test.setStartDateTime(StringToDateUtil.convertReadableFormat(test.getStartDateTime()));
                 test.setEndDateTime(StringToDateUtil.convertReadableFormat(test.getEndDateTime()));
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return test;
-        } else {
-            return null;
+                return test;
+            } catch (ParseException e) { e.printStackTrace(); }
         }
+            return null;
     }
 
     /**
@@ -237,16 +233,19 @@ public class TestService {
      */
     public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
         logger.info("Request made to add new question in to the database by {}", username);
+        if ("tutor".equals(modServ.checkValidAssociation(username, testRepo.selectByTestID(questionData.getTestID()).getModuleID()))) {
 
-        Question question = questionData.getQuestion();
-        List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
-        User user = userRepo.selectByUsername(username);
-        question.setCreatorID(user.getUserID());
+            Question question = questionData.getQuestion();
+            List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
+            User user = userRepo.selectByUsername(username);
+            question.setCreatorID(user.getUserID());
 
-        questionData.setQuestion(questionRepo.insert(question));
-        testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
-        questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID()));
-        return questionData;
+            questionData.setQuestion(questionRepo.insert(question));
+            testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
+            questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID()));
+            return questionData;
+        }
+        return null;
     }
 
     /**

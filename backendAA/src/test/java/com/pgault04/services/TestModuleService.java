@@ -1,7 +1,10 @@
 package com.pgault04.services;
 
 import com.pgault04.entities.*;
-import com.pgault04.pojos.*;
+import com.pgault04.pojos.ModuleWithTutor;
+import com.pgault04.pojos.Performance;
+import com.pgault04.pojos.TestAndGrade;
+import com.pgault04.pojos.TestMarking;
 import com.pgault04.repositories.*;
 import com.pgault04.utilities.StringToDateUtil;
 import org.junit.Before;
@@ -9,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
