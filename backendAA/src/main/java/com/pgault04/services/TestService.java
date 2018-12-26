@@ -28,6 +28,7 @@ public class TestService {
      */
     private static final Logger logger = LogManager.getLogger(TestService.class);
     public static final int SCHEDULED = 1;
+    public static final int UNSCHEDULED = 0;
     @Autowired
     TestsRepo testRepo;
 
@@ -178,7 +179,7 @@ public class TestService {
      * @param questionID - the question
      * @return the answerable options for this question
      */
-    public List<Option> findOptions(Long questionID) {
+    private List<Option> findOptions(Long questionID) {
         return optionRepo.selectByQuestionID(questionID);
     }
 
@@ -188,7 +189,7 @@ public class TestService {
      * @param questionID the questions id
      * @return the correct points for the question
      */
-    public List<CorrectPoint> findCorrectPoints(Long questionID) {
+    private List<CorrectPoint> findCorrectPoints(Long questionID) {
         List<CorrectPoint> correctPoints = cpRepo.selectByQuestionID(questionID);
         for (CorrectPoint cp : correctPoints) {
             cp.setAlternatives(findAlternatives(cp.getCorrectPointID()));
@@ -202,7 +203,7 @@ public class TestService {
      * @param correctPointID - the correct point
      * @return - its alternatives
      */
-    public List<Alternative> findAlternatives(Long correctPointID) {
+    private List<Alternative> findAlternatives(Long correctPointID) {
         return alternativeRepo.selectByCorrectPointID(correctPointID);
     }
 
@@ -212,15 +213,15 @@ public class TestService {
      * @param test - the test
      * @return the test after alteration
      */
-    public Tests primeTestForUserView(Tests test) {
+    Tests primeTestForUserView(Tests test) {
         if (test != null) {
             try {
                 test.setStartDateTime(StringToDateUtil.convertReadableFormat(test.getStartDateTime()));
                 test.setEndDateTime(StringToDateUtil.convertReadableFormat(test.getEndDateTime()));
-                return test;
+
             } catch (ParseException e) { e.printStackTrace(); }
         }
-            return null;
+        return test;
     }
 
     /**
@@ -243,6 +244,7 @@ public class TestService {
             questionData.setQuestion(questionRepo.insert(question));
             testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
             questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID()));
+            questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions()));
             return questionData;
         }
         return null;
@@ -309,6 +311,18 @@ public class TestService {
         return alternatives;
     }
 
+    public List<Option> addOptions(Long questionID, List<Option> options) throws Exception {
+        if (options != null && options.size() > 0) {
+            for (Option option : options) {
+                option.setQuestionID(questionID);
+                option.setOptionID(-1L);
+                Option returned = optionRepo.insert(option);
+                option.setOptionID(returned.getOptionID());
+            }
+        }
+        return options;
+    }
+
     /**
      * Method to carry out necessary actions needed for removing a question from a test,
      * checks that the users making the request is the tutor before allowing
@@ -363,7 +377,12 @@ public class TestService {
 
         if ("tutor".equals(modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()))) {
             Tests test = testRepo.selectByTestID(testID);
-            test.setScheduled(SCHEDULED);
+
+            if (test.getScheduled().equals(SCHEDULED)) {
+                test.setScheduled(UNSCHEDULED);
+            } else {
+                test.setScheduled(SCHEDULED);
+            }
             testRepo.insert(test);
             return true;
         }
