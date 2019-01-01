@@ -65,9 +65,8 @@ export class Question {
   questionType: number;
   questionID: number;
   questionContent: string = "";
-  questionFigure: string = "";
+  questionFigure : Blob;
   maxScore: number;
-  modelAnswerID: number;
   creatorID: number;
 
 }
@@ -112,12 +111,15 @@ export class TutorQuestionPojo {
   question = new Question();
   options: Option[];
   correctPoints: CorrectPoint[];
+  base64;
 }
 
 export class Option {
   optionID: number;
   questionID: number;
-  option: string="";
+  optionContent: string="";
+  worthMarks: number;
+  feedback: string="";
 }
 
 export class CorrectPoint {

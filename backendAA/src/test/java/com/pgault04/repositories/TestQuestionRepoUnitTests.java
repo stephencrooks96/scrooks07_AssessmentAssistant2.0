@@ -2,8 +2,10 @@ package com.pgault04.repositories;
 
 import static org.junit.Assert.*;
 
+import java.sql.Blob;
 import java.util.List;
 
+import javax.sql.rowset.serial.SerialBlob;
 import javax.transaction.Transactional;
 
 import org.junit.Before;
@@ -39,13 +41,14 @@ public class TestQuestionRepoUnitTests {
 	QuestionTypeRepo questionTypeRepo;
 
 	private Question questionObj;
-	private String questionContent, questionFigure;
+	private String questionContent;
+	private SerialBlob questionFigure;
 	private Integer maxScore;
 
 	@Before
 	public void setUp() throws Exception {
 		this.questionContent = "content";
-		this.questionFigure = "questionFigure";
+		//this.questionFigure = "questionFigure";
 		this.maxScore = 100;
 		questionObj = new Question(QUESTION_TYPE_ID_IN_DB, questionContent, questionFigure, maxScore,
 				USER_ID_IN_DB);

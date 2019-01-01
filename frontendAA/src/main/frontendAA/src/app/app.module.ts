@@ -27,6 +27,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { QuestionDetailComponent } from './question-detail/question-detail.component';
 import { AddQuestionComponent } from './add-question/add-question.component';
 import { OldQuestionComponent } from './old-question/old-question.component';
+import {Ng2FileSizeModule} from "ng2-file-size";
 
 
 @NgModule({
@@ -58,7 +59,8 @@ import { OldQuestionComponent } from './old-question/old-question.component';
     Ng2GoogleChartsModule,
     HttpClientModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    Ng2FileSizeModule
   ],
   providers: [AuthorizationService, PermissionsPermission, AppComponent],
   bootstrap: [AppComponent],

@@ -26,8 +26,8 @@ public class OptionRepo {
 
     private static final Logger log = LogManager.getLogger(OptionRepo.class);
 
-    private final String insertSQL = "INSERT INTO Optiontbl (questionID, optionContent, correct) values (:questionID, :optionContent, :correct)";
-    private final String updateSQL = "UPDATE Optiontbl SET questionID=:questionID, optionContent=:optionContent, correct=:correct WHERE optionID=:optionID";
+    private final String insertSQL = "INSERT INTO Optiontbl (questionID, optionContent, worthMarks, feedback) values (:questionID, :optionContent, :worthMarks, :feedback)";
+    private final String updateSQL = "UPDATE Optiontbl SET questionID=:questionID, optionContent=:optionContent, worthMarks=:worthMarks, feedback=:feedback WHERE optionID=:optionID";
     private final String selectSQL = "SELECT * FROM Optiontbl WHERE ";
 
     @Autowired

@@ -66,9 +66,9 @@ public class TestTestService {
     @Before
     @Transactional
     public void setUp() throws Exception {
-        question = new Question(1L, "questionContent", "hello", 10, USER_IN_DB);
+        question = new Question(1L, "questionContent", null/*"hello"*/, 10, USER_IN_DB);
         options = new ArrayList<>();
-        option = new Option(null, "optionContent", 1);
+        option = new Option(null, "optionContent", 1, "feedback");
         options.add(option);
         alternatives = new ArrayList<>();
         alternative = new Alternative(null, "alternativePhrase");

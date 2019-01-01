@@ -27,6 +27,17 @@ export class TestService {
 
   /**
    *
+   * @param test
+   */
+  public editTest(test: Tests): Observable<Tests> {
+
+    return this.http.post<Tests>(this.app.url + "/tests/editTest", test, {headers: this.app.headers}).pipe(
+      tap((test: Tests) => console.log(`Added test with id=${test.testID}`))
+    );
+  }
+
+  /**
+   *
    * @param questionData
    */
   public addQuestion(questionData: TutorQuestionPojo): Observable<TutorQuestionPojo> {

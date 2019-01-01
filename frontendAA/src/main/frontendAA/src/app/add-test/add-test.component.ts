@@ -34,14 +34,6 @@ export class AddTestComponent implements OnInit {
 
   ngOnInit() {
     this.nextYear.setFullYear(this.nextYear.getFullYear() + 1);
-
-    this.addTestForm = new FormGroup({
-      'testTitle': new FormControl(this.testInsert.testTitle, [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.maxLength(50)
-      ])
-    });
   }
 
   addTest() {

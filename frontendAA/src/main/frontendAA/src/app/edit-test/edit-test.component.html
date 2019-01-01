@@ -25,20 +25,24 @@
           <h5>This cannot be undone but any new questions you have added will remain in your question bank.</h5>
         </div>
         <div class="modal-footer">
-          <button (click)="modal.close(); deleteTest(testID);" class="btn btn-outline-dark" type="button">Yes, I'm sure</button>
+          <button (click)="modal.close(); deleteTest(testID);" class="btn btn-outline-dark" type="button">Yes, I'm
+            sure
+          </button>
         </div>
       </ng-template>
-      <h3 *ngIf="test">
+      <h3 *ngIf="test && !editTestShow">
         {{test.testTitle}}
         <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-              <button (click)="edit = !edit" class="btn btn-primary btn-sm" type="button">Edit</button>
+              <button (click)="editTestShow = true" class="btn btn-primary btn-sm" type="button">Edit</button>
               <button class="btn btn-danger btn-sm" type="button" (click)="open(AreYouSureTestDeletion)">Delete</button>
         </span>
       </h3>
-      <p *ngIf="test">Start: {{test.startDateTime}}</p>
-      <p *ngIf="test">End: {{test.endDateTime}}</p>
+      <p *ngIf="test && !editTestShow">Start: {{test.startDateTime | date:'HH:mm on dd-MM-yyyy'}}</p>
+      <p *ngIf="test && !editTestShow">End: {{test.endDateTime | date:'HH:mm on dd-MM-yyyy'}}</p>
 
-      <button type="button" class="btn btn-success" (click)="open(AreYouSureTestScheduling)" style="margin-bottom: 10px;">Schedule to go live</button>
+      <button *ngIf="test && !editTestShow" type="button" class="btn btn-success"
+              (click)="open(AreYouSureTestScheduling)" style="margin-bottom: 10px;">Schedule to go live
+      </button>
       <!-- Template from ngBootstrap -->
       <ng-template #AreYouSureTestScheduling let-modal>
         <div class="modal-header">
@@ -50,9 +54,61 @@
           <h5>Are you sure this test is ready?</h5>
         </div>
         <div class="modal-footer">
-          <button (click)="modal.close(); scheduleTest(testID);" class="btn btn-outline-dark" type="button">Yes, I'm sure</button>
+          <button (click)="modal.close(); scheduleTest(testID);" class="btn btn-outline-dark" type="button">Yes, I'm
+            sure
+          </button>
         </div>
       </ng-template>
+
+      <form *ngIf="editTestShow" #changeTestForm="ngForm" (submit)="editTest(changeTestForm)" id='changeTestForm'
+            name='changeTestForm' role="form"
+            style="width: 100%; padding: 5px 10px 5px 10px;">
+
+        <div class="form-group">
+          <div class="row">
+            <label for="testTitle">Title</label>
+            <span style="font-size: x-small; margin-bottom: 2px;" *ngIf="titleError">Must be between 1-50 characters
+              long.</span>
+            <input #testTitle="ngModel" [(ngModel)]="testInsert.testTitle" aria-describedby="testTitleHelp"
+                   class="form-control" id="testTitle"
+                   maxlength="50" minlength="1" name="testTitle" required type="text" style="margin-right: 10px;"
+                   [ngStyle]="{'border-color' : checkTitle}"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <label for="startDate">Start</label>
+            <span style="font-size: x-small; margin-bottom: 1px;" *ngIf="dateError">Start date must be before end date.</span>
+            <span style="font-size: x-small; margin-bottom: 2px;" *ngIf="startDateError">Valid date range 365 days from
+              today.</span>
+            <input #startDate="ngModel" [(ngModel)]="testInsert.startDateTime" aria-describedby="startDateHelp"
+                   id="startDate"
+                   name="startDate" class="form-control" required type="datetime-local" style="margin-right: 10px;"
+                   min="{{today | date:'yyyy-MM-ddTHH:mm'}}" max="{{nextYear | date:'yyyy-MM-ddTHH:mm'}}"
+                   [ngStyle]="{'border-color' : checkStartDate}"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <label for="endDate">End</label>
+            <span style="font-size: x-small; margin-bottom: 2px;" *ngIf="endDateError">Valid date range 365 days from
+              today.</span>
+            <input #endDate="ngModel" [(ngModel)]="testInsert.endDateTime" aria-describedby="endDateHelp"
+                   id="endDate"
+                   name="endDate" class="form-control" required type="datetime-local" style="margin-right: 10px;"
+                   min="{{today | date:'yyyy-MM-ddTHH:mm'}}" max="{{nextYear | date:'yyyy-MM-ddTHH:mm'}}"
+                   [ngStyle]="{'border-color' : checkEndDate}"/>
+          </div>
+        </div>
+        <div aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+          <button class="btn btn-success btn-sm" type="submit">Save</button>
+          <button class="btn btn-danger btn-sm" type="button" (click)="editTestShow = false; changeTestForm.reset(); getByTestID(test.testID)">
+            Cancel
+          </button>
+        </div>
+      </form>
 
       <h3>Questions <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
         <button (click)="showAdd = true; showExist = false; showDetail= false;" class="btn btn-dark btn-sm"
@@ -69,7 +125,8 @@
             <td style="padding-left: 10px;">{{tutorQuestion.question.questionContent}}</td>
             <td>
               <button type="button" class="btn btn-dark"
-                      (click)="questionDetail = tutorQuestion; showExist = false; showAdd = false; showDetail = true;">Info
+                      (click)="questionDetail = tutorQuestion; showExist = false; showAdd = false; showDetail = true;">
+                Info
               </button>
             </td>
           </tr>

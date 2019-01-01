@@ -35,7 +35,7 @@ public class TestOptionRepo {
     @Before
     public void setUp() throws Exception {
         this.option = "option";
-        optionObj = new Option(QUESTION_ID_IN_DATABASE, option, 1);
+        optionObj = new Option(QUESTION_ID_IN_DATABASE, option, 1, "feedback");
     }
 
     @Test

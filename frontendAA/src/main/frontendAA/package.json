@@ -26,6 +26,7 @@
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",
     "mini.css": "^3.0.1",
+    "ng2-file-size": "0.0.4",
     "ng2-google-charts": "^3.5.0",
     "ngx-permissions": "^6.0.4",
     "rxjs": "~6.3.3",

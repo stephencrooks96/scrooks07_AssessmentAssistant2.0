@@ -21,7 +21,9 @@ public class Option {
 
     private String optionContent;
 
-    private  Integer correct;
+    private  Integer worthMarks;
+
+    private String feedback;
 
     /**
      * The default constructor
@@ -33,21 +35,30 @@ public class Option {
      * @param questionID the question
      * @param optionContent the optionContent text
      */
-    public Option(Long questionID, String optionContent, Integer correct) {
+    public Option(Long questionID, String optionContent, Integer worthMarks, String feedback) {
         this.setQuestionID(questionID);
         this.setOptionContent(optionContent);
-        this.setCorrect(correct);
+        this.setWorthMarks(worthMarks);
+        this.setFeedback(feedback);
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
     }
 
     /**
-     * @return the correct flag
+     * @return the marks it is worth
      */
-    public Integer getCorrect() { return correct; }
+    public Integer getWorthMarks() { return worthMarks; }
 
     /**
-     * @param correct the correct flag to set
+     * @param worthMarks the marks worth to set
      */
-    public void setCorrect(Integer correct) { this.correct = correct; }
+    public void setWorthMarks(Integer worthMarks) { this.worthMarks = worthMarks; }
 
     /**
      * @return the optionID
@@ -100,7 +111,8 @@ public class Option {
         sb.append("optionID=").append(optionID);
         sb.append(", questionID=").append(questionID);
         sb.append(", optionContent='").append(optionContent).append('\'');
-        sb.append(", correct=").append(correct);
+        sb.append(", worthMarks=").append(worthMarks);
+        sb.append(", feedback='").append(feedback).append('\'');
         sb.append('}');
         return sb.toString();
     }

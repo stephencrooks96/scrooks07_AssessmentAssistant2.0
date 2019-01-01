@@ -5,11 +5,16 @@ import com.pgault04.entities.*;
 import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.*;
 import com.pgault04.utilities.StringToDateUtil;
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -100,6 +105,42 @@ public class TestService {
     }
 
     /**
+     * Method primes input data to be entered in to the database Ensures data size
+     * limits are enforced
+     * <p>
+     * Ensures input data is correct for a test and not tampered with on front
+     * end i.e. attempt to edit a test by a user who is not the tutor for the module
+     *
+     * @param test     - the test
+     * @param username - the principal user
+     * @return Test object or null
+     */
+    public Tests editTest(Tests test, String username) {
+        logger.info("Request made to edit a test with id #{} to the database by {}", test.getTestID(), username);
+
+        test.setTestTitle(test.getTestTitle().trim());
+        User user = userRepo.selectByUsername(username);
+        Module module = modRepo.selectByModuleID(test.getModuleID());
+
+        if ("tutor".equals(modServ.checkValidAssociation(username, test.getModuleID()))) {
+            try {
+                // Parse exceptions could be thrown here
+                test.setEndDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getEndDateTime()));
+                test.setStartDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getStartDateTime()));
+                if (test.getTestTitle().length() <= 50
+                        && test.getTestTitle().length() > 0
+                        && user != null
+                        && module != null) {
+                    return primeTestForUserView(testRepo.insert(test));
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
      * Performs necessary actions required to get the test id for view by tutor and ensures that the request is made by the tutor
      *
      * @param username - the principal user
@@ -124,7 +165,7 @@ public class TestService {
      * @param testID   - the test
      * @return the list of questions being used by this test
      */
-    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) {
+    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) throws Base64DecodingException, SQLException {
         logger.info("Request made for questions and all necessary info requited by tutor for test #{} by {}", testID, username);
 
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
@@ -133,8 +174,7 @@ public class TestService {
             for (TestQuestion tq : tqs) {
                 Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
                 if (q != null) {
-                    TutorQuestionPojo tutorQuestion = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
-                    tutorQuestions.add(tutorQuestion);
+                    tutorQuestions.add(prepareFigure(testID, q));
                 }
             }
             return tutorQuestions;
@@ -149,7 +189,7 @@ public class TestService {
      * @param testID   - the test
      * @return the questions not currently being used by this test
      */
-    public List<TutorQuestionPojo> getOldQuestions(String username, Long testID) {
+    public List<TutorQuestionPojo> getOldQuestions(String username, Long testID) throws Base64DecodingException, SQLException {
         logger.info("Request made for all old questions that aren't being used by test #{}", testID);
 
         List<TutorQuestionPojo> currents = getQuestionsByTestIDTutorView(username, testID);
@@ -157,8 +197,7 @@ public class TestService {
         List<TutorQuestionPojo> tutorQuestionsToRemove = new ArrayList<>();
 
         for (Question q : questionRepo.selectByCreatorID(userRepo.selectByUsername(username).getUserID())) {
-            TutorQuestionPojo tq = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
-            allTutorQuestions.add(tq);
+            allTutorQuestions.add(prepareFigure(testID, q));
         }
 
         for (TutorQuestionPojo next : allTutorQuestions) {
@@ -171,6 +210,15 @@ public class TestService {
 
         allTutorQuestions.removeAll(tutorQuestionsToRemove);
         return allTutorQuestions;
+    }
+
+    private TutorQuestionPojo prepareFigure(Long testID, Question q) throws SQLException, Base64DecodingException {
+
+        TutorQuestionPojo tq = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
+        tq.setBase64(blobToBase(tq.getQuestion().getQuestionFigure()));
+        tq.getQuestion().setQuestionFigure(null);
+
+        return tq;
     }
 
     /**
@@ -216,9 +264,8 @@ public class TestService {
     Tests primeTestForUserView(Tests test) {
         if (test != null) {
             try {
-                test.setStartDateTime(StringToDateUtil.convertReadableFormat(test.getStartDateTime()));
-                test.setEndDateTime(StringToDateUtil.convertReadableFormat(test.getEndDateTime()));
-
+                test.setStartDateTime(StringToDateUtil.convertDateToFrontEndFormat(test.getStartDateTime()));
+                test.setEndDateTime(StringToDateUtil.convertDateToFrontEndFormat(test.getEndDateTime()));
             } catch (ParseException e) { e.printStackTrace(); }
         }
         return test;
@@ -235,19 +282,52 @@ public class TestService {
     public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
         logger.info("Request made to add new question in to the database by {}", username);
         if ("tutor".equals(modServ.checkValidAssociation(username, testRepo.selectByTestID(questionData.getTestID()).getModuleID()))) {
-
             Question question = questionData.getQuestion();
+            if (questionData.getBase64() != null) {
+                question.setQuestionFigure(baseToBlob(questionData.getBase64()));
+            }
             List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
             User user = userRepo.selectByUsername(username);
             question.setCreatorID(user.getUserID());
 
             questionData.setQuestion(questionRepo.insert(question));
             testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
-            questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID()));
-            questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions()));
+
+            // Insert the word and Text-based
+            if (!questionData.getQuestion().getQuestionType().equals(2L)) {
+                questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID()));
+            }
+
+            // Multiple choice
+            if (questionData.getQuestion().getQuestionType().equals(2L)) {
+                questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions()));
+            }
+
+            questionData.setBase64(blobToBase(questionData.getQuestion().getQuestionFigure()));
+            questionData.getQuestion().setQuestionFigure(null);
+
             return questionData;
         }
         return null;
+    }
+
+    private SerialBlob baseToBlob(String base64) throws SQLException, Base64DecodingException {
+        com.sun.org.apache.xml.internal.security.Init.init();
+        String newBase64 = base64.substring(22);
+
+        byte[] bytes = Base64.decode(newBase64);
+        return new SerialBlob(bytes);
+    }
+
+    private String blobToBase(Blob blob) throws SQLException, Base64DecodingException {
+        com.sun.org.apache.xml.internal.security.Init.init();
+        byte[] bytes;
+        String base = null;
+        if (blob != null) {
+           bytes = blob.getBytes(1, (int) blob.length());
+           base = Base64.encode(bytes);
+        }
+        return base;
     }
 
     /**

@@ -85,7 +85,8 @@ CREATE TABLE IF NOT EXISTS OptionTbl (
   optionID int(11) NOT NULL AUTO_INCREMENT,
   questionID int(11) NOT NULL,
   optionContent text NOT NULL,
-  correct tinyint(1) NOT NULL
+  worthMarks int(11) NOT NULL,
+  feedback text NOT NULL
   );
 
 -- --------------------------------------------------------
@@ -109,7 +110,7 @@ CREATE TABLE IF NOT EXISTS Question (
   questionType int(11) NOT NULL,
   questionID int(11) NOT NULL AUTO_INCREMENT,
   questionContent text NOT NULL,
-  questionFigure varchar(255),
+  questionFigure BLOB,
   maxScore int(11) NOT NULL,
   creatorID int(11) NOT NULL
 );

@@ -23,6 +23,8 @@ public class TutorQuestionPojo {
 
 	private List<CorrectPoint> correctPoints;
 
+	private String base64;
+
 	/**
 	 * Default constructor
 	 */
@@ -40,6 +42,14 @@ public class TutorQuestionPojo {
 		this.setQuestion(question);
 		this.setOptions(options);
 		this.setCorrectPoints(correctPoints);
+	}
+
+	public String getBase64() {
+		return base64;
+	}
+
+	public void setBase64(String base64) {
+		this.base64 = base64;
 	}
 
 	/**

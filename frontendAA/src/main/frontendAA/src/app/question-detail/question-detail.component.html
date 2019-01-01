@@ -9,7 +9,34 @@
     <h5>Are you sure you want to remove this question from the test?</h5>
   </div>
   <div class="modal-footer">
-    <button (click)="modal.close(); removeQuestion(questionDetail.question.questionID, testID); editTest.showAdd = true; editTest.showDetail = false;" class="btn btn-outline-dark" type="button">Yes</button>
+    <button
+      (click)="modal.close(); removeQuestion(questionDetail.question.questionID, testID); editTest.showAdd = true; editTest.showDetail = false;"
+      class="btn btn-outline-dark" type="button">Yes
+    </button>
+  </div>
+</ng-template>
+
+<!-- Template from ngBootstrap -->
+<ng-template #EditQuestion let-modal>
+  <div class="modal-header">
+    <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <h5>Instead of editing this question you could choose to duplicate it allowing you to keep the original and the
+      revised versions.</h5>
+    <h5>After duplication it can be found in the old questions section by clicking the 'reuse' button.</h5>
+  </div>
+  <div class="modal-footer">
+    <button
+      (click)="modal.close(); duplicateQuestion(questionDetail.question.questionID);"
+      class="btn btn-outline-dark" type="button">Yes, duplicate.
+    </button>
+    <button
+      (click)="modal.close(); editQuestion = true;"
+      class="btn btn-outline-dark" type="button">No, edit.
+    </button>
   </div>
 </ng-template>
 
@@ -17,35 +44,271 @@
                                                                                             class="btn-group"
                                                                                             role="group"
                                                                                             style="margin-bottom: 5px;">
-              <button (click)="edit = !edit" class="btn btn-primary btn-sm" type="button">Edit</button>
-              <button class="btn btn-danger btn-sm" type="button" (click)="open(AreYouSureQuestionRemoval)">Remove</button>
+   <button *ngIf="editQuestion" (click)="editQuestion = false" class="btn btn-primary btn-sm" type="button">View</button>
+  <button *ngIf="!editQuestion" (click)="open(EditQuestion)" class="btn btn-primary btn-sm" type="button">Edit</button>
+              <button class="btn btn-danger btn-sm" type="button"
+                      (click)="open(AreYouSureQuestionRemoval)">Remove</button>
             </span></h3>
 <div class="pre-scrollable">
   <div class="panel panel-default default" *ngIf="questionDetail">
     <div class="panel-body">
-      <div><span><h5><b>Content: </b>{{questionDetail.question.questionContent}}</h5></span></div>
-      <div *ngFor="let type of questionTypesToShow">
-        <div *ngIf="type.questionTypeID == questionDetail.question.questionType">
-          <span><h5><b>Type: </b>{{type.questionType}}</h5></span></div>
+      <div *ngIf="!editQuestion">
+        <div><h5 id="content">{{questionDetail.question.questionContent}}</h5></div>
+        <img *ngIf="questionDetail.base64 != null && questionDetail.base64.length > 0"
+             style="width: 50%; margin-left: 25%; margin-right: 25%;" [src]="readyImage()" alt="QuestionFigure">
+
+        <div class="row" id="typeAndMark">
+          <div class="col-sm-6">
+            <div *ngFor="let type of questionTypesToShow">
+              <div *ngIf="type.questionTypeID == questionDetail.question.questionType">
+                <h5><b>Type: </b>{{type.questionType}}</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <h5><b>Score: </b>{{questionDetail.question.maxScore}}</h5>
+          </div>
+        </div>
+
+        <div *ngIf="questionDetail.question.questionType == 2">
+          <table class="table table-dark">
+            <thead class="thead-dark">
+            <tr>
+              <th>Option</th>
+              <th>Feedback</th>
+              <th>Worth</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr *ngFor="let opt of questionDetail.options">
+              <td data-label="Option">{{opt.optionContent}}</td>
+              <td data-label="Feedback">{{opt.feedback}}</td>
+              <td data-label="Worth">{{opt.worthMarks}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Question Type 2 is multiple choice -->
+        <div *ngIf="questionDetail.question.questionType != 2">
+          <h4>Mark Allocations <span style="font-size: small;"> expand to see more details</span></h4>
+          <ngb-accordion [closeOthers]="true" #markAllocations="ngbAccordion" activeIds="ngb-panel-0"
+                         class="rounded dark">
+            <ngb-panel class="rounded dark" *ngFor="let correctPoint of questionDetail.correctPoints"
+                       title="{{correctPoint.phrase}}" style="text-decoration: none;">
+              <ng-template ngbPanelContent class="rounded dark">
+
+                <div class="row" style="padding-left: 10%; padding-right: 10%;">
+                  <div class="col-sm-6">
+                    <h5><b>Alternative Phrases: </b></h5>
+                    <ul style="text-align: left;">
+                      <li *ngFor="let alt of correctPoint.alternatives">
+                        {{alt.alternativePhrase}}
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-sm-6" style="text-align: right;">
+                    <h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5>
+                  </div>
+
+                </div>
+
+              </ng-template>
+            </ngb-panel>
+          </ngb-accordion>
+        </div>
       </div>
+      <form *ngIf="editQuestion" #addQuestionForm="ngForm" (submit)="addQuestion(addQuestionForm)"
+            id='addQuestionForm'
+            name='addQuestionForm' role="form"
+            style="width: 100%; padding: 5px 10px 5px 10px;">
+
+        <fieldset style="width: 100%;">
+          <legend>Question</legend>
+
+          <img *ngIf="questionDetail.base64 != null && questionDetail.base64.length > 0"
+               style="width: 50%; margin-left: 25%; margin-right: 25%;" [src]="readyImage()" alt="QuestionFigure">
+          <div class="custom-file" style="margin-top: 10px; margin-bottom: 10px;">
+            <input type="file" class="custom-file-input" name="questionFigure" id="questionFigure"
+                   (change)="imageAdded($event)" #imgInput>
+            <label class="custom-file-label" for="questionFigure" (click)="imgInput.click()">Add an image - <span
+              *ngIf="!fileError">(max. 1MB)</span><span *ngIf="fileError"
+                                                        style="color: #dc3545;">Invalid file size: {{fileSize / 1024 / 1024 | number: '1.0-2'}}
+        MB</span></label>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="questionTypes">Question Type <span *ngIf="typeError"
+                                                             style="font-size: x-small; color: #dc3545;">You must select a type.</span></label>
+
+              <select #questionType="ngModel" [(ngModel)]="questionDetail.question.questionType" class="form-control"
+                      id="questionTypes"
+                      name="questionTypesModel" (change)="onTypeClick($event.target.value)" readonly disabled>
+                <option *ngFor="let q of questionTypesToShow" [value]="q.questionTypeID">{{q.questionType}}</option>
+              </select>
+
+            </div>
+            <div class="form-group col-md-6">
+              <label for="maxScore">Score <span *ngIf="maxScoreError" style="font-size: x-small; color: #dc3545;">Score must be greater than zero.</span></label>
+              <input #maxScore="ngModel" [(ngModel)]="questionDetail.question.maxScore" class="form-control"
+                     id="maxScore"
+                     min="1"
+                     name="maxScore" type="number"/>
+            </div>
+          </div>
+
+          <div *ngIf="questionDetail.question.questionType == 3">
+            <p style="font-size: x-small;">For insert the word:
+              <br/>1. Enter the text and then place any words that you want the user to insert inside double square
+              brackets
+              like this [[the insert]].
+              <br/>2. Then down below enter the answer again as a phrase in to the mark allocation and provide any
+              alternatives that you think can also be added in its place.
+              <br/>You can add as many inserts as you like just make sure and use the double square brackets [[the
+              insert]]
+              and ensure that the phrase in the mark allocation matches the spelling of the insert exactly.
+              <br/>If you need to put anything else inside the double square brackets [[]], you still can, just don't
+              add a
+              mark allocation for it.</p>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="questionContent">Question Content <span *ngIf="contentError"
+                                                                  style="font-size: x-small; color: #dc3545;">Must have between 1 and 65,535 characters.</span></label>
+              <textarea [(ngModel)]="questionDetail.question.questionContent" class="form-control" id="questionContent"
+                        name="questionContent" rows="3"
+                        style="display: block;
+    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <div *ngIf="questionDetail.question.questionType == 2">
+
+          <fieldset id="optionsFieldset" style="width: 100%;">
+            <legend>Options
+              <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+          <button (click)="addOption()" class="btn btn-success btn-sm" type="button">Add</button>
+          <button class="btn btn-danger btn-sm" type="button" (click)="removeLastOption()">Remove last</button>
+        </span>
+            </legend>
+
+            <div *ngIf="questionDetail.options.length > 0">
+              <div class="form-row">
+                <div class="form-group col-md-5">
+                  <label for="option{{[i]}}">Option</label>
+                  <span *ngIf="optionError" style="font-size: x-small; color: #dc3545;">Option must have between 1 and 65,535 characters.</span>
+                </div>
+                <div class="form-group col-md-5">
+                  <label for="optFeedback{{[i]}}">Feedback</label>
+                  <span *ngIf="optFeedbackError" style="font-size: x-small; color: #dc3545;">Feedback must have between 1 and 65,535 characters.</span>
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="worthMarks{{[i]}}">Worth Marks</label>
+                  <span *ngIf="worthMarksError"
+                        style="font-size: x-small; color: #dc3545;">Must not exceed +/- the total mark.</span>
+
+                </div>
+              </div>
+              <div class="form-row" *ngFor="let option of questionInsert.options; let i = index">
+                <div class="form-group col-md-5">
+            <textarea [(ngModel)]="option.optionContent" class="form-control" id="option{{[i]}}" name="option{{[i]}}"
+                      rows="1"
+                      style="display: block;
+    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
+                </div>
+                <div class="form-group col-md-5">
+             <textarea [(ngModel)]="option.feedback" class="form-control" id="optFeedback{{[i]}}"
+                       name="optFeedback{{[i]}}"
+                       rows="1"
+                       style="display: block;
+    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
+                </div>
+                <div class="form-group col-md-2">
+                  <input [(ngModel)]="option.worthMarks" value="0" class="form-control" id="worthMarks{{[i]}}"
+                         name="worthMarks{{[i]}}"
+                         type="number">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+
+        <div *ngIf="questionDetail.question.questionType == 1 || questionDetail.question.questionType == 3">
+          <fieldset id="markSchemeFieldset" style="width: 100%;">
+            <legend>
+        <span
+          ngbTooltip="Add some information on what you are looking for in the answer. The more you add the more the system can help you mark."
+          placement="bottom">
+          Mark Scheme</span>
+              <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+          <button (click)="addCorrectPoint()" class="btn btn-success btn-sm" type="button">Add</button>
+          <button class="btn btn-danger btn-sm" type="button" (click)="removeLastCorrectPoint()">Remove last</button>
+        </span>
+            </legend>
+
+            <div *ngIf="questionDetail.correctPoints.length > 0">
+              <fieldset *ngFor="let correctPoint of questionDetail.correctPoints; let i = index">
+                <legend>Mark Allocation</legend>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="phrase{{[i]}}">Phrase <span *ngIf="phraseError == i"
+                                                            style="font-size: x-small; color: #dc3545;">Must have between 1 and 65,535 characters.</span></label>
+                    <span *ngIf="insertError == i"
+                          style="font-size: x-small; color: #dc3545;"> Insertion [[{{correctPoint.phrase}}]] not found in question content.</span>
+                    <input [(ngModel)]="correctPoint.phrase" class="form-control" id="phrase{{[i]}}"
+                           name="phrase{{[i]}}"
+                           type="text"/>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="marksWorth{{[i]}}">Allocated Mark <span *ngIf="marksWorthError == i"
+                                                                        style="font-size: x-small; color: #dc3545;">Must not exceed +/- the total mark.</span></label>
+                    <input [(ngModel)]="correctPoint.marksWorth" class="form-control" id="marksWorth{{[i]}}"
+                           name="marksWorth{{[i]}}"
+                           type="number">
+                  </div>
+                </div>
+
+
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="feedback{{[i]}}">Feedback to give <span *ngIf="feedbackError == i"
+                                                                        style="font-size: x-small; color: #dc3545;">Must have between 1 and 65,535 characters.</span></label>
+                    <textarea [(ngModel)]="correctPoint.feedback" class="form-control" id="feedback{{[i]}}"
+                              name="feedback{{[i]}}"
+                              rows="3"
+                              style="display: block;
+    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label>Alternative Phrases
+                      <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
+                  <button (click)="addAlternative([i])" class="btn btn-success btn-sm" type="button">Add</button>
+                  <button class="btn btn-danger btn-sm" type="button"
+                          (click)="removeLastAlternative([i])">Remove last</button>
+                </span></label><br/>
+                    <span *ngIf="alternativePhraseError" style="font-size: x-small; color: #dc3545;">Must not exceed 65,535 characters.</span>
+                    <span *ngFor="let alt of correctPoint.alternatives; let j = index">
+              <input [(ngModel)]="alt.alternativePhrase"
+                     class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
+                     type="text">
+              </span>
+
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+          </fieldset>
+        </div>
+
+
+        <input class="shadow button btn-dark" id="addQuestionButton" name='addQuestionButton'
+               type="submit" value="Save"/>
+      </form>
+
     </div>
-    <div><span><h5><b>Score: </b>{{questionDetail.question.maxScore}}</h5></span></div>
-
-    <h4>Mark Allocations:</h4>
-    <ngb-accordion [closeOthers]="true" #markAllocations="ngbAccordion" activeIds="ngb-panel-0" class="rounded dark">
-      <ngb-panel class="rounded dark" *ngFor="let correctPoint of questionDetail.correctPoints"
-                 title="{{correctPoint.phrase}}" style="text-decoration: none;">
-        <ng-template ngbPanelContent class="rounded dark">
-          <div><span><h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5></span></div>
-
-          <div><span><h5><b>Alternative Phrases: </b></h5></span></div>
-          <ol>
-            <li *ngFor="let alt of correctPoint.alternatives">
-              {{alt.alternativePhrase}}
-            </li>
-          </ol>
-        </ng-template>
-      </ngb-panel>
-    </ngb-accordion>
   </div>
 </div>

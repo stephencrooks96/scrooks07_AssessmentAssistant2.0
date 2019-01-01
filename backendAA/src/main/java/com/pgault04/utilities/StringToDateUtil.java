@@ -51,6 +51,20 @@ public class StringToDateUtil {
     }
 
     /**
+     * Converts date input on front end to date that is preferred by database
+     *
+     * @param dateTime the date and time
+     * @return the reformatted date and time
+     * @throws ParseException arises from parsing date from string
+     */
+    public static String convertDateToFrontEndFormat(String dateTime) throws ParseException {
+        SimpleDateFormat stringToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat dateToString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Date date = stringToDate.parse(dateTime);
+        return dateToString.format(date);
+    }
+
+    /**
      * Converts the date to a more intuitive and easily readable format before outputting to user
      *
      * @param dateTime the date and time

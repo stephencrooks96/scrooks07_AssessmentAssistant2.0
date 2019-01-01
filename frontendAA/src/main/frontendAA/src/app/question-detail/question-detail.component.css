@@ -1,0 +1,19 @@
+#content {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#typeAndMark {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#marksAndAlts {
+  text-align: center;
+}
+
+.panel-body {
+  padding: 15px;
+
+}

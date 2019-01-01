@@ -6,12 +6,14 @@ import com.pgault04.entities.Tests;
 import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.QuestionTypeRepo;
 import com.pgault04.services.TestService;
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -52,6 +54,19 @@ public class TestController {
     }
 
     /**
+     * Edits details about a given test in the database
+     *
+     * @param principal - the principal user
+     * @param test      - the test
+     * @return the saved test
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/editTest", method = RequestMethod.POST)
+    public Tests editTest(Principal principal, @RequestBody Tests test) {
+        return testService.editTest(test, principal.getName());
+    }
+
+    /**
      * Gets the test by its test id
      *
      * @param principal - the principal user
@@ -73,7 +88,7 @@ public class TestController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getQuestionsByTestIDTutorView", method = RequestMethod.GET)
-    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(Principal principal, Long testID) {
+    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(Principal principal, Long testID) throws Base64DecodingException, SQLException {
         return testService.getQuestionsByTestIDTutorView(principal.getName(), testID);
     }
 
@@ -86,7 +101,7 @@ public class TestController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getOldQuestions", method = RequestMethod.GET)
-    public List<TutorQuestionPojo> getOldQuestions(Principal principal, Long testID) {
+    public List<TutorQuestionPojo> getOldQuestions(Principal principal, Long testID) throws Base64DecodingException, SQLException {
         return testService.getOldQuestions(principal.getName(), testID);
     }
 
@@ -113,7 +128,7 @@ public class TestController {
     public TutorQuestionPojo newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
         try {
             return testService.newQuestion(questionData, principal.getName());
-        } catch (Exception e) { return null; }
+        } catch (Exception e) { e.printStackTrace(); return null; }
     }
 
     /**

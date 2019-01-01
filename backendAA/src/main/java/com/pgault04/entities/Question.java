@@ -1,5 +1,7 @@
 package com.pgault04.entities;
 
+import java.sql.Blob;
+
 /**
  * @author Paul Gault 40126005
  * @since November 2018
@@ -17,7 +19,7 @@ public class Question {
 
 	private String questionContent;
 
-	private String questionFigure;
+	private Blob questionFigure;
 
 	private Integer maxScore;
 	
@@ -35,7 +37,7 @@ public class Question {
 	 * @param questionFigure an image to accompany the question
 	 * @param maxScore the marks for this question
 	 */
-	public Question(Long questionType, String questionContent, String questionFigure, Integer maxScore,
+	public Question(Long questionType, String questionContent, Blob questionFigure, Integer maxScore,
 			Long creatorID) {
 		this.setQuestionType(questionType);
 		this.setQuestionContent(questionContent);
@@ -92,7 +94,7 @@ public class Question {
 	/**
 	 * @return the questionFigure
 	 */
-	public String getQuestionFigure() {
+	public Blob getQuestionFigure() {
 		return questionFigure;
 	}
 
@@ -100,7 +102,7 @@ public class Question {
 	 * @param questionFigure
 	 *            the questionFigure to set
 	 */
-	public void setQuestionFigure(String questionFigure) {
+	public void setQuestionFigure(Blob questionFigure) {
 		this.questionFigure = questionFigure;
 	}
 

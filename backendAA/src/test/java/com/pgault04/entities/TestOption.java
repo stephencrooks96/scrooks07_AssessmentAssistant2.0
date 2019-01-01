@@ -25,7 +25,9 @@ public class TestOption {
 
     private String option;
 
-    private Integer correct;
+    private Integer worthMarks;
+
+    private String feedback;
 
     @Before
     public void setUp() throws Exception {
@@ -33,7 +35,8 @@ public class TestOption {
         this.optionID = 1L;
         this.questionID = 2L;
         this.option = "option";
-        this.correct = 1;
+        this.worthMarks = 1;
+        this.feedback = "feedback";
     }
 
     @Test
@@ -44,11 +47,12 @@ public class TestOption {
     @Test
     public void testCorrectPointConstructorWithArgs() {
         optionObj = null;
-        optionObj = new Option(questionID, option, correct);
+        optionObj = new Option(questionID, option, worthMarks, feedback);
         assertNotNull(optionObj);
         assertEquals(questionID, optionObj.getQuestionID());
         assertEquals(option, optionObj.getOptionContent());
-        assertEquals(correct, optionObj.getCorrect());
+        assertEquals(worthMarks, optionObj.getWorthMarks());
+        assertEquals(feedback, optionObj.getFeedback());
     }
 
     @Test
@@ -70,15 +74,21 @@ public class TestOption {
     }
 
     @Test
-    public void testGetSetCorrect() {
-        optionObj.setCorrect(correct);
-        assertEquals(correct, optionObj.getCorrect());
+    public void testGetSetWorthMarks() {
+        optionObj.setWorthMarks(worthMarks);
+        assertEquals(worthMarks, optionObj.getWorthMarks());
+    }
+
+    @Test
+    public void testGetSetFeedback() {
+        optionObj.setFeedback(feedback);
+        assertEquals(feedback, optionObj.getFeedback());
     }
 
     @Test
     public void testToString() {
-        optionObj = new Option(questionID, option, correct);
+        optionObj = new Option(questionID, option, worthMarks, feedback);
         optionObj.setOptionID(optionID);
-        assertEquals("Option{optionID=1, questionID=2, optionContent='option', correct=1}", optionObj.toString());
+        assertEquals("Option{optionID=1, questionID=2, optionContent='option', worthMarks=1, feedback='feedback'}", optionObj.toString());
     }
 }
