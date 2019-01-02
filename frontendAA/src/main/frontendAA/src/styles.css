@@ -79,3 +79,7 @@ body {
   background-color: #bdbdbd;
   border-radius: 5px;
 }
+
+button {
+  cursor: pointer;
+}

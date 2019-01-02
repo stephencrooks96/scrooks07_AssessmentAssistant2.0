@@ -90,8 +90,8 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
-  removeLastOption() {
-    this.questionInsert.options.splice(this.questionInsert.options.length - 1, 1);
+  removeOption(i) {
+    this.questionInsert.options.splice(i, 1);
     return false;
   }
 
@@ -112,8 +112,8 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
-  removeLastCorrectPoint() {
-    this.questionInsert.correctPoints.splice(this.questionInsert.correctPoints.length -1, 1);
+  removeCorrectPoint(i) {
+    this.questionInsert.correctPoints.splice(i, 1);
     return false;
   }
 
@@ -126,8 +126,8 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
-  removeLastAlternative(i) {
-    this.questionInsert.correctPoints[i].alternatives.splice(this.questionInsert.correctPoints[i].alternatives.length - 1, 1);
+  removeAlternative(i, j) {
+    this.questionInsert.correctPoints[i].alternatives.splice(j, 1);
     return false;
   }
 

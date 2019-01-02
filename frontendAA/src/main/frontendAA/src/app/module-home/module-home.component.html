@@ -135,7 +135,7 @@
             <tr *ngFor="let activeTest of activeTests">
               <td scope="row">{{activeTest.testID}}</td>
               <td data-label="Title:"> {{activeTest.testTitle}}</td>
-              <td data-label="Deadline:">{{activeTest.endDateTime}}</td>
+              <td data-label="Deadline:">{{activeTest.endDateTime | date:"dd-MM-yyyy 'at' HH:mm"}}</td>
               <td data-label="Take:"><a [routerLink]="['/takeTest', activeTest.testID]" style="color: white;"><i
                 class="fas fa-stopwatch fa-lg"></i></a></td>
             </tr>
@@ -259,8 +259,8 @@
             <tr *ngFor="let scheduledTest of scheduledTests">
               <td scope="row">{{scheduledTest.testID}}</td>
               <td data-label="Title:">{{scheduledTest.testTitle}}</td>
-              <td data-label="Starts:">{{scheduledTest.startDateTime}}</td>
-              <td data-label="Not ready?"><a [routerLink]="['/retractScheduled', scheduledTest.testID]"
+              <td data-label="Starts:">{{scheduledTest.startDateTime | date: "dd-MM-yyyy 'at' HH:mm"}}</td>
+              <td data-label="Not ready?"><a (click)="retractScheduled(scheduledTest.testID)"
                                              style="color: white;"><i
                 class="fas fa-step-backward fa-lg"></i></a></td>
             </tr>

@@ -11,10 +11,11 @@ import {
   User
 } from "../modelObjs/objects.model";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {tap} from "rxjs/operators";
+import {interval, Subscription} from "rxjs";
 import {TestService} from "../services/test.service";
+import {Observable} from "rxjs";
+
+'rxjs';
 
 @Component({
   selector: 'app-module-home',
@@ -44,8 +45,9 @@ export class ModuleHomeComponent implements OnInit {
   reviewMarkingCheck = false;
   show: number = 0;
   performanceList: Performance[];
+  activeSub: Subscription;
 
-  constructor(private modServ: ModulesService, private route: ActivatedRoute, private userServ: UserService, private testService: TestService, private router: Router) {
+  constructor(private testServ: TestService, private modServ: ModulesService, private route: ActivatedRoute, private userServ: UserService, private testService: TestService, private router: Router) {
     this.moduleID = +this.route.snapshot.paramMap.get('moduleID');
 
   }
@@ -60,10 +62,23 @@ export class ModuleHomeComponent implements OnInit {
     this.getMarking(this.moduleID);
     this.getTestDrafts(this.moduleID);
     this.getReviewMarking(this.moduleID);
+
+    // Checks for new tests every minute
+    this.activeSub = interval(60000)
+      .subscribe((val) => {
+        this.getActiveTests(this.moduleID);
+      });
   }
 
   calculateProgress(marked, toBeMarkedByYou, toBeMarkedByTAs): number {
     return Math.round((marked / (marked + toBeMarkedByYou + toBeMarkedByTAs)) * 100.00);
+  }
+
+  retractScheduled(testID) {
+    this.testServ.scheduleTest(testID).subscribe(
+      success => {
+      }
+    );
   }
 
   getPerformance(moduleID) {

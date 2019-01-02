@@ -117,6 +117,21 @@ public class TestController {
     }
 
     /**
+     * Edits a question to the database
+     *
+     * @param questionData the data input by the tutor
+     * @param principal    the principal user (the tutor in this case)
+     * @return the inserted question
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/editQuestion", method = RequestMethod.POST)
+    public TutorQuestionPojo editQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
+        try {
+            return testService.newQuestion(questionData, principal.getName(), true);
+        } catch (Exception e) { e.printStackTrace(); return null; }
+    }
+
+    /**
      * Adds a new question to the database
      *
      * @param questionData the data input by the tutor
@@ -127,7 +142,7 @@ public class TestController {
     @RequestMapping(value = "/addQuestion", method = RequestMethod.POST)
     public TutorQuestionPojo newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
         try {
-            return testService.newQuestion(questionData, principal.getName());
+            return testService.newQuestion(questionData, principal.getName(), false);
         } catch (Exception e) { e.printStackTrace(); return null; }
     }
 
@@ -147,6 +162,14 @@ public class TestController {
         } catch (Exception e) { return null; }
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/duplicateQuestion", method = RequestMethod.GET)
+    public Boolean addExistingQuestion(Long questionID, Principal principal) {
+        try {
+            return testService.duplicateQuestion(questionID, principal.getName());
+        } catch (Exception e) { return null; }
+    }
+
     /**
      * Rest mapping allowing for requests to be made to remove a question from a test by a tutor
      *
@@ -159,6 +182,24 @@ public class TestController {
     @RequestMapping(value = "/removeQuestionFromTest", method = RequestMethod.DELETE)
     public Boolean removeQuestionFromTest(Long testID, Long questionID, Principal principal) {
         return testService.removeQuestionFromTest(testID, questionID, principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/removeCorrectPoint", method = RequestMethod.DELETE)
+    public Boolean removeCorrectPoint(Long correctPointID, Principal principal) {
+        return testService.removeCorrectPoint(correctPointID, principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/removeOption", method = RequestMethod.DELETE)
+    public Boolean removeOption(Long optionID, Principal principal) {
+        return testService.removeOption(optionID, principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/removeAlternative", method = RequestMethod.DELETE)
+    public Boolean removeAlternative(Long alternativeID, Principal principal) {
+        return testService.removeAlternative(alternativeID, principal.getName());
     }
 
     /**

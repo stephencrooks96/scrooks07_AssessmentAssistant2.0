@@ -40,6 +40,7 @@ export class QuestionDetailComponent implements OnInit {
   constructor(private testServ: TestService, private modalService: NgbModal, private editTest: EditTestComponent, private sanitizer: DomSanitizer) {
     this.getQuestionTypes();
     this.testID = this.editTest.testID;
+
   }
 
 
@@ -76,8 +77,11 @@ export class QuestionDetailComponent implements OnInit {
     return false;
   }
 
-  removeLastOption() {
-    this.questionDetail.options.splice(this.questionDetail.options.length - 1, 1);
+  removeOption(i) {
+    this.testServ.removeOption(this.questionDetail.options[i] as Option)
+      .subscribe(success =>{});
+
+    this.questionDetail.options.splice(i, 1);
     return false;
   }
 
@@ -98,8 +102,11 @@ export class QuestionDetailComponent implements OnInit {
     return false;
   }
 
-  removeLastCorrectPoint() {
-    this.questionDetail.correctPoints.splice(this.questionDetail.correctPoints.length -1, 1);
+  removeCorrectPoint(i) {
+    this.testServ.removeCorrectPoint(this.questionDetail.correctPoints[i] as CorrectPoint)
+      .subscribe(success =>{});
+
+    this.questionDetail.correctPoints.splice(i, 1);
     return false;
   }
 
@@ -108,12 +115,15 @@ export class QuestionDetailComponent implements OnInit {
     alternative.alternativeID = 0;
     alternative.correctPointID = 0;
     alternative.alternativePhrase = '';
+
     this.questionDetail.correctPoints[i].alternatives.push(alternative);
     return false;
   }
 
-  removeLastAlternative(i) {
-    this.questionDetail.correctPoints[i].alternatives.splice(this.questionDetail.correctPoints[i].alternatives.length - 1, 1);
+  removeAlternative(i, j) {
+    this.testServ.removeAlternative(this.questionDetail.correctPoints[i].alternatives[j] as Alternative)
+      .subscribe(success =>{ });
+    this.questionDetail.correctPoints[i].alternatives.splice(j, 1);
     return false;
   }
 
@@ -224,7 +234,7 @@ export class QuestionDetailComponent implements OnInit {
     if (this.generalError) {
       return;
     }
-    this.testServ.addQuestion(this.questionDetail as TutorQuestionPojo)
+    this.testServ.editQuestion(this.questionDetail as TutorQuestionPojo)
       .subscribe(success => {
         form.reset();
         this.addedImage = null;
@@ -245,6 +255,16 @@ export class QuestionDetailComponent implements OnInit {
         this.optFeedbackError = false;
         this.editTest.getQuestions(this.editTest.testID);
         this.ngOnInit();
+      }, error => {
+        return;
+      });
+  }
+
+  duplicateQuestion(questionID: number) {
+    this.testServ.duplicateQuestion(questionID)
+      .subscribe(success => {
+        this.editTest.showDetail = false;
+        this.editTest.showExist = true;
       }, error => {
         return;
       });

@@ -2,7 +2,15 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {AppComponent} from "../app.component";
-import {Question, QuestionType, Tests, TutorQuestionPojo} from "../modelObjs/objects.model";
+import {
+  Alternative,
+  CorrectPoint,
+  Option,
+  Question,
+  QuestionType,
+  Tests,
+  TutorQuestionPojo
+} from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
 
 
@@ -40,6 +48,17 @@ export class TestService {
    *
    * @param questionData
    */
+  public editQuestion(questionData: TutorQuestionPojo): Observable<TutorQuestionPojo> {
+
+    return this.http.post<TutorQuestionPojo>(this.app.url + "/tests/editQuestion", questionData, {headers: this.app.headers}).pipe(
+      tap((question: TutorQuestionPojo) => console.log(`Edited question with id=${question.question.questionID}`))
+    );
+  }
+
+  /**
+   *
+   * @param questionData
+   */
   public addQuestion(questionData: TutorQuestionPojo): Observable<TutorQuestionPojo> {
 
     return this.http.post<TutorQuestionPojo>(this.app.url + "/tests/addQuestion", questionData, {headers: this.app.headers}).pipe(
@@ -55,6 +74,12 @@ export class TestService {
   public addExistingQuestion(questionID, testID): Observable<Question> {
     return this.http.get<Question>(this.app.url + "/tests/addExistingQuestion?questionID=" + questionID + "&testID=" + testID, {headers: this.app.headers}).pipe(
       tap((question: Question) => console.log(`Added question with id=${question.questionID} to test with id=${testID}`))
+    );
+  }
+
+  public duplicateQuestion(questionID): Observable<Question> {
+    return this.http.get<Question>(this.app.url + "/tests/duplicateQuestion?questionID=" + questionID, {headers: this.app.headers}).pipe(
+      tap((question: Question) => console.log(`Duplicated question with id=${question.questionID}`))
     );
   }
 
@@ -122,6 +147,28 @@ export class TestService {
     return this.http.delete<any>(this.app.url + "/tests/removeQuestionFromTest?testID=" + testID + "&questionID=" + questionID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log(`Question id=${questionID} removed from test id=${testID}`))
+      );
+  }
+
+
+  removeAlternative(alternative: Alternative): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/removeAlternative?alternativeID=" + alternative.alternativeID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log(`Alternative id=${alternative.alternativeID} removed.`))
+      );
+  }
+
+  removeCorrectPoint(correctPoint: CorrectPoint): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/removeCorrectPoint?correctPointID=" + correctPoint.correctPointID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log(`CorrectPoint id=${correctPoint.correctPointID} removed.`))
+      );
+  }
+
+  removeOption(option: Option): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/removeOption?optionID=" + option.optionID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log(`Option id=${option.optionID} removed.`))
       );
   }
 

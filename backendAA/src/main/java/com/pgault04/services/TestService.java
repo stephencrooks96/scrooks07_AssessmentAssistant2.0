@@ -1,6 +1,5 @@
 package com.pgault04.services;
 
-import com.pgault04.controller.TestController;
 import com.pgault04.entities.*;
 import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.*;
@@ -28,12 +27,12 @@ import java.util.List;
 public class TestService {
 
 
+    public static final int SCHEDULED = 1;
+    public static final int UNSCHEDULED = 0;
     /**
      * Logs useful info for debugging and analysis needs
      */
     private static final Logger logger = LogManager.getLogger(TestService.class);
-    public static final int SCHEDULED = 1;
-    public static final int UNSCHEDULED = 0;
     @Autowired
     TestsRepo testRepo;
 
@@ -266,7 +265,9 @@ public class TestService {
             try {
                 test.setStartDateTime(StringToDateUtil.convertDateToFrontEndFormat(test.getStartDateTime()));
                 test.setEndDateTime(StringToDateUtil.convertDateToFrontEndFormat(test.getEndDateTime()));
-            } catch (ParseException e) { e.printStackTrace(); }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return test;
     }
@@ -279,10 +280,13 @@ public class TestService {
      * @return the collection of all question data available to tutor after insertion
      * @throws Exception generic
      */
-    public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username) throws Exception {
+    public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username, Boolean update) throws Exception {
         logger.info("Request made to add new question in to the database by {}", username);
         if ("tutor".equals(modServ.checkValidAssociation(username, testRepo.selectByTestID(questionData.getTestID()).getModuleID()))) {
             Question question = questionData.getQuestion();
+            if (question.getQuestionID() == null || question.getQuestionID() < 1) {
+                question.setQuestionID(-1L);
+            }
             if (questionData.getBase64() != null) {
                 question.setQuestionFigure(baseToBlob(questionData.getBase64()));
             }
@@ -291,16 +295,17 @@ public class TestService {
             question.setCreatorID(user.getUserID());
 
             questionData.setQuestion(questionRepo.insert(question));
-            testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
-
+            if (!update) {
+                testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
+            }
             // Insert the word and Text-based
             if (!questionData.getQuestion().getQuestionType().equals(2L)) {
-                questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID()));
+                questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID(), update));
             }
 
             // Multiple choice
             if (questionData.getQuestion().getQuestionType().equals(2L)) {
-                questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions()));
+                questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions(), update));
             }
 
             questionData.setBase64(blobToBase(questionData.getQuestion().getQuestionFigure()));
@@ -324,8 +329,8 @@ public class TestService {
         byte[] bytes;
         String base = null;
         if (blob != null) {
-           bytes = blob.getBytes(1, (int) blob.length());
-           base = Base64.encode(bytes);
+            bytes = blob.getBytes(1, (int) blob.length());
+            base = Base64.encode(bytes);
         }
         return base;
     }
@@ -351,6 +356,47 @@ public class TestService {
         return null;
     }
 
+    public Boolean duplicateQuestion(Long questionID, String username) {
+        logger.info("Request made to duplicate question #{} by {}", questionID, username);
+
+        Question question = questionRepo.selectByQuestionID(questionID);
+        User user = userRepo.selectByUsername(username);
+
+        if (question.getCreatorID().equals(user.getUserID())) {
+
+            question.setQuestionID(-1L);
+            Question newQuestion = questionRepo.insert(question);
+            if (question.getQuestionType() == 2L) {
+                List<Option> options = optionRepo.selectByQuestionID(question.getQuestionID());
+                for (Option opt : options) {
+                    opt.setOptionID(-1L);
+                    opt.setQuestionID(newQuestion.getQuestionID());
+                    optionRepo.insert(opt);
+                }
+            }
+
+            if (question.getQuestionType() != 2L) {
+                List<CorrectPoint> cps = cpRepo.selectByQuestionID(question.getQuestionID());
+                for (CorrectPoint cp : cps) {
+                    List<Alternative> alts = alternativeRepo.selectByCorrectPointID(cp.getCorrectPointID());
+                    cp.setCorrectPointID(-1L);
+                    cp.setQuestionID(newQuestion.getQuestionID());
+                    CorrectPoint newCorrectPoint = cpRepo.insert(cp);
+
+                    for (Alternative alt : alts) {
+                        alt.setAlternativeID(-1L);
+                        alt.setCorrectPointID(newCorrectPoint.getCorrectPointID());
+                        alternativeRepo.insert(alt);
+                    }
+                }
+            }
+
+
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Carries out actions needed to add correct points in to the database
      *
@@ -359,13 +405,15 @@ public class TestService {
      * @return the correct points
      * @throws Exception generic
      */
-    public List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID) throws Exception {
+    public List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID, Boolean update) throws Exception {
         if (correctPoints != null && correctPoints.size() > 0) {
             for (CorrectPoint cp : correctPoints) {
                 cp.setQuestionID(questionID);
-                cp.setCorrectPointID(-1L);
+                if (cp.getCorrectPointID() == null || cp.getCorrectPointID() < 1) {
+                    cp.setCorrectPointID(-1L);
+                }
                 cp = cpRepo.insert(cp);
-                cp.setAlternatives(addAlternatives(cp.getCorrectPointID(), cp.getAlternatives()));
+                cp.setAlternatives(addAlternatives(cp.getCorrectPointID(), cp.getAlternatives(), update));
             }
         }
         return correctPoints;
@@ -379,11 +427,13 @@ public class TestService {
      * @return the list of alternatives
      * @throws Exception generic
      */
-    public List<Alternative> addAlternatives(Long correctPointID, List<Alternative> alternatives) throws Exception {
+    public List<Alternative> addAlternatives(Long correctPointID, List<Alternative> alternatives, Boolean update) throws Exception {
         if (alternatives != null && alternatives.size() > 0) {
             for (Alternative alt : alternatives) {
                 alt.setCorrectPointID(correctPointID);
-                alt.setAlternativeID(-1L);
+                if (alt.getAlternativeID() == null || alt.getAlternativeID() < 1) {
+                    alt.setAlternativeID(-1L);
+                }
                 Alternative returned = alternativeRepo.insert(alt);
                 alt.setAlternativeID(returned.getAlternativeID());
             }
@@ -391,11 +441,13 @@ public class TestService {
         return alternatives;
     }
 
-    public List<Option> addOptions(Long questionID, List<Option> options) throws Exception {
+    public List<Option> addOptions(Long questionID, List<Option> options, Boolean update) throws Exception {
         if (options != null && options.size() > 0) {
             for (Option option : options) {
                 option.setQuestionID(questionID);
-                option.setOptionID(-1L);
+                if (option.getOptionID() == null || option.getOptionID() < 1) {
+                    option.setOptionID(-1L);
+                }
                 Option returned = optionRepo.insert(option);
                 option.setOptionID(returned.getOptionID());
             }
@@ -423,6 +475,50 @@ public class TestService {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    public Boolean removeCorrectPoint(Long correctPointID, String username) {
+        logger.info("Request made to remove correct point #{} by {}", correctPointID, username);
+
+        CorrectPoint cp = cpRepo.selectByCorrectPointID(correctPointID);
+        User user = userRepo.selectByUsername(username);
+
+        if (user.getUserID().equals(questionRepo.selectByQuestionID(cp.getQuestionID()).getCreatorID())) {
+            List<Alternative> alts = alternativeRepo.selectByCorrectPointID(correctPointID);
+            for (Alternative alt : alts) {
+                alternativeRepo.delete(alt.getAlternativeID());
+            }
+            cpRepo.delete(correctPointID);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean removeAlternative(Long alternativeID, String username) {
+        logger.info("Request made to remove alternative #{} by {}", alternativeID, username);
+
+        User user = userRepo.selectByUsername(username);
+        Alternative alt = alternativeRepo.selectByAlternativeID(alternativeID);
+        CorrectPoint cp = cpRepo.selectByCorrectPointID(alt.getCorrectPointID());
+
+        if (user.getUserID().equals(questionRepo.selectByQuestionID(cp.getQuestionID()).getCreatorID())) {
+            alternativeRepo.delete(alt.getAlternativeID());
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean removeOption(Long optionID, String username) {
+        logger.info("Request made to remove option #{} by {}", optionID, username);
+
+        User user = userRepo.selectByUsername(username);
+        Option option = optionRepo.selectByOptionID(optionID);
+
+        if (user.getUserID().equals(questionRepo.selectByQuestionID(option.getQuestionID()).getCreatorID())) {
+            optionRepo.delete(option.getOptionID());
+            return true;
         }
         return false;
     }

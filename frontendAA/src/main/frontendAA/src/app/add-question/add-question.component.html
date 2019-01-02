@@ -64,10 +64,9 @@
 
     <fieldset id="optionsFieldset" style="width: 100%;">
       <legend>Options
-        <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-          <button (click)="addOption()" class="btn btn-success btn-sm" type="button">Add</button>
-          <button class="btn btn-danger btn-sm" type="button" (click)="removeLastOption()">Remove last</button>
-        </span>
+        <button (click)="addOption()" type="button"
+                style="color: #28a745; background-color: transparent; border: none;"><i
+          class="fas fa-plus"></i> </button>
       </legend>
 
       <div *ngIf="questionInsert.options.length > 0">
@@ -101,10 +100,15 @@
                        style="display: block;
     width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
           </div>
-          <div class="form-group col-md-2">
+          <div class="form-group col-md-1">
             <input [(ngModel)]="option.worthMarks" value="0" class="form-control" id="worthMarks{{[i]}}"
                    name="worthMarks{{[i]}}"
                    type="number">
+          </div>
+
+          <div class="form-group col-md-1">
+            <button type="button" (click)="removeOption([i])"
+                    style="color: #dc3545; background-color: transparent; border: none;"> <i class="fas fa-times"></i></button>
           </div>
         </div>
       </div>
@@ -119,15 +123,16 @@
           ngbTooltip="Add some information on what you are looking for in the answer. The more you add the more the system can help you mark."
           placement="bottom">
           Mark Scheme</span>
-        <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-          <button (click)="addCorrectPoint()" class="btn btn-success btn-sm" type="button">Add</button>
-          <button class="btn btn-danger btn-sm" type="button" (click)="removeLastCorrectPoint()">Remove last</button>
-        </span>
+         <button (click)="addCorrectPoint()" type="button"
+                 style="color: #28a745; background-color: transparent; border: none;"><i
+           class="fas fa-plus"></i> </button>
+
       </legend>
 
       <div *ngIf="questionInsert.correctPoints.length > 0">
         <fieldset *ngFor="let correctPoint of questionInsert.correctPoints; let i = index">
-          <legend>Mark Allocation</legend>
+          <legend>Mark Allocation <span><button type="button" (click)="removeCorrectPoint([i])"
+                                          style="color: #dc3545; background-color: transparent; border: none;"> <i class="fas fa-times"></i></button></span></legend>
           <div class="form-row">
             <div class="form-group col-md-6">
               <label for="phrase{{[i]}}">Phrase <span *ngIf="phraseError == i"
@@ -159,17 +164,26 @@
             </div>
             <div class="form-group col-md-6">
               <label>Alternative Phrases
-                <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-                  <button (click)="addAlternative([i])" class="btn btn-success btn-sm" type="button">Add</button>
-                  <button class="btn btn-danger btn-sm" type="button"
-                          (click)="removeLastAlternative([i])">Remove last</button>
-                </span></label><br/>
+                <button (click)="addAlternative([i])" type="button"
+                          style="color: #28a745; background-color: transparent; border: none;"><i
+                    class="fas fa-plus"></i> </button>
+
+                </label><br/>
               <span *ngIf="alternativePhraseError" style="font-size: x-small; color: #dc3545;">Must not exceed 65,535 characters.</span>
-              <span *ngFor="let alt of correctPoint.alternatives; let j = index">
+              <div *ngFor="let alt of correctPoint.alternatives; let j = index">
+                <div class="row">
+                  <div class="col-sm-11" style="padding-right: 0;">
               <input [(ngModel)]="alt.alternativePhrase"
                      class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
                      type="text">
-              </span>
+                  </div>
+                  <div class="col-sm-1" style="padding-left: 0;">
+                    <button type="button"
+                            (click)="removeAlternative([i], [j])"
+                            style="color: #dc3545; background-color: transparent; border: none;"> <i class="fas fa-times"></i></button>
+                  </div>
+                </div>
+              </div>
 
             </div>
           </div>

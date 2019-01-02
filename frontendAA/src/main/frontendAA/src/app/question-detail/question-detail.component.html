@@ -44,7 +44,8 @@
                                                                                             class="btn-group"
                                                                                             role="group"
                                                                                             style="margin-bottom: 5px;">
-   <button *ngIf="editQuestion" (click)="editQuestion = false" class="btn btn-primary btn-sm" type="button">View</button>
+   <button *ngIf="editQuestion" (click)="editQuestion = false" class="btn btn-primary btn-sm"
+           type="button">View</button>
   <button *ngIf="!editQuestion" (click)="open(EditQuestion)" class="btn btn-primary btn-sm" type="button">Edit</button>
               <button class="btn btn-danger btn-sm" type="button"
                       (click)="open(AreYouSureQuestionRemoval)">Remove</button>
@@ -134,7 +135,7 @@
             <label class="custom-file-label" for="questionFigure" (click)="imgInput.click()">Add an image - <span
               *ngIf="!fileError">(max. 1MB)</span><span *ngIf="fileError"
                                                         style="color: #dc3545;">Invalid file size: {{fileSize / 1024 / 1024 | number: '1.0-2'}}
-        MB</span></label>
+              MB</span></label>
           </div>
 
           <div class="form-row">
@@ -188,10 +189,10 @@
 
           <fieldset id="optionsFieldset" style="width: 100%;">
             <legend>Options
-              <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-          <button (click)="addOption()" class="btn btn-success btn-sm" type="button">Add</button>
-          <button class="btn btn-danger btn-sm" type="button" (click)="removeLastOption()">Remove last</button>
-        </span>
+              <button (click)="addOption()" type="button"
+                      style="color: #28a745; background-color: transparent; border: none;"><i
+                class="fas fa-plus"></i></button>
+
             </legend>
 
             <div *ngIf="questionDetail.options.length > 0">
@@ -211,7 +212,25 @@
 
                 </div>
               </div>
-              <div class="form-row" *ngFor="let option of questionInsert.options; let i = index">
+              <div class="form-row" *ngFor="let option of questionDetail.options; let i = index">
+                <!-- Template from ngBootstrap -->
+                <ng-template #DeleteOption let-modal>
+                  <div class="modal-header">
+                    <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete this option?
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      (click)="modal.close(); removeOption([i]);"
+                      class="btn btn-outline-dark" type="button">Yes.
+                    </button>
+                  </div>
+                </ng-template>
+
                 <div class="form-group col-md-5">
             <textarea [(ngModel)]="option.optionContent" class="form-control" id="option{{[i]}}" name="option{{[i]}}"
                       rows="1"
@@ -225,10 +244,14 @@
                        style="display: block;
     width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
                 </div>
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-1">
                   <input [(ngModel)]="option.worthMarks" value="0" class="form-control" id="worthMarks{{[i]}}"
                          name="worthMarks{{[i]}}"
                          type="number">
+                </div>
+                <div class="form-group col-md-1">
+                  <button type="button" (click)="open(DeleteOption)"
+                          style="color: #dc3545; background-color: transparent; border: none;"><i class="fas fa-times"></i></button>
                 </div>
               </div>
             </div>
@@ -243,15 +266,36 @@
           ngbTooltip="Add some information on what you are looking for in the answer. The more you add the more the system can help you mark."
           placement="bottom">
           Mark Scheme</span>
-              <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-          <button (click)="addCorrectPoint()" class="btn btn-success btn-sm" type="button">Add</button>
-          <button class="btn btn-danger btn-sm" type="button" (click)="removeLastCorrectPoint()">Remove last</button>
-        </span>
+              <button (click)="addCorrectPoint()" type="button"
+                      style="color: #28a745; background-color: transparent; border: none;"><i
+                class="fas fa-plus"></i></button>
+
             </legend>
 
             <div *ngIf="questionDetail.correctPoints.length > 0">
               <fieldset *ngFor="let correctPoint of questionDetail.correctPoints; let i = index">
-                <legend>Mark Allocation</legend>
+                <!-- Template from ngBootstrap -->
+                <ng-template #DeleteCorrectPoint let-modal>
+                  <div class="modal-header">
+                    <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete this correct point?
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      (click)="modal.close(); removeCorrectPoint([i]);"
+                      class="btn btn-outline-dark" type="button">Yes.
+                    </button>
+                  </div>
+                </ng-template>
+
+                <legend>Mark Allocation
+                  <button type="button" (click)="open(DeleteCorrectPoint)"
+                          style="color: #dc3545; background-color: transparent; border: none;"><i class="fas fa-times"></i></button>
+                </legend>
                 <div class="form-row">
                   <div class="form-group col-md-6">
                     <label for="phrase{{[i]}}">Phrase <span *ngIf="phraseError == i"
@@ -284,19 +328,48 @@
                   </div>
                   <div class="form-group col-md-6">
                     <label>Alternative Phrases
-                      <span aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
-                  <button (click)="addAlternative([i])" class="btn btn-success btn-sm" type="button">Add</button>
-                  <button class="btn btn-danger btn-sm" type="button"
-                          (click)="removeLastAlternative([i])">Remove last</button>
-                </span></label><br/>
+                      <button (click)="addAlternative([i])" type="button"
+                              style="color: #28a745; background-color: transparent; border: none;"><i
+                        class="fas fa-plus"></i></button>
+                    </label><br/>
                     <span *ngIf="alternativePhraseError" style="font-size: x-small; color: #dc3545;">Must not exceed 65,535 characters.</span>
-                    <span *ngFor="let alt of correctPoint.alternatives; let j = index">
-              <input [(ngModel)]="alt.alternativePhrase"
-                     class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
-                     type="text">
-              </span>
+                    <div *ngFor="let alt of correctPoint.alternatives; let j = index">
 
+                      <!-- Template from ngBootstrap -->
+                      <ng-template #RemoveAlternative let-modal>
+                        <div class="modal-header">
+                          <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          Are you sure you want to delete this alternative?
+                        </div>
+                        <div class="modal-footer">
+                          <button
+                            (click)="modal.close(); removeAlternative([i], [j]);"
+                            class="btn btn-outline-dark" type="button">Yes.
+                          </button>
+                        </div>
+                      </ng-template>
+
+                      <div class="row">
+                        <div class="col-sm-11" style="padding-right: 0;">
+                          <input [(ngModel)]="alt.alternativePhrase"
+                                 class="form-control" id="alternatives_{{i}}, {{j}}" name="alternatives_{{i}}, {{j}}"
+                                 type="text">
+                        </div>
+
+                        <div class="col-sm-1" style="padding-left: 0;">
+                          <button type="button"
+                                  (click)="open(RemoveAlternative)"
+                                  style="color: #dc3545; background-color: transparent; border: none;"><i class="fas fa-times"></i></button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+
+
                 </div>
               </fieldset>
             </div>
