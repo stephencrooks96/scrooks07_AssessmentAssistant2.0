@@ -6,6 +6,10 @@ package com.pgault04.entities;
  */
 public class QuestionType {
 
+	public static final long TEXT_BASED = 1L;
+	public static final long MULTIPLE_CHOICE = 2L;
+	public static final long INSERT_THE_WORD = 3L;
+
 	/**
 	 * Used as a checker for insertions and updates
 	 */

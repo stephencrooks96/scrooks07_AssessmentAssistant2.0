@@ -28,6 +28,8 @@ import { QuestionDetailComponent } from './question-detail/question-detail.compo
 import { AddQuestionComponent } from './add-question/add-question.component';
 import { OldQuestionComponent } from './old-question/old-question.component';
 import {Ng2FileSizeModule} from "ng2-file-size";
+import { DelegateDetailComponent } from './delegate-detail/delegate-detail.component';
+import {ChartsModule} from "ng2-charts";
 
 
 @NgModule({
@@ -51,12 +53,13 @@ import {Ng2FileSizeModule} from "ng2-file-size";
     ViewProgressComponent,
     QuestionDetailComponent,
     AddQuestionComponent,
-    OldQuestionComponent
+    OldQuestionComponent,
+    DelegateDetailComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    Ng2GoogleChartsModule,
+    ChartsModule,
     HttpClientModule,
     FormsModule,
     NgbModule,

@@ -122,7 +122,7 @@ public class ModuleService {
      */
     public List<Tests> scheduledTests(String username, Long moduleID) {
         logger.info("Request made for scheduled tests for module with id #{}", moduleID);
-        if ("tutor".equals(checkValidAssociation(username, moduleID))) {
+        if (AssociationType.TUTOR == checkValidAssociation(username, moduleID)) {
 
             Date now = new Date();
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
@@ -151,8 +151,8 @@ public class ModuleService {
      */
     public List<TestMarking> marking(Long moduleID, String username) {
         logger.info("Request made for marking info for module with id #{}", moduleID);
-        String associationType = checkValidAssociation(username, moduleID);
-        if (!"student".equals(associationType) && associationType != null) {
+        Long associationType = checkValidAssociation(username, moduleID);
+        if (AssociationType.STUDENT != associationType) {
 
             Date now = new Date();
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
@@ -165,7 +165,7 @@ public class ModuleService {
                         List<Answer> answers = answerRepo.selectByTestID(t.getTestID());
                         int toBeMarkedByYou = 0, toBeMarkedByTAs = 0, marked = 0, totalForYou = 0, totalForTAs = 0;
                         for (Answer a : answers) {
-                            if ("tutor".equalsIgnoreCase(associationType)) {
+                            if (AssociationType.TUTOR == associationType) {
                                 if (a.getMarkerID().equals(user.getUserID())) {
                                     totalForYou++;
                                     if (a.getScore() == null) {
@@ -212,7 +212,7 @@ public class ModuleService {
      */
     public List<TestAndGrade> activeResults(Long moduleID, String username) {
         logger.info("Request made for active results for module #{}", moduleID);
-        if ("student".equals(checkValidAssociation(username, moduleID))) {
+        if (AssociationType.STUDENT == checkValidAssociation(username, moduleID)) {
 
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
             User user = userRepo.selectByUsername(username);
@@ -267,7 +267,7 @@ public class ModuleService {
      */
     public List<Tests> testDrafts(String username, Long moduleID) {
         logger.info("Request made for drafted tests for module with id #{}", moduleID);
-        if ("tutor".equals(checkValidAssociation(username, moduleID))) {
+        if (AssociationType.TUTOR == checkValidAssociation(username, moduleID)) {
 
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
             List<Tests> testReturn = new ArrayList<>();
@@ -290,7 +290,7 @@ public class ModuleService {
      */
     public List<TestMarking> reviewMarking(String username, Long moduleID) {
         logger.info("Request made for all marking ready to be reviewed for module with id #{}", moduleID);
-        if ("tutor".equals(checkValidAssociation(username, moduleID))) {
+        if (AssociationType.TUTOR == checkValidAssociation(username, moduleID)) {
 
             Date now = new Date();
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
@@ -342,13 +342,13 @@ public class ModuleService {
      * Performs the actions necessary to get the performance data and return it to the user on front end
      *
      * @param moduleID  - the module id
-     * @param principal - the user
+     * @param username - the user
      * @return the performance data
      */
     public List<Performance> generatePerformance(Long moduleID, String username) {
         logger.info("Request made for performance statistics for module with id #{}", moduleID);
-        String check = checkValidAssociation(username, moduleID);
-        if (!"teaching assistant".equalsIgnoreCase(check) && check != null) {
+        Long check = checkValidAssociation(username, moduleID);
+        if (AssociationType.TEACHING_ASSISTANT != check) {
 
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
             User user = userRepo.selectByUsername(username);
@@ -381,7 +381,7 @@ public class ModuleService {
      * @param moduleID - the module id
      * @return the association
      */
-    public String checkValidAssociation(String username, Long moduleID) {
+    public Long checkValidAssociation(String username, Long moduleID) {
         logger.info("Request made for {}'s association with module #{}", username, moduleID);
 
         List<ModuleAssociation> ma = modAssocRepo.selectByModuleID(moduleID);
@@ -394,7 +394,7 @@ public class ModuleService {
             }
         }
         if (theAssociationTypeID != null) {
-            return associationTypeRepo.selectByAssociationTypeID(theAssociationTypeID).getAssociationType();
+            return associationTypeRepo.selectByAssociationTypeID(theAssociationTypeID).getAssociationTypeID();
         } else {
             return null;
         }
@@ -424,5 +424,4 @@ public class ModuleService {
             return "F";
         }
     }
-
 }

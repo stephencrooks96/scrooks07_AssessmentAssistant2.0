@@ -1,3 +1,219 @@
-<p>
-  mark-test works!
-</p>
+<app-header></app-header>
+<div class="container" style="width: 90%; max-width: 90%;">
+
+  <nav aria-label="breadcrumb" class="breadcrumbs">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="'/myModules'">Modules</a></li>
+      <li class="breadcrumb-item"><a [routerLink]="['/moduleHome', test.moduleID]">Module Home</a></li>
+      <li aria-current="page" class="breadcrumb-item active">{{test.testTitle}}</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+
+    <div class="col-sm-2">
+      <h3>Grouped Answers</h3>
+      <div ngbDropdown class="d-inline-block">
+        <button class="btn btn-dark" ngbDropdownToggle>Group-by:</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button class="dropdown-item" *ngFor="let testMarking of marking"
+                  (click)="show = testMarking.test.testID">{{testMarking.test.testTitle}}</button>
+        </div>
+      </div>
+      <div class="panel panel-default default-pre-scrollable">
+        <table class="table-striped">
+          <tr *ngFor="let question of questions; let i = index">
+            <td>{{i + 1}}</td>
+            <td style="padding-left: 10px;"><span *ngIf="question.question.questionType == 3">Insert the missing word(s):<br/></span>{{question.question.questionContent}}
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark"
+                      (click)="questionDetail = (i + 1);">
+                Answer
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-sm-2">
+      <h3>Questions</h3>
+      <div class="panel panel-default default-pre-scrollable">
+        <table class="table-striped">
+          <tr *ngFor="let question of questions; let i = index">
+            <td>{{i + 1}}</td>
+            <td style="padding-left: 10px;"><span *ngIf="question.question.questionType == 3">Insert the missing word(s):<br/></span>{{question.question.questionContent}}
+            </td>
+            <td>
+              <button type="button" class="btn btn-dark"
+                      (click)="questionDetail = (i + 1);">
+                Answer
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-sm-5" style="height: 500px;">
+      <form #takeTestForm="ngForm" id='takeTestForm'
+            name='takeTestForm' role="form"
+            style="width: 100%;">
+        <div *ngIf="timeDifference == 0"><span *ngIf="!submitted">{{submitTest(takeTestForm)}}</span>{{backHome()}}</div>
+
+        <!-- Template from ngBootstrap -->
+        <ng-template #AreYouSureSubmit let-modal>
+          <div class="modal-header">
+            <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h5>Are you sure you are ready to submit this test? Once you do you will not be allowed to edit your
+              answers.</h5>
+            <h6 *ngIf="tooLong != originalLongMessage">{{tooLong}}</h6>
+            <h6 *ngIf="tooShort != originalShortMessage">{{tooShort}}</h6>
+          </div>
+          <div class="modal-footer">
+            <button (click)="modal.close(); submitTest(takeTestForm)" class="btn btn-outline-dark" type="submit">Yes, I'm
+              sure.
+            </button>
+          </div>
+        </ng-template>
+
+
+        <div class="pre-scrollable">
+          <div class="panel panel-default default">
+            <div class="panel-body">
+              <div *ngFor="let questionAnswer of questionAnswers; let i = index">
+                <div *ngIf="questionDetail == (i + 1)">
+                  <div class="content"><img
+                    *ngIf="questionAnswer.question.base64 != null && questionAnswer.question.base64.length > 0"
+                    style="max-width: 80%; max-height: 200px; margin-left: auto; margin-right: auto;"
+                    [src]="readyImage(questionAnswer.question.base64)" alt="QuestionFigure"></div>
+                  <div class="form-row">
+                    <h4 *ngIf="questionAnswer.question.question.questionType == 3">Insert the missing word(s):</h4>
+                    <div class="form-group col-sm-9"><h4>{{i + 1}}
+                      . {{questionAnswer.question.question.questionContent}}</h4></div>
+                    <div class="form-group col-sm-3">
+                      <h3>({{questionAnswer.question.question.maxScore}} marks)</h3>
+                    </div>
+                  </div>
+                  <div *ngIf="questionAnswer.question.question.questionType == 3">
+                    <div class="form-row" *ngFor="let input of questionAnswer.question.inputs; let j = index;">
+                      <div class="form-group col-sm-1">
+                        <label for="input_({{i}}, {{j}})"><h3>{{j + 1}}</h3></label>
+                      </div>
+                      <div class="form-group col-sm-6">
+                        <input [(ngModel)]="input.value" class="form-control" type="text" id="input_({{i}}, {{j}})" name="input_({{i}}, {{j}})"/>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="questionAnswer.question.question.questionType == 2">
+                    <div *ngFor="let option of questionAnswer.question.options;" class="form-check">
+                      <input [(ngModel)]="questionAnswer.answer.content" class="form-check-input" type="radio" name="option_({{i}})" id="option_({{i}})" value="{{option.optionContent}}">
+                      <label style="font-size: large;" class="form-check-label" for="option_({{i}})">
+                        {{option.optionContent}}
+                      </label>
+                    </div>
+                  </div>
+                  <div *ngIf="questionAnswer.question.question.questionType == 1">
+                    <label for="answerContent_{{i}}">Answer:</label>
+                    <textarea [(ngModel)]="questionAnswer.answer.content" class="form-control"
+                              id="answerContent_{{i}}"
+                              name="answerContent_{{i}}" rows="8"
+                              style="display: block;
+    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-sm-3" style="height: 500px;">
+      <form #takeTestForm="ngForm" id='takeTestForm'
+            name='takeTestForm' role="form"
+            style="width: 100%;">
+        <div *ngIf="timeDifference == 0"><span *ngIf="!submitted">{{submitTest(takeTestForm)}}</span>{{backHome()}}</div>
+
+        <!-- Template from ngBootstrap -->
+        <ng-template #AreYouSureSubmit let-modal>
+          <div class="modal-header">
+            <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h5>Are you sure you are ready to submit this test? Once you do you will not be allowed to edit your
+              answers.</h5>
+            <h6 *ngIf="tooLong != originalLongMessage">{{tooLong}}</h6>
+            <h6 *ngIf="tooShort != originalShortMessage">{{tooShort}}</h6>
+          </div>
+          <div class="modal-footer">
+            <button (click)="modal.close(); submitTest(takeTestForm)" class="btn btn-outline-dark" type="submit">Yes, I'm
+              sure.
+            </button>
+          </div>
+        </ng-template>
+
+
+        <div class="pre-scrollable">
+          <div class="panel panel-default default">
+            <div class="panel-body">
+              <div *ngFor="let questionAnswer of questionAnswers; let i = index">
+                <div *ngIf="questionDetail == (i + 1)">
+                  <div class="content"><img
+                    *ngIf="questionAnswer.question.base64 != null && questionAnswer.question.base64.length > 0"
+                    style="max-width: 80%; max-height: 200px; margin-left: auto; margin-right: auto;"
+                    [src]="readyImage(questionAnswer.question.base64)" alt="QuestionFigure"></div>
+                  <div class="form-row">
+                    <h4 *ngIf="questionAnswer.question.question.questionType == 3">Insert the missing word(s):</h4>
+                    <div class="form-group col-sm-9"><h4>{{i + 1}}
+                      . {{questionAnswer.question.question.questionContent}}</h4></div>
+                    <div class="form-group col-sm-3">
+                      <h3>({{questionAnswer.question.question.maxScore}} marks)</h3>
+                    </div>
+                  </div>
+                  <div *ngIf="questionAnswer.question.question.questionType == 3">
+                    <div class="form-row" *ngFor="let input of questionAnswer.question.inputs; let j = index;">
+                      <div class="form-group col-sm-1">
+                        <label for="input_({{i}}, {{j}})"><h3>{{j + 1}}</h3></label>
+                      </div>
+                      <div class="form-group col-sm-6">
+                        <input [(ngModel)]="input.value" class="form-control" type="text" id="input_({{i}}, {{j}})" name="input_({{i}}, {{j}})"/>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="questionAnswer.question.question.questionType == 2">
+                    <div *ngFor="let option of questionAnswer.question.options;" class="form-check">
+                      <input [(ngModel)]="questionAnswer.answer.content" class="form-check-input" type="radio" name="option_({{i}})" id="option_({{i}})" value="{{option.optionContent}}">
+                      <label style="font-size: large;" class="form-check-label" for="option_({{i}})">
+                        {{option.optionContent}}
+                      </label>
+                    </div>
+                  </div>
+                  <div *ngIf="questionAnswer.question.question.questionType == 1">
+                    <label for="answerContent_{{i}}">Answer:</label>
+                    <textarea [(ngModel)]="questionAnswer.answer.content" class="form-control"
+                              id="answerContent_{{i}}"
+                              name="answerContent_{{i}}" rows="8"
+                              style="display: block;
+    width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+

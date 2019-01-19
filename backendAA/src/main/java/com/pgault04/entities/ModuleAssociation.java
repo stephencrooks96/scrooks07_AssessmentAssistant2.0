@@ -6,6 +6,7 @@ package com.pgault04.entities;
  */
 public class ModuleAssociation {
 
+
 	/**
 	 * Used as a checker for insertions and updates
 	 */

@@ -181,7 +181,7 @@ public class ModuleController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getModuleAssociation", method = RequestMethod.GET)
-    public String getModuleAssociation(Principal principal, Long moduleID) {
-        return "\"" + modService.checkValidAssociation(principal.getName(), moduleID) + "\"";
+    public Long getModuleAssociation(Principal principal, Long moduleID) {
+        return modService.checkValidAssociation(principal.getName(), moduleID);
     }
 }

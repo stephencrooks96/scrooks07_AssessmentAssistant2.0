@@ -39,7 +39,7 @@ public class TestAnswerRepo {
 
     @Before
     public void setUp() throws Exception {
-        answer = new Answer(QUESTION_ID_IN_DATABASE, ANSWERER_ID_IN_DB, MARKER_ID_IN_DB, TEST_ID_IN_DB, "content", 100);
+        answer = new Answer(QUESTION_ID_IN_DATABASE, ANSWERER_ID_IN_DB, MARKER_ID_IN_DB, TEST_ID_IN_DB, "content", 100, "feedback", 0, 0);
     }
 
     @Test

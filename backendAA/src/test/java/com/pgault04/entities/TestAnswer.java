@@ -21,7 +21,7 @@ public class TestAnswer {
 	private Answer answer;
 	private Long answerID, questionID, answererID, markerID, testID;
 	private Integer score;
-	private String content;
+	private String content, feedback;
 
 
 	@Before
@@ -34,6 +34,7 @@ public class TestAnswer {
 		this.testID = 5L;
 		this.score = 5;
 		this.content = "content";
+		this.feedback = "feedback";
 	}
 
 	@Test
@@ -44,7 +45,7 @@ public class TestAnswer {
 	@Test
 	public void testAnswerConstructorWithArgs() {
 		answer = null;
-		answer = new Answer(questionID, answererID, markerID, testID, content, score);
+		answer = new Answer(questionID, answererID, markerID, testID, content, score, feedback, 0, 0);
 
 		assertNotNull(answer);
 		assertEquals(questionID, answer.getQuestionID());
@@ -53,6 +54,7 @@ public class TestAnswer {
 		assertEquals(testID, answer.getTestID());
 		assertEquals(content, answer.getContent());
 		assertEquals(score, answer.getScore());
+		assertEquals(feedback, answer.getFeedback());
 	}
 
 	@Test
@@ -98,6 +100,12 @@ public class TestAnswer {
 	}
 
 	@Test
+	public void testGetSetFeedback() {
+		answer.setFeedback(feedback);
+		assertEquals(feedback, answer.getFeedback());
+	}
+
+	@Test
 	public void testToString() {
 		answer.setAnswerID(answerID);
 		answer.setQuestionID(questionID);
@@ -107,7 +115,7 @@ public class TestAnswer {
 		answer.setContent(content);
 		answer.setScore(score);
 
-		assertEquals("Answer{answerID=1, questionID=2, answererID=3, markerID=4, testID=5, content='content', score=5}", answer.toString());
+		assertEquals("Answer{answerID=1, questionID=2, answererID=3, markerID=4, testID=5, content='content', score=5, feedback='feedback'}", answer.toString());
 	}
 
 }

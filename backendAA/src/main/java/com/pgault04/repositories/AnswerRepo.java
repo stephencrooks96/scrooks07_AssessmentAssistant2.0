@@ -25,8 +25,8 @@ public class AnswerRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
-    private final String insertSQL = "INSERT INTO Answer (questionID, answererID, markerID, testID, content, score) values (:questionID, :answererID, :markerID, :testID, :content, :score)";
-    private final String updateSQL = "UPDATE Answer SET questionID=:questionID, answererID=:answererID, markerID=:markerID, testID=:testID, content=:content, score=:score WHERE answerID=:answerID";
+    private final String insertSQL = "INSERT INTO Answer (questionID, answererID, markerID, testID, content, score, feedback, markerApproved, tutorApproved) values (:questionID, :answererID, :markerID, :testID, :content, :score, :feedback, :markerApproved, :tutorApproved)";
+    private final String updateSQL = "UPDATE Answer SET questionID=:questionID, answererID=:answererID, markerID=:markerID, testID=:testID, content=:content, score=:score, feedback=:feedback, markerApproved=:markerApproved, tutorApproved=:tutorApproved WHERE answerID=:answerID";
     private final String selectSQL = "SELECT * FROM Answer WHERE ";
 
     @Autowired

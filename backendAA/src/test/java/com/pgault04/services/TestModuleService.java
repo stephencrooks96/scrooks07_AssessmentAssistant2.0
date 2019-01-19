@@ -158,10 +158,10 @@ public class TestModuleService {
         testQuestionRepo.insert(new TestQuestion(testObj.getTestID(), QUESTION_IN_DB));
 
         // Answers added
-        markedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, USER_IN_DB, testObj.getTestID(), "content", 25));
-        notMarkedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), "content", 50));
-        markedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, USER_IN_DB, testObj.getTestID(), "content", null));
-        notMarkedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), "content", null));
+        markedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, USER_IN_DB, testObj.getTestID(), "content", 25, "feedback", 0, 0));
+        notMarkedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), "content", 50, "feedback", 0, 0));
+        markedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, USER_IN_DB, testObj.getTestID(), "content", null, "feedback", 0, 0));
+        notMarkedByUser = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), "content", null, "feedback", 0, 0));
 
         // Tutor association
         List<TestMarking> tests = moduleService.marking(module.getModuleID(), USERNAME_IN_DB);
@@ -239,7 +239,7 @@ public class TestModuleService {
 
         testQuestionRepo.insert(new TestQuestion(testObj.getTestID(), QUESTION_IN_DB));
 
-        Answer answer = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, USER_IN_DB, testObj.getTestID(), "content", null));
+        Answer answer = answerRepo.insert(new Answer(QUESTION_IN_DB, USER_IN_DB, USER_IN_DB, testObj.getTestID(), "content", null, "feedback", 0, 0));
 
         // Tutor association
         List<TestMarking> tests = moduleService.reviewMarking(USERNAME_IN_DB, module.getModuleID());

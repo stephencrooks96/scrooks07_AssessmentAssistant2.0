@@ -1,3 +1,38 @@
-<p>
-  delegate-marking works!
-</p>
+<app-header></app-header>
+<div class="container">
+  <nav aria-label="breadcrumb" class="breadcrumbs">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="'/myModules'">Modules</a></li>
+      <li class="breadcrumb-item"><a [routerLink]="['/moduleHome', test.moduleID]">Module Home</a></li>
+      <li aria-current="page" class="breadcrumb-item active">{{test.testTitle}}</li>
+    </ol>
+  </nav>
+  <div class="row">
+
+    <div class="col-sm-4">
+      <h3 *ngIf="test" style="margin-bottom: 20px;">{{test.testTitle}}</h3>
+
+      <div [hidden]="!chartCheck">
+        <canvas id="main" height="250px" width="300px">{{chart}}
+        </canvas>
+      </div>
+      <div style="margin-top: 30px;" class="panel panel-default default-pre-scrollable">
+        <table class="table-striped" style="width: 100%;">
+          <tr *ngFor="let markerObj of markerWithChart.markers; let rowIndex = index">
+            <td style="padding-left: 10px;">{{markerObj.markerType}}</td>
+            <td style="padding-left: 10px;">{{markerObj.marker.firstName}} {{markerObj.marker.lastName}}</td>
+            <td>
+              <button type="button" style="margin-top: 1px; margin-bottom: 1px; margin-left: 30px;" class="btn btn-dark"
+                      (click)="markerDetail = markerObj;">Info
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-sm-8" style="height: 500px;">
+      <app-delegate-detail [markerDetail]="markerDetail"></app-delegate-detail>
+    </div>
+  </div>
+</div>

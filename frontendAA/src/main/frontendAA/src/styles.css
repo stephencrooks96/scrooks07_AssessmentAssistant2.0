@@ -10,6 +10,7 @@ body {
 
 .breadcrumbs ol {
   background-color: #dbdbdb;
+  padding: 0;
 }
 
 .breadcrumbs ol li a {

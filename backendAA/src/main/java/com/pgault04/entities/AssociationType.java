@@ -7,6 +7,10 @@ package com.pgault04.entities;
  */
 public class AssociationType {
 
+	public static final long TUTOR = 1L;
+	public static final long STUDENT = 2L;
+	public static final long TEACHING_ASSISTANT = 3L;
+
 	/**
 	 * Used as a checker for insertions and updates
 	 */

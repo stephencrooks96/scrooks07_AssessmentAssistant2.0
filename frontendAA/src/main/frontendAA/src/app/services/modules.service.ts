@@ -39,9 +39,9 @@ export class ModulesService {
       );
   }
 
-  getModuleAssociation(moduleID): Observable<string> {
+  getModuleAssociation(moduleID): Observable<number> {
 
-    return this.http.get<string>("http://localhost:8080/modules/getModuleAssociation?moduleID=" + moduleID, {headers: this.app.headers})
+    return this.http.get<number>("http://localhost:8080/modules/getModuleAssociation?moduleID=" + moduleID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Module association fetched from server.'))
       );

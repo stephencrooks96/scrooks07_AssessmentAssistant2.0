@@ -1,3 +1,5 @@
+
+
 export class User {
   userID: number;
   username: string = "";
@@ -71,18 +73,43 @@ export class Question {
 
 }
 
+export class MarkerAndReassigned {
+
+  markerID : number;
+  previousMarkerID : number;
+  specifyQuestion : number;
+  numberToReassign : number;
+}
+
 export class Answer {
 
-  answerID: number;
-  questionID: number;
-  answererID: number;
-  markerID: number;
-  testID: number;
-  content: string = "";
-  score: number;
-  feedback: string = "";
-  marksGainedFor: string = "";
+  answerID : number;
+  questionID : number;
+  answererID : number;
+  markerID : number;
+  testID : number;
+  content : string="";
+  score : number;
+  feedback : string="";
+  markerApproved : number;
+  tutorApproved : number;
 
+}
+
+export class QuestionAndAnswer {
+  question = new QuestionAndBase64();
+  answer = new Answer();
+}
+
+export class QuestionAndBase64 {
+  question = new Question();
+  options : Option[];
+  inputs : Input[];
+  base64 : string="";
+}
+
+export class Input {
+  value : string="";
 }
 
 export class TestMarking {
@@ -94,6 +121,24 @@ export class TestMarking {
   totalForYou: number=0;
   totalForTAs: number=0;
 
+}
+
+export class Marker {
+
+  test = new Tests();
+  marker = new User();
+  markerType: string;
+  scripts: Answer[];
+  marked: number;
+  unmarked: number;
+
+}
+
+export class MarkerWithChart {
+  markers : Marker[];
+  labels : [];
+  data : [];
+  colours : [];
 }
 
 export class Performance {

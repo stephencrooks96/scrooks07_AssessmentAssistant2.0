@@ -1,0 +1,16 @@
+.content {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.panel-body {
+  padding: 15px;
+
+}
+
+.pre-scrollable {
+  max-height: 600px;
+  height: 600px;
+  background-color: #bdbdbd;
+  border-radius: 5px;
+}

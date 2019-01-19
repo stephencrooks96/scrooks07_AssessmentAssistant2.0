@@ -6,7 +6,7 @@ import {
   Alternative,
   CorrectPoint,
   Option,
-  Question,
+  Question, QuestionAndAnswer, QuestionAndBase64,
   QuestionType,
   Tests,
   TutorQuestionPojo
@@ -66,6 +66,13 @@ export class TestService {
     );
   }
 
+  public submitTest(script: QuestionAndAnswer[]): Observable<number> {
+
+    return this.http.post<number>(this.app.url + "/tests/submitTest", script, {headers: this.app.headers}).pipe(
+      tap((testID: number) => console.log(`Added script for test #${testID}.`))
+    );
+  }
+
   /**
    *
    * @param questionID
@@ -74,6 +81,12 @@ export class TestService {
   public addExistingQuestion(questionID, testID): Observable<Question> {
     return this.http.get<Question>(this.app.url + "/tests/addExistingQuestion?questionID=" + questionID + "&testID=" + testID, {headers: this.app.headers}).pipe(
       tap((question: Question) => console.log(`Added question with id=${question.questionID} to test with id=${testID}`))
+    );
+  }
+
+  public getAnsweredTests(): Observable<number[]> {
+    return this.http.get<number[]>(this.app.url + "/tests/getAnsweredTests", {headers: this.app.headers}).pipe(
+      tap((answeredTests: number[]) => console.log(`Returned users answered tests size ${answeredTests.length}`))
     );
   }
 
@@ -102,6 +115,18 @@ export class TestService {
   getQuestions(testID): Observable<TutorQuestionPojo[]> {
 
     return this.http.get<TutorQuestionPojo[]>(this.app.url + "/tests/getQuestionsByTestIDTutorView?testID=" + testID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log('Questions fetched from server.'))
+      );
+  }
+
+  /**
+   *
+   * @param testID
+   */
+  getQuestionsStudent(testID): Observable<QuestionAndBase64[]> {
+
+    return this.http.get<QuestionAndBase64[]>(this.app.url + "/tests/getQuestionsStudent?testID=" + testID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Questions fetched from server.'))
       );

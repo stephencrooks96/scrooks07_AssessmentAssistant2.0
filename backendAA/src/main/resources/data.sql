@@ -41,9 +41,9 @@ insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResul
 insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Astrophysics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
 
 -- Scheduled Tests --
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Quantum Physics 2', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Medical Physics 2', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Astrophysics 2', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Quantum Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Medical Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Astrophysics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
 
 -- Draft Tests --
 insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Quantum Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
@@ -83,9 +83,9 @@ insert into testquestion(testID, questionID) values (12, 1);
 insert into testquestion(testID, questionID) values (12, 2);
 insert into testquestion(testID, questionID) values (12, 3);
 
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (1, 10, 1, 2, 'Electrons', 3);
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (2, 10, 1, 3, 'A lot', 3);
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (3, 10, 1, 2, 'Blue then green', 2);
+insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved) values (1, 10, 1, 2, 'Electrons', null, 1, 0);
+insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved) values (2, 10, 1, 3, 'A lot', 3, 1 ,0);
+insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved) values (3, 10, 1, 2, 'Blue then green', 2, 0, 0);
 
 insert into Answer(questionID, testID, answererID, markerID, content, score) values (1, 11, 1, 2, 'Electrons', null);
 insert into Answer(questionID, testID, answererID, markerID, content, score) values (2, 11, 1, 2, 'A lot', null);

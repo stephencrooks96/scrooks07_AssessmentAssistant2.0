@@ -13,9 +13,9 @@ import {
 import {ActivatedRoute, Router} from "@angular/router";
 import {interval, Subscription} from "rxjs";
 import {TestService} from "../services/test.service";
-import {Observable} from "rxjs";
 
-'rxjs';
+
+
 
 @Component({
   selector: 'app-module-home',
@@ -23,6 +23,10 @@ import {Observable} from "rxjs";
   styleUrls: ['./module-home.component.css']
 })
 export class ModuleHomeComponent implements OnInit {
+
+  TUTOR: number = 1;
+  STUDENT: number = 2;
+  TEACHING_ASSISTANT: number = 3;
 
   moduleTutor = new ModuleWithTutorFE();
   tutor = new User();
@@ -34,7 +38,7 @@ export class ModuleHomeComponent implements OnInit {
   marking: TestMarking[];
   testsForReview: TestMarking[];
   activeResults: TestAndGrade[];
-  moduleAssoc: string = "";
+  moduleAssoc: number;
   activeTestCheck = true;
   activeResultCheck = false;
   addTestCheck = false;
@@ -46,6 +50,8 @@ export class ModuleHomeComponent implements OnInit {
   show: number = 0;
   performanceList: Performance[];
   activeSub: Subscription;
+  subCheck: Boolean[];
+  answeredSet: number[];
 
   constructor(private testServ: TestService, private modServ: ModulesService, private route: ActivatedRoute, private userServ: UserService, private testService: TestService, private router: Router) {
     this.moduleID = +this.route.snapshot.paramMap.get('moduleID');
@@ -53,6 +59,7 @@ export class ModuleHomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getAnsweredTests();
     this.getPerformance(this.moduleID);
     this.getModuleAndTutor(this.moduleID);
     this.getModuleAssociation(this.moduleID);
@@ -77,6 +84,8 @@ export class ModuleHomeComponent implements OnInit {
   retractScheduled(testID) {
     this.testServ.scheduleTest(testID).subscribe(
       success => {
+        this.getScheduledTests(this.moduleID);
+        this.getTestDrafts(this.moduleID);
       }
     );
   }
@@ -101,7 +110,17 @@ export class ModuleHomeComponent implements OnInit {
 
   getActiveTests(moduleID) {
     return this.modServ.getActiveTests(moduleID)
-      .subscribe(tests => this.activeTests = tests);
+      .subscribe(tests => {
+        this.activeTests = tests;
+
+      });
+  }
+
+  getAnsweredTests() {
+    return this.testServ.getAnsweredTests()
+      .subscribe(answeredSet => {
+        this.answeredSet = answeredSet;
+      });
   }
 
   getActiveResults(moduleID) {

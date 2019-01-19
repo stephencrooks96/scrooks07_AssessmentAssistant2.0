@@ -37,8 +37,8 @@
               <button class="btn btn-danger btn-sm" type="button" (click)="open(AreYouSureTestDeletion)">Delete</button>
         </span>
       </h3>
-      <p *ngIf="test && !editTestShow">Start: {{test.startDateTime | date:'HH:mm on dd-MM-yyyy'}}</p>
-      <p *ngIf="test && !editTestShow">End: {{test.endDateTime | date:'HH:mm on dd-MM-yyyy'}}</p>
+      <p *ngIf="test && !editTestShow">Start: {{test.startDateTime | date:"dd-MM-yyyy 'at' HH:mm"}}</p>
+      <p *ngIf="test && !editTestShow">End: {{test.endDateTime | date:"dd-MM-yyyy 'at' HH:mm"}}</p>
 
       <button *ngIf="test && !editTestShow" type="button" class="btn btn-success"
               (click)="open(AreYouSureTestScheduling)" style="margin-bottom: 10px;">Schedule to go live

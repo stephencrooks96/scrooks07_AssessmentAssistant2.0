@@ -30,6 +30,12 @@ public class Answer {
 
 	private Integer score;
 
+	private String feedback;
+
+	private Integer markerApproved;
+
+	private Integer tutorApproved;
+
 	/**
 	 * The default constructor
 	 */
@@ -44,13 +50,24 @@ public class Answer {
 	 * @param content the answers content
 	 * @param score the score given
 	 */
-	public Answer(Long questionID, Long answererID, Long markerID, Long testID, String content, Integer score) {
+	public Answer(Long questionID, Long answererID, Long markerID, Long testID, String content, Integer score, String feedback, Integer markerApproved, Integer tutorApproved) {
 		this.setQuestionID(questionID);
 		this.setAnswererID(answererID);
 		this.setMarkerID(markerID);
 		this.setTestID(testID);
 		this.setContent(content);
 		this.setScore(score);
+		this.setFeedback(feedback);
+		this.setMarkerApproved(markerApproved);
+		this.setTutorApproved(tutorApproved);
+	}
+
+	public String getFeedback() {
+		return feedback;
+	}
+
+	public void setFeedback(String feedback) {
+		this.feedback = feedback;
 	}
 
 	/**
@@ -157,9 +174,24 @@ public class Answer {
 		this.testID = testID;
 	}
 
+	public Integer getMarkerApproved() {
+		return markerApproved;
+	}
+
+	public void setMarkerApproved(Integer markerApproved) {
+		this.markerApproved = markerApproved;
+	}
+
+	public Integer getTutorApproved() {
+		return tutorApproved;
+	}
+
+	public void setTutorApproved(Integer tutorApproved) {
+		this.tutorApproved = tutorApproved;
+	}
+
 	/**
-	 *
-	 * @return the string for this object
+	 * @return the object as a string
 	 */
 	@Override
 	public String toString() {
@@ -171,6 +203,9 @@ public class Answer {
 		sb.append(", testID=").append(testID);
 		sb.append(", content='").append(content).append('\'');
 		sb.append(", score=").append(score);
+		sb.append(", feedback='").append(feedback).append('\'');
+		sb.append(", markerApproved=").append(markerApproved);
+		sb.append(", tutorApproved=").append(tutorApproved);
 		sb.append('}');
 		return sb.toString();
 	}

@@ -3,6 +3,8 @@ package com.pgault04.controller;
 import com.pgault04.entities.QuestionType;
 import com.pgault04.entities.TestQuestion;
 import com.pgault04.entities.Tests;
+import com.pgault04.pojos.QuestionAndAnswer;
+import com.pgault04.pojos.QuestionAndBase64;
 import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.QuestionTypeRepo;
 import com.pgault04.services.TestService;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Paul Gault
@@ -23,11 +26,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/tests")
 public class TestController {
-
-    /**
-     * Logs useful info for debugging and analysis needs
-     */
-    private static final Logger logger = LogManager.getLogger(TestController.class);
 
     @Autowired
     TestService testService;
@@ -51,6 +49,12 @@ public class TestController {
     @RequestMapping(value = "/addTest", method = RequestMethod.POST)
     public Tests saveTest(Principal principal, @RequestBody Tests test) {
         return testService.addTest(test, principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/submitTest", method = RequestMethod.POST)
+    public boolean submitTest(Principal principal, @RequestBody List<QuestionAndAnswer> script) {
+        return testService.submitTest(script, principal.getName());
     }
 
     /**
@@ -77,6 +81,18 @@ public class TestController {
     @RequestMapping(value = "/getByTestIDTutorView", method = RequestMethod.GET)
     public Tests getByTestIDTutorView(Principal principal, Long testID) {
         return testService.getByTestIDTutorView(principal.getName(), testID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getQuestionsStudent", method = RequestMethod.GET)
+    public List<QuestionAndBase64> getQuestionsStudent(Principal principal, Long testID) throws Base64DecodingException, SQLException {
+        return testService.getQuestionsStudent(principal.getName(), testID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getAnsweredTests", method = RequestMethod.GET)
+    public Set<Integer> getAnsweredTests(Principal principal) {
+        return testService.getAnsweredTests(principal.getName());
     }
 
     /**
