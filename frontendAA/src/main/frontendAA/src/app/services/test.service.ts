@@ -102,7 +102,7 @@ export class TestService {
    */
   getByTestID(testID): Observable<Tests> {
 
-    return this.http.get<Tests>(this.app.url + "/tests/getByTestIDTutorView?testID=" + testID, {headers: this.app.headers})
+    return this.http.get<Tests>(this.app.url + "/tests/getByTestID?testID=" + testID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Test fetched from server.'))
       );
@@ -124,9 +124,9 @@ export class TestService {
    *
    * @param testID
    */
-  getQuestionsStudent(testID): Observable<QuestionAndBase64[]> {
+  getQuestionsStudent(testID): Observable<QuestionAndAnswer[]> {
 
-    return this.http.get<QuestionAndBase64[]>(this.app.url + "/tests/getQuestionsStudent?testID=" + testID, {headers: this.app.headers})
+    return this.http.get<QuestionAndAnswer[]>(this.app.url + "/tests/getQuestionsStudent?testID=" + testID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Questions fetched from server.'))
       );
@@ -176,17 +176,17 @@ export class TestService {
   }
 
 
-  removeAlternative(alternative: Alternative): Observable<any> {
-    return this.http.delete<any>(this.app.url + "/tests/removeAlternative?alternativeID=" + alternative.alternativeID, {headers: this.app.headers})
+  removeAlternative(alternativeID): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/removeAlternative?alternativeID=" + alternativeID, {headers: this.app.headers})
       .pipe(
-        tap(_ => console.log(`Alternative id=${alternative.alternativeID} removed.`))
+        tap(_ => console.log(`Alternative id=${alternativeID} removed.`))
       );
   }
 
-  removeCorrectPoint(correctPoint: CorrectPoint): Observable<any> {
-    return this.http.delete<any>(this.app.url + "/tests/removeCorrectPoint?correctPointID=" + correctPoint.correctPointID, {headers: this.app.headers})
+  removeCorrectPoint(correctPointID): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/removeCorrectPoint?correctPointID=" + correctPointID, {headers: this.app.headers})
       .pipe(
-        tap(_ => console.log(`CorrectPoint id=${correctPoint.correctPointID} removed.`))
+        tap(_ => console.log(`CorrectPoint id=${correctPointID} removed.`))
       );
   }
 

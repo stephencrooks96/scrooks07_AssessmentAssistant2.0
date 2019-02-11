@@ -51,7 +51,7 @@ public class TestQuestionRepoUnitTests {
 		//this.questionFigure = "questionFigure";
 		this.maxScore = 100;
 		questionObj = new Question(QUESTION_TYPE_ID_IN_DB, questionContent, questionFigure, maxScore,
-				USER_ID_IN_DB);
+				USER_ID_IN_DB, 0);
 	}
 
 	@Test

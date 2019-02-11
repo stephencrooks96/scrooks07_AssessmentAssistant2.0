@@ -1,6 +1,15 @@
 <div id="logoutButton">
 		<span *ngIf="username">Logged in as {{username}} </span><button
-  class="secondary" (click)="logout()">logout</button>
+  class="btn btn-dark btn-sm" (click)="logout()">logout</button>
+</div>
+
+<div class="col">
+  <div ngbDropdown class="d-inline-block" id="dropdownMenu">
+    <button class="btn btn-dark" id="dropdown" ngbDropdownToggle>Options</button>
+    <div ngbDropdownMenu aria-labelledby="dropdown">
+      <button class="dropdown-item" routerLink="/changePassword">Change Password</button>
+    </div>
+  </div>
 </div>
 <a routerLink="/myModules"><img id="logo" src="../../assets/images/logo.png" alt="AssessmentAssistantLogo" placement="bottom" ngbTooltip="Back to home..."/></a>
 

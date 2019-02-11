@@ -11,7 +11,7 @@ import {
   User
 } from "../modelObjs/objects.model";
 import {ActivatedRoute, Router} from "@angular/router";
-import {interval, Subscription} from "rxjs";
+import {interval, Observable, Subscription} from "rxjs";
 import {TestService} from "../services/test.service";
 
 
@@ -38,7 +38,7 @@ export class ModuleHomeComponent implements OnInit {
   marking: TestMarking[];
   testsForReview: TestMarking[];
   activeResults: TestAndGrade[];
-  moduleAssoc: number;
+  moduleAssoc: Observable<number>;
   activeTestCheck = true;
   activeResultCheck = false;
   addTestCheck = false;
@@ -103,9 +103,7 @@ export class ModuleHomeComponent implements OnInit {
   }
 
   getModuleAssociation(moduleID) {
-
-    return this.modServ.getModuleAssociation(moduleID)
-      .subscribe(moduleAssoc => this.moduleAssoc = moduleAssoc);
+    this.moduleAssoc = this.modServ.getModuleAssociation(moduleID);
   }
 
   getActiveTests(moduleID) {

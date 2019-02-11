@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -34,7 +35,8 @@ public class TestPasswordResetEncrypt {
 
 	@Test
 	public void testEncrypt() {
-		assertThat(encodedPassword.matches(PasswordEncrypt.encrypt(passwordToEncode)));
+		BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+		assertTrue(bcrypt.matches(passwordToEncode, encodedPassword));
 	}
 
 }

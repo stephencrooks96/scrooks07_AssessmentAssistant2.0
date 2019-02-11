@@ -22,8 +22,8 @@ public class QuestionRepo {
 
     private static final Logger log = LogManager.getLogger(QuestionRepo.class);
 
-    private final String insertSQL = "INSERT INTO Question (questionType, questionContent, questionFigure, maxScore, creatorID) values (:questionType, :questionContent, :questionFigure, :maxScore, :creatorID)";
-    private final String updateSQL = "UPDATE Question SET questionType=:questionType, questionContent=:questionContent, questionFigure=:questionFigure, maxScore=:maxScore, creatorID=:creatorID WHERE questionID=:questionID";
+    private final String insertSQL = "INSERT INTO Question (questionType, questionContent, questionFigure, maxScore, creatorID, allThatApply) values (:questionType, :questionContent, :questionFigure, :maxScore, :creatorID, :allThatApply)";
+    private final String updateSQL = "UPDATE Question SET questionType=:questionType, questionContent=:questionContent, questionFigure=:questionFigure, maxScore=:maxScore, creatorID=:creatorID, allThatApply=:allThatApply WHERE questionID=:questionID";
     private final String selectSQL = "SELECT * FROM Question WHERE ";
 
     @Autowired

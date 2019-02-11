@@ -30,7 +30,7 @@
             Tests</a>
         </li>
 
-        <li *ngIf="'student' == moduleAssoc" class="nav-item">
+        <li *ngIf="STUDENT == (moduleAssoc | async)" class="nav-item">
           <a (click)="activeResultCheck = true;
              activeTestCheck = false;
              addTestCheck = false;
@@ -42,7 +42,7 @@
              class="nav-link" href="#">Active
             Results</a>
         </li>
-        <li *ngIf="moduleAssoc == STUDENT|| moduleAssoc == TUTOR" class="nav-item">
+        <li *ngIf="(moduleAssoc | async) == STUDENT || (moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeResultCheck = false;
              activeTestCheck = false;
              performanceCheck = true;
@@ -53,7 +53,7 @@
              reviewMarkingCheck = false"
              class="nav-link" href="#">Performance</a>
         </li>
-        <li *ngIf="moduleAssoc == TUTOR" class="nav-item">
+        <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
              addTestCheck = true;
@@ -64,7 +64,7 @@
              reviewMarkingCheck = false"
              class="nav-link" href="#">Add Test</a>
         </li>
-        <li *ngIf="moduleAssoc == TUTOR" class="nav-item">
+        <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
              addTestCheck = false;
@@ -76,7 +76,7 @@
              class="nav-link" href="#">Scheduled
             Tests</a>
         </li>
-        <li *ngIf="moduleAssoc != STUDENT" class="nav-item">
+        <li *ngIf="(moduleAssoc | async) != STUDENT" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
              addTestCheck = false;
@@ -87,7 +87,7 @@
              reviewMarkingCheck = false"
              class="nav-link" href="#">Marking</a>
         </li>
-        <li *ngIf="moduleAssoc == TUTOR" class="nav-item">
+        <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
              addTestCheck = false;
@@ -99,7 +99,7 @@
              class="nav-link" href="#">Test
             Drafts</a>
         </li>
-        <li *ngIf="moduleAssoc == TUTOR" class="nav-item">
+        <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
              performanceCheck = false;
@@ -127,8 +127,8 @@
               <th scope="col">#</th>
               <th>Title</th>
               <th>Deadline</th>
-              <th *ngIf="moduleAssoc == STUDENT">Take</th>
-              <th *ngIf="moduleAssoc != STUDENT">View</th>
+              <th *ngIf="(moduleAssoc | async) == STUDENT">Take</th>
+              <th *ngIf="(moduleAssoc | async) != STUDENT">View</th>
             </tr>
             </thead>
             <tbody>
@@ -138,7 +138,7 @@
               <td data-label="Deadline:">{{activeTest.endDateTime | date:"dd-MM-yyyy 'at' HH:mm"}}</td>
 
               <td *ngIf="answeredSet && answeredSet.includes(activeTest.testID)">SUBMITTED</td>
-              <td data-label="Take:" *ngIf="!answeredSet.includes(activeTest.testID)"><a [routerLink]="['/takeTest', activeTest.testID]" style="color: white;"><i
+              <td data-label="Take:" *ngIf="answeredSet && !answeredSet.includes(activeTest.testID)"><a [routerLink]="['/takeTest', activeTest.testID]" style="color: white;"><i
                 class="fas fa-stopwatch fa-lg"></i></a></td>
             </tr>
             </tbody>
@@ -156,7 +156,7 @@
 
 
     <div *ngIf="activeResultCheck">
-      <div *ngIf="moduleAssoc == STUDENT" class="modHomeInner" id="activeResults">
+      <div *ngIf="(moduleAssoc | async) == STUDENT" class="modHomeInner" id="activeResults">
         <div *ngIf="activeResults && activeResults.length > 0">
           <div class="title">
             <h5 class="display-5">Active Results</h5>
@@ -192,7 +192,7 @@
     </div>
 
     <div *ngIf="performanceCheck">
-      <div *ngIf="moduleAssoc == STUDENT || moduleAssoc == TUTOR" class="modHomeInner" id="performance">
+      <div *ngIf="(moduleAssoc | async) == STUDENT || (moduleAssoc | async) == TUTOR" class="modHomeInner" id="performance">
         <div *ngIf="performanceList && performanceList.length > 0">
           <div class="title">
             <h5 class="display-5">Performance</h5>
@@ -237,12 +237,12 @@
     </div>
 
     <div *ngIf="addTestCheck">
-      <app-add-test *ngIf="moduleAssoc == TUTOR"></app-add-test>
+      <app-add-test *ngIf="(moduleAssoc | async) == TUTOR"></app-add-test>
     </div>
 
 
     <div *ngIf="scheduledTestCheck">
-      <div *ngIf="moduleAssoc == TUTOR" class="modHomeInner" id="scheduledTests">
+      <div *ngIf="(moduleAssoc | async) == TUTOR" class="modHomeInner" id="scheduledTests">
         <div *ngIf="scheduledTests.length > 0">
           <div class="title">
             <h5 class="display-5">Scheduled Tests</h5>
@@ -280,7 +280,7 @@
 
 
     <div *ngIf="markingCheck">
-      <div *ngIf="moduleAssoc != STUDENT" class="modHomeInner" id="marking">
+      <div *ngIf="(moduleAssoc | async) != STUDENT" class="modHomeInner" id="marking">
         <div *ngIf="marking.length > 0">
           <div class="title">
             <h5 class="display-5">Marking</h5>
@@ -304,7 +304,7 @@
                 *ngIf="testMarking == marking[0] ? show == testMarking.test.testID || show == 0 : show == testMarking.test.testID"
                 class="markingObj" id="testMarking.test.testID">
                 <h2>{{testMarking.test.testTitle}}</h2><span>answers marked</span>
-                <div *ngIf="moduleAssoc == TUTOR">
+                <div *ngIf="(moduleAssoc | async) == TUTOR">
 
                   <div class="row">
                     <div class="col-sm-6">
@@ -340,7 +340,7 @@
                   <button [routerLink]="['/mark', testMarking.test.testID]" class="btn btn-warning" type="button">Mark
                     scripts
                   </button>
-                  <button *ngIf="moduleAssoc == TUTOR" [routerLink]="['/delegateMarking', testMarking.test.testID]"
+                  <button *ngIf="(moduleAssoc | async) == TUTOR" [routerLink]="['/delegateMarking', testMarking.test.testID]"
                           class="btn btn-warning"
                           type="button">View progress and assign scripts
                   </button>
@@ -359,7 +359,7 @@
     </div>
 
     <div *ngIf="testDraftCheck">
-      <div *ngIf="moduleAssoc == TUTOR" class="modHomeInner" id="testDrafts">
+      <div *ngIf="(moduleAssoc | async) == TUTOR" class="modHomeInner" id="testDrafts">
         <div *ngIf="testDrafts.length > 0">
           <div class="title">
             <h5 class="display-5">Test Drafts</h5>
@@ -393,7 +393,7 @@
     </div>
 
     <div *ngIf="reviewMarkingCheck">
-      <div *ngIf="moduleAssoc == TUTOR" class="modHomeInner" id="reviewMarking">
+      <div *ngIf="(moduleAssoc | async) == TUTOR" class="modHomeInner" id="reviewMarking">
         <div *ngIf="testsForReview.length > 0">
           <div class="title">
             <h5 class="display-5">Review Marking</h5>

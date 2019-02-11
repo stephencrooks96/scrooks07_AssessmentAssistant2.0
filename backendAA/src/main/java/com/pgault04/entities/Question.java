@@ -25,6 +25,8 @@ public class Question {
 	
 	private Long creatorID;
 
+	private Integer allThatApply;
+
 	/**
 	 * Default constructor
 	 */
@@ -36,14 +38,16 @@ public class Question {
 	 * @param questionContent the content of the question
 	 * @param questionFigure an image to accompany the question
 	 * @param maxScore the marks for this question
+	 * @param allowedOptions the number of entries allowed
 	 */
 	public Question(Long questionType, String questionContent, Blob questionFigure, Integer maxScore,
-			Long creatorID) {
+			Long creatorID, Integer allthatApply) {
 		this.setQuestionType(questionType);
 		this.setQuestionContent(questionContent);
 		this.setQuestionFigure(questionFigure);
 		this.setMaxScore(maxScore);
 		this.setCreatorID(creatorID);
+		this.setAllThatApply(allthatApply);
 	}
 
 	/**
@@ -136,6 +140,16 @@ public class Question {
 	}
 
 	/**
+	 * @return the allowed options
+	 */
+	public Integer getAllThatApply() { return allThatApply; }
+
+	/**
+	 * @param allThatApply the number of allowed options
+	 */
+	public void setAllThatApply(Integer allThatApply) { this.allThatApply = allThatApply; }
+
+	/**
 	 * @return the object as a string
 	 */
 	@Override
@@ -144,9 +158,10 @@ public class Question {
 		sb.append("questionType=").append(questionType);
 		sb.append(", questionID=").append(questionID);
 		sb.append(", questionContent='").append(questionContent).append('\'');
-		sb.append(", questionFigure='").append(questionFigure).append('\'');
+		sb.append(", questionFigure=").append(questionFigure);
 		sb.append(", maxScore=").append(maxScore);
 		sb.append(", creatorID=").append(creatorID);
+		sb.append(", allThatApply=").append(allThatApply);
 		sb.append('}');
 		return sb.toString();
 	}

@@ -30,7 +30,7 @@
         <table class="table-striped">
           <tr *ngFor="let question of questions; let i = index">
             <td>{{i + 1}}</td>
-            <td style="padding-left: 10px;"><span *ngIf="question.question.questionType == 3">Insert the missing word(s):<br/></span>{{question.question.questionContent}}
+            <td style="padding-left: 10px;"><span *ngIf="question.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{question.question.question.questionContent}}
             </td>
             <td>
               <button type="button" class="btn btn-dark"
@@ -47,7 +47,8 @@
       <form #takeTestForm="ngForm" id='takeTestForm'
             name='takeTestForm' role="form"
             style="width: 100%;">
-        <div *ngIf="timeDifference == 0"><span *ngIf="!submitted">{{submitTest(takeTestForm)}}</span>{{backHome()}}</div>
+        <div *ngIf="timeDifference == 0"><span *ngIf="!submitted">{{submitTest(takeTestForm)}}</span>{{backHome()}}
+        </div>
 
         <!-- Template from ngBootstrap -->
         <ng-template #AreYouSureSubmit let-modal>
@@ -63,7 +64,8 @@
             <h6 *ngIf="tooShort != originalShortMessage">{{tooShort}}</h6>
           </div>
           <div class="modal-footer">
-            <button (click)="modal.close(); submitTest(takeTestForm)" class="btn btn-outline-dark" type="submit">Yes, I'm
+            <button (click)="modal.close(); submitTest(takeTestForm)" class="btn btn-outline-dark" type="submit">Yes,
+              I'm
               sure.
             </button>
           </div>
@@ -73,42 +75,57 @@
         <div class="pre-scrollable">
           <div class="panel panel-default default">
             <div class="panel-body">
-              <div *ngFor="let questionAnswer of questionAnswers; let i = index">
+              <div *ngFor="let question of questions; let i = index">
                 <div *ngIf="questionDetail == (i + 1)">
                   <div class="content"><img
-                    *ngIf="questionAnswer.question.base64 != null && questionAnswer.question.base64.length > 0"
+                    *ngIf="question.question.base64 != null && question.question.base64.length > 0"
                     style="max-width: 80%; max-height: 200px; margin-left: auto; margin-right: auto;"
-                    [src]="readyImage(questionAnswer.question.base64)" alt="QuestionFigure"></div>
+                    [src]="readyImage(question.question.base64)" alt="QuestionFigure"></div>
                   <div class="form-row">
-                    <h4 *ngIf="questionAnswer.question.question.questionType == 3">Insert the missing word(s):</h4>
+                    <h4 *ngIf="question.question.question.questionType == 3">Insert the missing word(s):</h4>
                     <div class="form-group col-sm-9"><h4>{{i + 1}}
-                      . {{questionAnswer.question.question.questionContent}}</h4></div>
+                      . {{question.question.question.questionContent}}</h4></div>
                     <div class="form-group col-sm-3">
-                      <h3>({{questionAnswer.question.question.maxScore}} marks)</h3>
+                      <h3>({{question.question.question.maxScore}} marks)</h3>
                     </div>
                   </div>
-                  <div *ngIf="questionAnswer.question.question.questionType == 3">
-                    <div class="form-row" *ngFor="let input of questionAnswer.question.inputs; let j = index;">
+                  <div *ngIf="question.question.question.questionType == 3">
+                    <div class="form-row" *ngFor="let input of question.inputs; let j = index;">
                       <div class="form-group col-sm-1">
                         <label for="input_({{i}}, {{j}})"><h3>{{j + 1}}</h3></label>
                       </div>
                       <div class="form-group col-sm-6">
-                        <input [(ngModel)]="input.value" class="form-control" type="text" id="input_({{i}}, {{j}})" name="input_({{i}}, {{j}})"/>
+                        <input [(ngModel)]="input.inputValue" class="form-control" type="text" id="input_({{i}}, {{j}})"
+                               name="input_({{i}}, {{j}})"/>
                       </div>
                     </div>
                   </div>
 
-                  <div *ngIf="questionAnswer.question.question.questionType == 2">
-                    <div *ngFor="let option of questionAnswer.question.options;" class="form-check">
-                      <input [(ngModel)]="questionAnswer.answer.content" class="form-check-input" type="radio" name="option_({{i}})" id="option_({{i}})" value="{{option.optionContent}}">
-                      <label style="font-size: large;" class="form-check-label" for="option_({{i}})">
-                        {{option.optionContent}}
-                      </label>
+                  <div *ngIf="question.question.question.questionType == 2">
+
+                    <p *ngIf="question.question.question.allThatApply == 0">Select one...</p>
+                    <p *ngIf="question.question.question.allThatApply == 1">Select all that apply...</p>
+                    <div *ngFor="let option of question.question.options; let j = index" class="form-check">
+                      <div *ngIf="question.question.question.allThatApply == 0">
+                        <input [checked]="question.optionEntries[0].optionID == option.optionID" (click)="question.optionEntries[0].optionID == option.optionID ? question.optionEntries[j].optionID = 0 : question.optionEntries[0].optionID = option.optionID;" class="form-check-input" type="radio"
+                               name="option_{{i}}" id="option_{{i}}">
+                        <label style="font-size: large;" class="form-check-label" for="option_{{i}}">
+                          {{option.optionContent}}
+                        </label>
+                      </div>
+
+                      <div *ngIf="question.question.question.allThatApply == 1">
+                        <input *ngIf="question.optionEntries[j]" [checked]="question.optionEntries[j].optionID == option.optionID" class="form-check-input" type="radio"
+                               name="option_{{i}}_{{j}}" id="option_{{i}}_{{j}}" (click)="question.optionEntries[j].optionID == option.optionID ? question.optionEntries[j].optionID = 0 : question.optionEntries[j].optionID = option.optionID;">
+                        <label style="font-size: large;" class="form-check-label" for="option_{{i}}_{{j}}">
+                          {{option.optionContent}}
+                        </label>
+                      </div>
                     </div>
                   </div>
-                  <div *ngIf="questionAnswer.question.question.questionType == 1">
+                  <div *ngIf="question.question.question.questionType == 1">
                     <label for="answerContent_{{i}}">Answer:</label>
-                    <textarea [(ngModel)]="questionAnswer.answer.content" class="form-control"
+                    <textarea [(ngModel)]="question.answer.content" class="form-control"
                               id="answerContent_{{i}}"
                               name="answerContent_{{i}}" rows="8"
                               style="display: block;

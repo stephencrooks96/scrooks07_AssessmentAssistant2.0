@@ -103,7 +103,7 @@ export class QuestionDetailComponent implements OnInit {
   }
 
   removeCorrectPoint(i) {
-    this.testServ.removeCorrectPoint(this.questionDetail.correctPoints[i] as CorrectPoint)
+    this.testServ.removeCorrectPoint(this.questionDetail.correctPoints[i].correctPointID)
       .subscribe(success =>{});
 
     this.questionDetail.correctPoints.splice(i, 1);
@@ -121,7 +121,7 @@ export class QuestionDetailComponent implements OnInit {
   }
 
   removeAlternative(i, j) {
-    this.testServ.removeAlternative(this.questionDetail.correctPoints[i].alternatives[j] as Alternative)
+    this.testServ.removeAlternative(this.questionDetail.correctPoints[i].alternatives[j].alternativeID)
       .subscribe(success =>{ });
     this.questionDetail.correctPoints[i].alternatives.splice(j, 1);
     return false;

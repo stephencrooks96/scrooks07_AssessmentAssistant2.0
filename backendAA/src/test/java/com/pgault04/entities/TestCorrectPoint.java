@@ -49,7 +49,7 @@ public class TestCorrectPoint {
     @Test
     public void testCorrectPointConstructorWithArgs() {
         correctPointObj = null;
-        correctPointObj = new CorrectPoint(questionID, phrase, marksWorth, feedback, alts);
+        correctPointObj = new CorrectPoint(questionID, phrase, marksWorth, feedback, alts, 0);
         assertNotNull(correctPointObj);
         assertEquals(questionID, correctPointObj.getQuestionID());
         assertEquals(phrase, correctPointObj.getPhrase());
@@ -96,7 +96,7 @@ public class TestCorrectPoint {
 
     @Test
     public void testToString() {
-        correctPointObj = new CorrectPoint(questionID, phrase, marksWorth, feedback, alts);
+        correctPointObj = new CorrectPoint(questionID, phrase, marksWorth, feedback, alts, 0);
         correctPointObj.setCorrectPointID(correctPointID);
         assertEquals("CorrectPoint{correctPointID=1, questionID=2, phrase='phrase', marksWorth=0.0, feedback='feedback', alternatives=[]}", correctPointObj.toString());
     }

@@ -47,7 +47,8 @@
         and ensure that the phrase in the mark allocation matches the spelling of the insert exactly.
         <br/>If you need to put anything else inside the double square brackets [[]], you still can, just don't add a
         mark allocation for it.
-      <br/>Each question of this type will have "Insert the missing word(s):" prepended to it so you don't need to include it yourself.</p>
+        <br/>Each question of this type will have "Insert the missing word(s):" prepended to it so you don't need to
+        include it yourself.</p>
 
     </div>
     <div class="form-row">
@@ -68,10 +69,23 @@
       <legend>Options
         <button (click)="addOption()" type="button"
                 style="color: #28a745; background-color: transparent; border: none;"><i
-          class="fas fa-plus"></i> </button>
+          class="fas fa-plus"></i></button>
       </legend>
 
       <div *ngIf="questionInsert.options.length > 0">
+        <div class="form-row">
+
+          <div class="form-group col-md-4">
+            <label for="allThatApply">Settings </label>
+
+            <select #allThatApply="ngModel" [(ngModel)]="questionInsert.question.allThatApply" class="form-control"
+                    id="allThatApply"
+                    name="allThatApply">
+              <option [value]="0">Select one.</option>
+              <option [value]="1">All the apply.</option>
+            </select>
+          </div>
+        </div>
         <div class="form-row">
           <div class="form-group col-md-5">
             <label for="option{{[i]}}">Option</label>
@@ -110,7 +124,8 @@
 
           <div class="form-group col-md-1">
             <button type="button" (click)="removeOption([i])"
-                    style="color: #dc3545; background-color: transparent; border: none;"> <i class="fas fa-times"></i></button>
+                    style="color: #dc3545; background-color: transparent; border: none;"><i class="fas fa-times"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -125,16 +140,17 @@
           ngbTooltip="Add some information on what you are looking for in the answer. The more you add the more the system can help you mark."
           placement="bottom">
           Mark Scheme</span>
-         <button (click)="addCorrectPoint()" type="button"
-                 style="color: #28a745; background-color: transparent; border: none;"><i
-           class="fas fa-plus"></i> </button>
+        <button (click)="addCorrectPoint()" type="button"
+                style="color: #28a745; background-color: transparent; border: none;"><i
+          class="fas fa-plus"></i></button>
 
       </legend>
 
       <div *ngIf="questionInsert.correctPoints.length > 0">
         <fieldset *ngFor="let correctPoint of questionInsert.correctPoints; let i = index">
           <legend>Mark Allocation <span><button type="button" (click)="removeCorrectPoint([i])"
-                                          style="color: #dc3545; background-color: transparent; border: none;"> <i class="fas fa-times"></i></button></span></legend>
+                                                style="color: #dc3545; background-color: transparent; border: none;"> <i
+            class="fas fa-times"></i></button></span></legend>
           <div class="form-row">
             <div class="form-group col-md-6">
               <label for="phrase{{[i]}}">Phrase <span *ngIf="phraseError == i"
@@ -167,22 +183,23 @@
             <div class="form-group col-md-6">
               <label>Alternative Phrases
                 <button (click)="addAlternative([i])" type="button"
-                          style="color: #28a745; background-color: transparent; border: none;"><i
-                    class="fas fa-plus"></i> </button>
+                        style="color: #28a745; background-color: transparent; border: none;"><i
+                  class="fas fa-plus"></i></button>
 
-                </label><br/>
+              </label><br/>
               <span *ngIf="alternativePhraseError" style="font-size: x-small; color: #dc3545;">Must not exceed 65,535 characters.</span>
               <div *ngFor="let alt of correctPoint.alternatives; let j = index">
                 <div class="row">
                   <div class="col-sm-11" style="padding-right: 0;">
-              <input [(ngModel)]="alt.alternativePhrase"
-                     class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
-                     type="text">
+                    <input [(ngModel)]="alt.alternativePhrase"
+                           class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
+                           type="text">
                   </div>
                   <div class="col-sm-1" style="padding-left: 0;">
                     <button type="button"
                             (click)="removeAlternative([i], [j])"
-                            style="color: #dc3545; background-color: transparent; border: none;"> <i class="fas fa-times"></i></button>
+                            style="color: #dc3545; background-color: transparent; border: none;"><i
+                      class="fas fa-times"></i></button>
                   </div>
                 </div>
               </div>

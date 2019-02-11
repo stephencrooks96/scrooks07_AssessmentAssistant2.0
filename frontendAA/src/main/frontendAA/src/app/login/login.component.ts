@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
   login() {
     this.auth.loginServ(this.user).subscribe(data => {
       this.router.navigate(['/myModules']);
+      location.reload();
     }, error => {
       this.errorMsg="error : Username or password is incorrect";
     })

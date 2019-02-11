@@ -72,6 +72,8 @@
         </div>
 
         <div *ngIf="questionDetail.question.questionType == 2">
+          <p *ngIf="questionDetail.question.allThatApply == 1">Select all that apply...</p>
+          <p *ngIf="questionDetail.question.allThatApply == 0">Select one...</p>
           <table class="table table-dark">
             <thead class="thead-dark">
             <tr>
@@ -194,6 +196,17 @@
                 class="fas fa-plus"></i></button>
 
             </legend>
+
+            <div class="form-row">
+              <label for="allThatApply">Settings </label>
+
+              <select #allThatApply="ngModel" [(ngModel)]="questionDetail.question.allThatApply" class="form-control"
+                      id="allThatApply"
+                      name="allThatApply">
+                <option [value]="0">Select one.</option>
+                <option [value]="1">All the apply.</option>
+              </select>
+            </div>
 
             <div *ngIf="questionDetail.options.length > 0">
               <div class="form-row">

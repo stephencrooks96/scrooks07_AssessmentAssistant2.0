@@ -43,16 +43,7 @@ export class AddQuestionComponent implements OnInit {
   }
 
   onTypeClick(questionType: any) {
-    if (questionType == 1) {
-      // Mark Allocation
-      this.questionTypeChecker = 1;
-    } else if (questionType == 2) {
-      // Options
-      this.questionTypeChecker = 2;
-    } else if (questionType == 3) {
-      // Insert the word
-      this.questionTypeChecker = 3;
-    }
+    this.questionTypeChecker = questionType;
   }
 
   async imageAdded(event) {

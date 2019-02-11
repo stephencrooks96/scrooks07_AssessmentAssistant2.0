@@ -78,14 +78,14 @@ public class TestController {
      * @return the test
      */
     @CrossOrigin
-    @RequestMapping(value = "/getByTestIDTutorView", method = RequestMethod.GET)
+    @RequestMapping(value = "/getByTestID", method = RequestMethod.GET)
     public Tests getByTestIDTutorView(Principal principal, Long testID) {
-        return testService.getByTestIDTutorView(principal.getName(), testID);
+        return testService.getByTestID(principal.getName(), testID);
     }
 
     @CrossOrigin
     @RequestMapping(value = "/getQuestionsStudent", method = RequestMethod.GET)
-    public List<QuestionAndBase64> getQuestionsStudent(Principal principal, Long testID) throws Base64DecodingException, SQLException {
+    public List<QuestionAndAnswer> getQuestionsStudent(Principal principal, Long testID) throws Base64DecodingException, SQLException {
         return testService.getQuestionsStudent(principal.getName(), testID);
     }
 

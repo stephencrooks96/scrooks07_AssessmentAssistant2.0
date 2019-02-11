@@ -12,10 +12,12 @@ import {DelegateMarkingComponent} from "./delegate-marking/delegate-marking.comp
 import {EditTestComponent} from "./edit-test/edit-test.component";
 import {ReviewMarkingComponent} from "./review-marking/review-marking.component";
 import {TakeTestComponent} from "./take-test/take-test.component";
+import {ChangePasswordComponent} from "./change-password/change-password.component";
 
 const routes: Routes = [
   {path: 'myModules', component: MyModulesComponent, canActivate: [PermissionsPermission]},
   {path: 'moduleHome/:moduleID', component: ModuleHomeComponent, canActivate: [PermissionsPermission]},
+  {path: 'changePassword', component: ChangePasswordComponent, canActivate: [PermissionsPermission]},
   {path: 'login', component: LoginComponent},
   {path: 'testFeedback/:testID', component: ViewFeedbackComponent, canActivate: [PermissionsPermission]},
   {path: 'viewProgress/:testID', component: ViewProgressComponent, canActivate: [PermissionsPermission]},

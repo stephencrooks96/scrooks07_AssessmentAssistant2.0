@@ -33,6 +33,7 @@ public class ModuleService {
     private static final int SCHEDULED = 1;
     private static final int READY_FOR_REVIEW = 0;
     private static final int PUBLISH_TRUE = 1;
+    private static final int MARKER_APPROVED = 1;
 
     @Autowired
     TestsRepo testsRepo;
@@ -168,14 +169,14 @@ public class ModuleService {
                             if (AssociationType.TUTOR == associationType) {
                                 if (a.getMarkerID().equals(user.getUserID())) {
                                     totalForYou++;
-                                    if (a.getScore() == null) {
+                                    if (a.getMarkerApproved() != null && a.getMarkerApproved() != MARKER_APPROVED) {
                                         toBeMarkedByYou++;
                                     } else {
                                         marked++;
                                     }
                                 } else {
                                     totalForTAs++;
-                                    if (a.getScore() == null) {
+                                    if (a.getMarkerApproved() != null && a.getMarkerApproved() != MARKER_APPROVED) {
                                         toBeMarkedByTAs++;
                                     } else {
                                         marked++;
@@ -184,7 +185,7 @@ public class ModuleService {
                             } else {
                                 if (a.getMarkerID().equals(user.getUserID())) {
                                     totalForYou++;
-                                    if (a.getScore() == null) {
+                                    if (a.getMarkerApproved() != null && a.getMarkerApproved() != MARKER_APPROVED) {
                                         toBeMarkedByYou++;
                                     } else {
                                         marked++;
@@ -302,7 +303,7 @@ public class ModuleService {
                         int answersUnmarked = 0;
                         List<Answer> answers = answerRepo.selectByTestID(t.getTestID());
                         for (Answer a : answers) {
-                            if (a.getScore() == null) {
+                            if (a.getMarkerApproved() != null && a.getMarkerApproved() == 0) {
                                 answersUnmarked++;
                             }
                         }

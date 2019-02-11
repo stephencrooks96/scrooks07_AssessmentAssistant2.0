@@ -30,6 +30,7 @@ import { OldQuestionComponent } from './old-question/old-question.component';
 import {Ng2FileSizeModule} from "ng2-file-size";
 import { DelegateDetailComponent } from './delegate-detail/delegate-detail.component';
 import {ChartsModule} from "ng2-charts";
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 
 @NgModule({
@@ -54,7 +55,8 @@ import {ChartsModule} from "ng2-charts";
     QuestionDetailComponent,
     AddQuestionComponent,
     OldQuestionComponent,
-    DelegateDetailComponent
+    DelegateDetailComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

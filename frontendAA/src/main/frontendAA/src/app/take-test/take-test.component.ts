@@ -23,8 +23,7 @@ export class TakeTestComponent implements OnInit {
 
   testID: number;
   test = new Tests();
-  questions: QuestionAndBase64[];
-  questionAnswers: QuestionAndAnswer[];
+  questions: QuestionAndAnswer[];
   questionDetail: number = 1;
   timeUp = false;
   timing = false;
@@ -91,16 +90,7 @@ export class TakeTestComponent implements OnInit {
     this.router.navigate(['/moduleHome', this.test.moduleID]);
   }
 
-  populateQuestionAnswers() {
-    this.questionAnswers = [];
-    for (let q = 0; q < this.questions.length; q++) {
 
-      let questionAnswer = new QuestionAndAnswer();
-      questionAnswer.question = this.questions[q];
-      questionAnswer.answer = new Answer();
-      this.questionAnswers.push(questionAnswer);
-    }
-  }
 
   readyImage(base64): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + base64);
@@ -117,7 +107,6 @@ export class TakeTestComponent implements OnInit {
   getQuestions(testID) {
     return this.testServ.getQuestionsStudent(testID).subscribe(questions => {
       this.questions = questions;
-      this.populateQuestionAnswers();
     });
   }
 
@@ -130,33 +119,49 @@ export class TakeTestComponent implements OnInit {
   }
 
   validateTest() {
-    for (let q = 0; q < this.questionAnswers.length; q++) {
-      this.questionAnswers[q].answer.questionID = this.questionAnswers[q].question.question.questionID;
-      this.questionAnswers[q].answer.testID = this.testID;
+    for (let q = 0; q < this.questions.length; q++) {
+      this.questions[q].answer.questionID = this.questions[q].question.question.questionID;
+      this.questions[q].answer.testID = this.testID;
 
-      if (!this.questionAnswers[q].answer.content || this.questionAnswers[q].answer.content.trim().length <= 0) {
-        if (this.questionAnswers[q].question.question.questionType != 3) {
+      if (this.questions[q].question.question.questionType == 1) {
+        if (this.questions[q].answer.content.trim().length < 1) {
           this.tooShort += (q + 1);
-          if (q != this.questionAnswers.length - 1) {
+          if (q != this.questions.length - 1) {
             this.tooShort += ",";
           }
         }
+      } else if (this.questions[q].question.question.questionType == 3) {
+        for (let i = 0; i < this.questions[q].inputs.length; i++) {
+          if (this.questions[q].inputs[i].inputValue.trim().length < 1) {
+            this.tooLong += (q + 1);
+            if (q != this.questions.length - 1) {
+              this.tooLong += ",";
+            }
+            break;
+          }
+        }
+
       }
 
-      if (this.questionAnswers[q].answer.content.length > 65535) {
-        this.tooLong += (q + 1);
-        if (q != this.questionAnswers.length - 1) {
-          this.tooLong += ",";
-        }
-      }
 
-      if (this.questionAnswers[q].question.question.questionType == 3) {
-        this.questionAnswers[q].answer.content = this.questionAnswers[q].question.question.questionContent;
-        for (let i = 0; i < this.questionAnswers[q].question.inputs.length; i++) {
-          let j = i + 1;
-          let regex = new RegExp(j + "._____", "gi");
-          this.questionAnswers[q].answer.content = this.questionAnswers[q].answer.content.replace(regex, this.questionAnswers[q].question.inputs[i].value);
+      if (this.questions[q].question.question.questionType == 1) {
+        if (this.questions[q].answer.content.length > 65535) {
+          this.tooLong += (q + 1);
+          if (q != this.questions.length - 1) {
+            this.tooLong += ",";
+          }
         }
+      } else if (this.questions[q].question.question.questionType == 3) {
+        for (let i = 0; i < this.questions[q].inputs.length; i++) {
+          if (this.questions[q].inputs[i].inputValue.length > 65535) {
+            this.tooLong += (q + 1);
+            if (q != this.questions.length - 1) {
+              this.tooLong += ",";
+            }
+            break;
+          }
+        }
+
       }
     }
   }
@@ -164,19 +169,11 @@ export class TakeTestComponent implements OnInit {
   async submitTest(form: NgForm) {
 
 
-    for (let q = 0; q < this.questionAnswers.length; q++) {
-      this.questionAnswers[q].answer.testID = this.testID;
-      if (this.questionAnswers[q].question.question.questionType == 3) {
-        this.questionAnswers[q].answer.content = this.questionAnswers[q].question.question.questionContent;
-        for (let i = 0; i < this.questionAnswers[q].question.inputs.length; i++) {
-          let j = i + 1;
-          let regex = new RegExp(j + "._____", "gi");
-          this.questionAnswers[q].answer.content = this.questionAnswers[q].answer.content.replace(regex, this.questionAnswers[q].question.inputs[i].value);
-        }
-      }
+    for (let q = 0; q < this.questions.length; q++) {
+      this.questions[q].answer.testID = this.testID;
     }
     this.submitted = true;
-    this.testServ.submitTest(this.questionAnswers as QuestionAndAnswer[])
+    this.testServ.submitTest(this.questions as QuestionAndAnswer[])
       .subscribe(success => {
         form.reset();
         this.tooShort = this.originalShortMessage;

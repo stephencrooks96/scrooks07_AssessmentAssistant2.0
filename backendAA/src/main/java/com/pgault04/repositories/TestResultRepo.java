@@ -105,6 +105,18 @@ public class TestResultRepo {
         return tests;
     }
 
+    public TestResult selectByTestIDAndStudentID(Long testID, Long studentID) {
+        log.debug("TestResultRepo selectByTestIDAndStudentID: #{} #{}", testID, studentID);
+        String selectByTestIDSQL = selectSQL + "testID=? AND studentID=?";
+        List<TestResult> tests = tmpl.query(selectByTestIDSQL, new BeanPropertyRowMapper<>(TestResult.class), testID, studentID);
+
+        if (tests != null && tests.size() > 0) {
+            log.debug("Query for test result: #{} #{}, number of items: {}", testID, studentID, tests.size());
+            return tests.get(0);
+        }
+        return null;
+    }
+
     /**
      * Selects results by a student
      *

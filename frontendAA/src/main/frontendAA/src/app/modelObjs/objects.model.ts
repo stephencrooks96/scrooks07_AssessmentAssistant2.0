@@ -1,4 +1,15 @@
+export class ResultChartPojo {
+  labels : string[];
+  scores : number[];
+  classAverage : number;
+  colors : string[];
+}
 
+export class ChangePassword {
+  password : string;
+  newPassword : string;
+  repeatPassword : string;
+}
 
 export class User {
   userID: number;
@@ -33,6 +44,8 @@ export class Tests {
   startDateTime = new Date();
   endDateTime = new Date();
   moduleID: number=0;
+  publishGrades : number;
+  publishResults : number;
 }
 
 export class TestAndResultFE {
@@ -70,6 +83,7 @@ export class Question {
   questionFigure : Blob;
   maxScore: number;
   creatorID: number;
+  allThatApply : number;
 
 }
 
@@ -96,20 +110,39 @@ export class Answer {
 
 }
 
+export class Inputs {
+  inputValue : string="";
+  inputIndex : number;
+  answerID : number;
+}
+
+export class OptionEntries {
+  optionEntryID : number;
+  optionID : number;
+  answerID : number;
+}
+
 export class QuestionAndAnswer {
   question = new QuestionAndBase64();
   answer = new Answer();
+  inputs : Inputs[];
+  optionEntries : OptionEntries[];
 }
 
 export class QuestionAndBase64 {
   question = new Question();
   options : Option[];
-  inputs : Input[];
   base64 : string="";
 }
 
 export class Input {
   value : string="";
+}
+
+export class AnswerData {
+  questionAndAnswer = new QuestionAndAnswer();
+  student = new User();
+  correctPoints : CorrectPoint[];
 }
 
 export class TestMarking {

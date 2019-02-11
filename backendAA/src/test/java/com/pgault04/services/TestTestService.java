@@ -66,7 +66,7 @@ public class TestTestService {
     @Before
     @Transactional
     public void setUp() throws Exception {
-        question = new Question(1L, "questionContent", null/*"hello"*/, 10, USER_IN_DB);
+        question = new Question(1L, "questionContent", null/*"hello"*/, 10, USER_IN_DB, 0);
         options = new ArrayList<>();
         option = new Option(null, "optionContent", 1, "feedback");
         options.add(option);
@@ -74,7 +74,7 @@ public class TestTestService {
         alternative = new Alternative(null, "alternativePhrase");
         alternatives.add(alternative);
         correctPoints = new ArrayList<>();
-        correctPoint = new CorrectPoint(null, "phrase", 10.0, "feedback", alternatives);
+        correctPoint = new CorrectPoint(null, "phrase", 10.0, "feedback", alternatives, 0);
         correctPoints.add(correctPoint);
 
         module = new Module("module", "description", 1L, 2018);
@@ -143,10 +143,10 @@ public class TestTestService {
         testObj = testService.addTest(testObj, USERNAME_IN_DB);
 
         // Valid tutor
-        assertEquals(testObj.toString(), testService.getByTestIDTutorView(USERNAME_IN_DB, testObj.getTestID()).toString());
+        assertEquals(testObj.toString(), testService.getByTestID(USERNAME_IN_DB, testObj.getTestID()).toString());
 
         // Invalid tutor
-        assertNull(testService.getByTestIDTutorView(OTHER_USERNAME_IN_DB, testObj.getTestID()));
+        assertNull(testService.getByTestID(OTHER_USERNAME_IN_DB, testObj.getTestID()));
 
 
     }

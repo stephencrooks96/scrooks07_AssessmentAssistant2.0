@@ -46,7 +46,7 @@ public class MainController {
     @CrossOrigin
     @RequestMapping("/login")
     public Principal user(Principal principal) {
-        logger.info("User logged in {}", principal.getName());
+        logger.info("User logged in {}", principal != null ? principal.getName() : "n/a");
         return principal;
     }
 
