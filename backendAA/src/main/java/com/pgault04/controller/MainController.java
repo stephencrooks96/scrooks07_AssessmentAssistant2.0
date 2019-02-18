@@ -3,8 +3,11 @@
  */
 package com.pgault04.controller;
 
+import com.pgault04.entities.User;
+import com.pgault04.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +28,9 @@ public class MainController {
      */
     private static final Logger logger = LogManager.getLogger(MainController.class);
 
+    @Autowired
+    UserService userService;
+
     /**
      * Get username method
      *
@@ -32,10 +38,9 @@ public class MainController {
      * @return the users username
      */
     @CrossOrigin
-    @RequestMapping("/getUsername")
-    public String username(Principal principal) {
-        logger.info("Returning username {}", principal.getName());
-        return "\"" + principal.getName() + "\"";
+    @RequestMapping("/getUser")
+    public User username(Principal principal) throws IllegalArgumentException {
+        return userService.getUser(principal.getName());
     }
 
     /**

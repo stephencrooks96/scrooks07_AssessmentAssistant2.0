@@ -77,7 +77,7 @@ public class TestTestService {
         correctPoint = new CorrectPoint(null, "phrase", 10.0, "feedback", alternatives, 0);
         correctPoints.add(correctPoint);
 
-        module = new Module("module", "description", 1L, 2018);
+        module = new Module("module", "description", 1L, 2018, 1);
         module = moduleRepo.insert(module);
         tests = new ArrayList<>();
         testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01T10:00:00", "2018-01-01T11:00:00", 0, 0, 0);

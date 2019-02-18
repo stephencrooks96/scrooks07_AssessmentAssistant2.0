@@ -21,6 +21,7 @@ export class DelegateMarkingComponent implements OnInit, AfterViewInit, DoCheck 
   chart;
   chartCheck = false;
   chartCount = 0;
+  counter = 0;
 
   constructor(private cdr: ChangeDetectorRef, private markServ: MarkingService, private router: Router, private route: ActivatedRoute, private testServ: TestService, private modalService: NgbModal, private sanitizer: DomSanitizer) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
@@ -79,7 +80,8 @@ export class DelegateMarkingComponent implements OnInit, AfterViewInit, DoCheck 
     return this.markServ.getMarkersData(testID)
       .subscribe(markers => {
           this.markerWithChart = markers;
-          this.markerDetail = markers.markers[0];
+          this.markerDetail = markers.markers[this.counter];
+          this.mainChartInit();
         }
       );
   }

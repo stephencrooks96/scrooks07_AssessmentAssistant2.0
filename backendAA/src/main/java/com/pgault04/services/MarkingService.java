@@ -140,10 +140,62 @@ public class MarkingService {
     public Answer editFeedback(String username, Answer answer) throws IllegalArgumentException {
         answer = editAnswer(username, answer);
         List<Answer> answers = answerRepo.selectByTestID(answer.getTestID());
+        List<Inputs> inputs = inputsRepo.selectByAnswerID(answer.getAnswerID());
+        List<OptionEntries> optionEntries = optionEntriesRepo.selectByAnswerID(answer.getAnswerID());
+        List<Answer> answersForNonTutor = new ArrayList<>();
+        if (modService.checkValidAssociation(username, testsRepo.selectByTestID(answer.getTestID()).getModuleID()).equals(AssociationType.TEACHING_ASSISTANT)) {
+            User user = userRepo.selectByUsername(username);
+            for (Answer a : answers) {
+                if (a.getMarkerID().longValue() == user.getUserID().longValue()) {
+                    answersForNonTutor.add(a);
+                }
+            }
+            answers = new ArrayList<>(answersForNonTutor);
+        }
         for (Answer a : answers) {
-            if (a.getContent().equalsIgnoreCase(answer.getContent()) && a.getMarkerApproved() == 0) {
-                a.setFeedback(answer.getFeedback());
-                answerRepo.insert(a);
+            if (a.getQuestionID().equals(answer.getQuestionID())) {
+                Question questionToCompare = questionRepo.selectByQuestionID(a.getQuestionID());
+                if (questionToCompare.getQuestionType() == QuestionType.TEXT_BASED && a.getContent().equalsIgnoreCase(answer.getContent())) {
+                    a.setMarkerApproved(1);
+                    a.setFeedback(answer.getFeedback());
+                    answerRepo.insert(a);
+                } else if (questionToCompare.getQuestionType() == QuestionType.INSERT_THE_WORD) {
+                    List<Inputs> inputToCompare = inputsRepo.selectByAnswerID(a.getAnswerID());
+                    int inputCounter = 0;
+                    for (Inputs i : inputs) {
+                        for (Inputs iToCompare : inputToCompare) {
+                            if (i.getInputIndex().equals(iToCompare.getInputIndex()) && i.getInputValue().equalsIgnoreCase(iToCompare.getInputValue())) {
+                                inputCounter++;
+                                break;
+                            }
+                        }
+                    }
+                    if (inputCounter == inputs.size()) {
+                        a.setMarkerApproved(1);
+                        a.setFeedback(answer.getFeedback());
+                        answerRepo.insert(a);
+                    }
+                } else if (questionToCompare.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
+                    List<Long> optionEntriesIDs = new ArrayList<>();
+                    List<OptionEntries> optionEntriesToCompare = optionEntriesRepo.selectByAnswerID(a.getAnswerID());
+                    List<Long> optionEntriesIDsToCompare = new ArrayList<>();
+
+
+                    for (OptionEntries o : optionEntriesToCompare) {
+                        optionEntriesIDsToCompare.add(o.getOptionID());
+                    }
+
+                    for (OptionEntries o : optionEntries) {
+                        optionEntriesIDs.add(o.getOptionID());
+                    }
+
+
+                    if (optionEntriesIDs.containsAll(optionEntriesIDsToCompare)) {
+                        a.setMarkerApproved(1);
+                        a.setFeedback(answer.getFeedback());
+                        answerRepo.insert(a);
+                    }
+                }
             }
         }
         return answer;
@@ -151,11 +203,62 @@ public class MarkingService {
 
     public Answer editScore(String username, Answer answer) throws IllegalArgumentException {
         answer = editAnswer(username, answer);
+        List<OptionEntries> optionEntries = optionEntriesRepo.selectByAnswerID(answer.getAnswerID());
         List<Answer> answers = answerRepo.selectByTestID(answer.getTestID());
+        List<Answer> answersForNonTutor = new ArrayList<>();
+        if (modService.checkValidAssociation(username, testsRepo.selectByTestID(answer.getTestID()).getModuleID()) == AssociationType.TEACHING_ASSISTANT) {
+            User user = userRepo.selectByUsername(username);
+            for (Answer a : answers) {
+                if (a.getMarkerID().equals(user.getUserID())) {
+                    answersForNonTutor.add(a);
+                }
+            }
+            answers = answersForNonTutor;
+        }
+        List<Inputs> inputs = inputsRepo.selectByAnswerID(answer.getAnswerID());
         for (Answer a : answers) {
-            if (a.getContent().equalsIgnoreCase(answer.getContent()) && a.getMarkerApproved() == 0) {
-                a.setScore(answer.getScore());
-                answerRepo.insert(a);
+            if (a.getQuestionID().equals(answer.getQuestionID())) {
+                Question questionToCompare = questionRepo.selectByQuestionID(a.getQuestionID());
+                if (questionToCompare.getQuestionType() == QuestionType.TEXT_BASED && a.getContent().equalsIgnoreCase(answer.getContent())) {
+                    a.setMarkerApproved(1);
+                    a.setScore(answer.getScore());
+                    answerRepo.insert(a);
+                } else if (questionToCompare.getQuestionType() == QuestionType.INSERT_THE_WORD) {
+                    int inputCounter = 0;
+                    List<Inputs> inputToCompare = inputsRepo.selectByAnswerID(a.getAnswerID());
+                    for (Inputs iToCompare : inputToCompare) {
+                        for (Inputs i : inputs) {
+                            if (iToCompare.getInputIndex().equals(i.getInputIndex()) && i.getInputValue().equalsIgnoreCase(iToCompare.getInputValue())) {
+                                inputCounter += 1;
+                                break;
+                            }
+                        }
+                    }
+                    if (inputCounter + 1 == inputs.size()) {
+                        a.setMarkerApproved(1);
+                        a.setScore(answer.getScore());
+                        answerRepo.insert(a);
+                    }
+                } else if (questionToCompare.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
+                    List<Long> optionEntriesIDs = new LinkedList<>();
+
+                    for (OptionEntries o : optionEntries) {
+                        optionEntriesIDs.add(o.getOptionID());
+                    }
+
+                    List<OptionEntries> optionEntriesToCompare = optionEntriesRepo.selectByAnswerID(a.getAnswerID());
+                    List<Long> optionEntriesIDsToCompare = new LinkedList<>();
+
+                    for (OptionEntries o : optionEntriesToCompare) {
+                        optionEntriesIDsToCompare.add(o.getOptionID());
+                    }
+
+                    if (optionEntriesIDs.containsAll(optionEntriesIDsToCompare)) {
+                        a.setMarkerApproved(1);
+                        a.setScore(answer.getScore());
+                        answerRepo.insert(a);
+                    }
+                }
             }
         }
         return answer;
@@ -225,14 +328,14 @@ public class MarkingService {
                     }
 
                     if (question.getQuestionType() == QuestionType.INSERT_THE_WORD) {
-                        correctPoints.sort(Comparator.comparingInt(CorrectPoint::getIndex));
+                        correctPoints.sort(Comparator.comparingInt(CorrectPoint::getIndexedAt));
                         inputs = inputsRepo.selectByAnswerID(a.getAnswerID());
                         inputs.sort(Comparator.comparingInt(Inputs::getInputIndex));
                     }
                 }
 
                 User student = userRepo.selectByUserID(a.getAnswererID());
-                scripts.add(new AnswerData(new QuestionAndAnswer(new QuestionAndBase64(base64, options, question), a, inputs, optionEntries), student, correctPoints));
+                scripts.add(new AnswerData(new QuestionAndAnswer(new QuestionAndBase64(base64, options, question), a, inputs, optionEntries, correctPointRepo.selectByQuestionID(question.getQuestionID())), student));
             }
         }
         return scripts;
@@ -495,6 +598,25 @@ public class MarkingService {
         }
     }
 
+    public double calculateStandardDeviation(List<Answer> answers) {
+
+        double sum = 0;
+        double newSum = 0;
+
+        for (int i = 0; i < answers.size(); i++) {
+            sum = sum + answers.get(i).getScore().doubleValue();
+        }
+        double mean = (sum) / (answers.size());
+
+        for (int j = 0; j < answers.size(); j++) {
+            // put the calculation right in there
+            newSum += ((answers.get(j).getScore().doubleValue() - mean)
+                    * (answers.get(j).getScore().doubleValue() - mean));
+        }
+        double squaredDiffMean = (newSum) / (answers.size());
+        return (Math.sqrt(squaredDiffMean));
+    }
+
 
     public ResultChartPojo generateResultChart(Long testID, String username) {
         logger.info("Request made for result statistics for test with id #{}", testID);
@@ -510,13 +632,17 @@ public class MarkingService {
             LinkedList<String> colors = new LinkedList<>();
 
             double totalMarks = 0.0;
+            long classAverage = 0L;
             for (TestQuestion testQuestion : testQuestions) {
                 totalMarks += questionRepo.selectByQuestionID(testQuestion.getQuestionID()).getMaxScore();
             }
             for (Answer a : answers) {
                 users.add(a.getAnswererID());
+                classAverage += a.getScore();
             }
-            long classAverage = 0L;
+            int classAverageFinal = (int) (((classAverage / totalMarks) * 100) / users.size());
+            double standardDev = calculateStandardDeviation(answers);
+
             for (Long user : users) {
                 double userScore = 0.0;
                 for (Answer answer : answers) {
@@ -524,13 +650,21 @@ public class MarkingService {
                         userScore += answer.getScore();
                     }
                 }
-                classAverage += userScore;
                 User u = userRepo.selectByUserID(user);
                 labels.add(u.getFirstName() + " " + u.getLastName());
                 scores.add((int) (((userScore / totalMarks)) * 100));
-                colors.add(ChartUtil.chartColourGenerate());
+                userScore = (((userScore / totalMarks)) * 100);
+                standardDev = (((standardDev / totalMarks)) * 100);
+                if (userScore  > classAverageFinal) {
+                    colors.add("#28a745");
+                } else if (userScore <= classAverageFinal && userScore >= classAverageFinal - standardDev) {
+                    colors.add("#ffc107");
+                } else {
+                    colors.add("#dc3545");
+                }
             }
-            return new ResultChartPojo(labels, scores, (int) (((classAverage / totalMarks) * 100) / users.size()), colors);
+
+            return new ResultChartPojo(labels, scores, classAverageFinal, colors);
         }
         return null;
     }

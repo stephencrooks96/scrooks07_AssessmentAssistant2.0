@@ -13,6 +13,10 @@ import {EditTestComponent} from "./edit-test/edit-test.component";
 import {ReviewMarkingComponent} from "./review-marking/review-marking.component";
 import {TakeTestComponent} from "./take-test/take-test.component";
 import {ChangePasswordComponent} from "./change-password/change-password.component";
+import {PerformanceComponent} from "./performance/performance.component";
+import {FeedbackComponent} from "./feedback/feedback.component";
+import {AddModuleComponent} from "./add-module/add-module.component";
+import {BecomeTutorComponent} from "./become-tutor/become-tutor.component";
 
 const routes: Routes = [
   {path: 'myModules', component: MyModulesComponent, canActivate: [PermissionsPermission]},
@@ -23,8 +27,12 @@ const routes: Routes = [
   {path: 'viewProgress/:testID', component: ViewProgressComponent, canActivate: [PermissionsPermission]},
   {path: 'takeTest/:testID', component: TakeTestComponent, canActivate: [PermissionsPermission]},
   {path: 'mark/:testID', component: MarkTestComponent, canActivate: [PermissionsPermission]},
+  {path: 'feedback/:testID', component: FeedbackComponent, canActivate: [PermissionsPermission]},
+  {path: 'performance/:testID', component: PerformanceComponent, canActivate: [PermissionsPermission]},
   {path: 'delegateMarking/:testID', component: DelegateMarkingComponent, canActivate: [PermissionsPermission]},
   {path: 'addTest/:moduleID', component: AddTestComponent, canActivate: [PermissionsPermission]},
+  {path: 'addModule', component: AddModuleComponent, canActivate: [PermissionsPermission]},
+  {path: 'becomeTutor', component: BecomeTutorComponent, canActivate: [PermissionsPermission]},
   {path: 'editTest/:testID', component: EditTestComponent, canActivate: [PermissionsPermission]},
   {path: 'reviewMarking/:testID', component: ReviewMarkingComponent, canActivate: [PermissionsPermission]},
   {path: '**', redirectTo: '/myModules'}

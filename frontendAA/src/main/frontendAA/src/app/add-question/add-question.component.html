@@ -13,7 +13,7 @@
       <input type="file" class="custom-file-input" name="questionFigure" id="questionFigure"
              (change)="imageAdded($event)" #imgInput>
       <label class="custom-file-label" for="questionFigure" (click)="imgInput.click()">Add an image - <span
-        *ngIf="!fileError">(max. 1MB)</span><span *ngIf="fileError"
+        *ngIf="!fileError">(max. 1MB | must be .png)</span><span *ngIf="fileError"
                                                   style="color: #dc3545;">Invalid file size: {{fileSize / 1024 / 1024 | number: '1.0-2'}}
         MB</span></label>
     </div>

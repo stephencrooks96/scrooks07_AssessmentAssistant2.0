@@ -54,12 +54,12 @@ public class TestModuleWithTutor {
         this.password = "password";
         this.enabled = 1;
         this.userRoleID = 2L;
-        userObj = new User(username, password, firstName, lastName, enabled, userRoleID);
+        userObj = new User(username, password, firstName, lastName, enabled, userRoleID, 0);
         moduleName = "moduleName";
         moduleDescription = "moduleDescription";
         tutorUserID = 2L;
         year = 2018;
-        moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year);
+        moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year, 1);
     }
 
     @Test

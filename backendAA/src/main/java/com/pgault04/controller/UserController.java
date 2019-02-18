@@ -1,5 +1,6 @@
 package com.pgault04.controller;
 
+import com.pgault04.entities.TutorRequests;
 import com.pgault04.entities.User;
 import com.pgault04.pojos.ChangePassword;
 import com.pgault04.repositories.UserRepo;
@@ -42,6 +43,18 @@ public class UserController {
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
     public Boolean changePassword(@RequestBody ChangePassword changePassword, Principal user) {
         return userService.changePassword(changePassword, user.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/submitTutorRequest", method = RequestMethod.POST)
+    public TutorRequests submitTutorRequest(@RequestBody TutorRequests tutorRequest, Principal user) {
+        return userService.submitTutorRequest(tutorRequest, user.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getTutorRequest", method = RequestMethod.GET)
+    public TutorRequests getTutorRequest(Principal user) {
+        return userService.getTutorRequest(user.getName());
     }
 
     /**

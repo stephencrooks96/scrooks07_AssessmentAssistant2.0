@@ -54,7 +54,7 @@ public class TestUser {
 	@Test
 	public void testUserConstructorWithArgs() {
 		userObj = null;
-		userObj = new User(username, password, firstName, lastName, enabled, userRoleID);
+		userObj = new User(username, password, firstName, lastName, enabled, userRoleID, 0);
 
 		assertNotNull(userObj);
 		assertEquals(username, userObj.getUsername());
@@ -103,7 +103,7 @@ public class TestUser {
 
 	@Test
 	public void testToString() {
-		userObj = new User(username, password, firstName, lastName, enabled, userRoleID);
+		userObj = new User(username, password, firstName, lastName, enabled, userRoleID, 0);
 		userObj.setUserID(userID);
 		assertEquals("User{userID=1, username='username', password='password', firstName='firstName', lastName='lastName', enabled=1, userRoleID=2}", userObj.toString());
 	}

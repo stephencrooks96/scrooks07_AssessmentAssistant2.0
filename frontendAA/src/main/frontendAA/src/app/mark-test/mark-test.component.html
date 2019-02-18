@@ -15,12 +15,12 @@
       <h3>Students</h3>
       <div class="panel panel-default default-pre-scrollable">
         <table class="table-striped" style="width: 100%;">
-          <tr *ngFor="let student of studentSet" style="border-radius: 10px;">
-            <td style="padding-left: 10px; border-radius: 10px 0 0 10px;">{{student.firstName + " " + student.lastName}}
+          <tr *ngFor="let student of studentSet; let rowIndex = index;" style="border-radius: 10px;">
+            <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="showStudent = true; showQuestions = false; studentDetail = student; studentCounter = rowIndex; answerCounter = -1; newAnswerDetail(student.userID)">{{student.firstName + " " + student.lastName}}
             </td>
             <td style="border-radius: 0 10px 10px 0;">
               <button type="button" style="background: none; border: none;"
-                      (click)="showStudent = true; showQuestions = false; studentDetail = student; newAnswerDetail(student.userID)">
+                      (click)="showStudent = true; showQuestions = false; studentDetail = student; studentCounter = rowIndex; answerCounter = -1; newAnswerDetail(student.userID)">
                 <i
                   class="fas fa-long-arrow-alt-right"></i>
               </button>
@@ -35,8 +35,8 @@
       <div class="panel panel-default default-pre-scrollable">
         <table class="table-striped">
           <tbody>
-          <span *ngFor="let script of scripts">
-                    <tr style="border-radius: 10px;"
+          <span *ngFor="let script of scripts; let rowIndex = index;">
+                    <tr (click)="answerDetail = script; answerCounter = rowIndex;" style="border-radius: 10px;"
                         [ngStyle]="{'background-color' : approvalFeedback[script.questionAndAnswer.answer.markerApproved]}"
                         *ngIf="script.questionAndAnswer.answer.answererID == studentDetail.userID">
                         <td style="padding-left: 10px; border-radius: 10px 0 0 10px;">
@@ -44,7 +44,7 @@
                 *ngIf="script.questionAndAnswer.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{script.questionAndAnswer.question.question.questionContent}}
             </td>
             <td style="border-radius: 0 10px 10px 0;">
-              <button type="button" style="background: none; border: none;" (click)="answerDetail = script;"><i
+              <button type="button" style="background: none; border: none;" ><i
                 class="fas fa-long-arrow-alt-right"></i></button>
             </td>
           </tr>

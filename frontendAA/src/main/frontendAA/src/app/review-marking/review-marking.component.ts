@@ -113,8 +113,11 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
           data: this.resultChartData.scores,
           backgroundColor: "#28a745",
           borderColor: "#28a745",
+          pointBackgroundColor: this.resultChartData.colors,
+          pointBorderColor: "#343a40",
           pointHoverRadius: 20,
-          pointRadius: 7
+          pointRadius: 7,
+          showLine: false
         }]
       },
       options: {
@@ -145,7 +148,7 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
 
   getCorrectPoints(questionID) {
     return this.markServ.getCorrectPoints(questionID, this.testID)
-      .subscribe(correctPoints => this.answerDetail.correctPoints = correctPoints);
+      .subscribe(correctPoints => this.answerDetail.questionAndAnswer.correctPoints = correctPoints);
   }
 
   approve(answerID) {

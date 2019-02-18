@@ -1,14 +1,15 @@
 package com.pgault04.pojos;
 
-import com.pgault04.entities.Answer;
-import com.pgault04.entities.Question;
+import com.pgault04.entities.CorrectPoint;
 import com.pgault04.entities.TestResult;
 import com.pgault04.entities.Tests;
+import com.pgault04.entities.User;
 
 import java.util.List;
 
 /**
  * Class for accumulating test and result info before outputting it to front end
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -16,33 +17,42 @@ public class TestAndResult {
 
     private Tests test;
     private TestResult testResult;
-    private List<Question> questions;
-    private List<Answer> answers;
+    private List<QuestionAndAnswer> questions;
     private Double percentageScore;
+    private User user;
 
     /**
      * Default constructor
      */
-    public TestAndResult() { }
+    public TestAndResult() {
+    }
 
     /**
      * Constructor with args
-     * @param test the test
+     *
+     * @param test       the test
      * @param testResult the result
-     * @param questions the questions
-     * @param answers the answers
+     * @param questions  the questions
      */
-    public TestAndResult(Tests test, TestResult testResult, List<Question> questions, List<Answer> answers) {
+    public TestAndResult(Tests test, TestResult testResult, List<QuestionAndAnswer> questions, User user) {
         this.setTest(test);
         this.setTestResult(testResult);
         this.setQuestions(questions);
-        this.setAnswers(answers);
+        this.setUser(user);
         Double percentageScore = 0.0;
-        for (Question q : questions) {
-            if (q.getMaxScore() != null)
-            percentageScore+=q.getMaxScore();
+        for (QuestionAndAnswer q : questions) {
+            if (q.getQuestion().getQuestion().getMaxScore() != null)
+                percentageScore += q.getQuestion().getQuestion().getMaxScore();
         }
         this.setPercentageScore(percentageScore);
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     /**
@@ -90,29 +100,15 @@ public class TestAndResult {
     /**
      * @return the questions
      */
-    public List<Question> getQuestions() {
+    public List<QuestionAndAnswer> getQuestions() {
         return questions;
     }
 
     /**
      * @param questions the questions to set
      */
-    public void setQuestions(List<Question> questions) {
+    public void setQuestions(List<QuestionAndAnswer> questions) {
         this.questions = questions;
-    }
-
-    /**
-     * @return the answers
-     */
-    public List<Answer> getAnswers() {
-        return answers;
-    }
-
-    /**
-     * @param answers the answers to set
-     */
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
     }
 
     /**
@@ -125,7 +121,6 @@ public class TestAndResult {
         sb.append("test=").append(test);
         sb.append(", testResult=").append(testResult);
         sb.append(", questions=").append(questions);
-        sb.append(", answers=").append(answers);
         sb.append(", percentageScore=").append(percentageScore);
         sb.append('}');
         return sb.toString();

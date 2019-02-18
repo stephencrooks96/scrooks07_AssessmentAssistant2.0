@@ -62,7 +62,7 @@ public class TestUserDetailsSerivceImplementation {
 		this.lastName = "lastName";
 		this.enabled = 1;
 		userRole = userRoleRepo.insert(userRole);
-		user = new User(validUserName, password, firstName, lastName, enabled, userRole.getUserRoleID());
+		user = new User(validUserName, password, firstName, lastName, enabled, userRole.getUserRoleID(), 0);
 		userRepo.insert(user);
 	}
 

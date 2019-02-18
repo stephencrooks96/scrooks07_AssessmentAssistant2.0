@@ -17,7 +17,15 @@ export class User {
   password: string = "";
   firstName: string = "";
   lastName: string = "";
+  enabled : number;
+  userRoleID : number;
+  tutor : number;
+}
 
+export class TutorRequest {
+  tutorRequestID : number;
+  reason : string;
+  approved : number;
 }
 
 export class ModuleFE {
@@ -52,8 +60,8 @@ export class TestAndResultFE {
 
   test = new Tests();
   testResult = new TestResult();
-  questions: Question[];
-  answers: Answer[];
+  questions: QuestionAndAnswer[];
+  user = new User();
   percentageScore: number;
 
 }
@@ -127,6 +135,7 @@ export class QuestionAndAnswer {
   answer = new Answer();
   inputs : Inputs[];
   optionEntries : OptionEntries[];
+  correctPoints : CorrectPoint[];
 }
 
 export class QuestionAndBase64 {
@@ -142,7 +151,6 @@ export class Input {
 export class AnswerData {
   questionAndAnswer = new QuestionAndAnswer();
   student = new User();
-  correctPoints : CorrectPoint[];
 }
 
 export class TestMarking {

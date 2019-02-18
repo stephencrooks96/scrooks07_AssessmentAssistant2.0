@@ -22,6 +22,8 @@ public class Module {
 
     private Integer year;
 
+    private Integer approved;
+
     /**
      * Default Constructor
      */
@@ -36,13 +38,18 @@ public class Module {
      * @param tutorUserID the tutor
      * @param year the year
      */
-    public Module(String moduleName, String moduleDescription, Long tutorUserID, Integer year) {
+    public Module(String moduleName, String moduleDescription, Long tutorUserID, Integer year, Integer approved) {
 
         this.setModuleName(moduleName);
         this.setModuleDescription(moduleDescription);
         this.setTutorUserID(tutorUserID);
         this.setYear(year);
+        this.setApproved(approved);
     }
+
+    public Integer getApproved() { return approved; }
+
+    public void setApproved(Integer approved) { this.approved = approved; }
 
     /**
      * @return the moduleID
@@ -119,8 +126,8 @@ public class Module {
         this.year = year;
     }
 
-    /**
-     * @return the object as a string
+    /*
+     * the object as a string
      */
     @Override
     public String toString() {
@@ -130,6 +137,7 @@ public class Module {
         sb.append(", moduleDescription='").append(moduleDescription).append('\'');
         sb.append(", tutorUserID=").append(tutorUserID);
         sb.append(", year=").append(year);
+        sb.append(", approved=").append(approved);
         sb.append('}');
         return sb.toString();
     }

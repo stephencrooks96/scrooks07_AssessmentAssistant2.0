@@ -25,7 +25,7 @@ public class CorrectPoint {
 	
 	private List<Alternative> alternatives;
 
-	private Integer index;
+	private Integer indexedAt;
 
 	/**
 	 * The default constructor
@@ -40,24 +40,25 @@ public class CorrectPoint {
 	 * @param feedback the feedback given for this phrase appearing
 	 * @param alternatives the list of phrases that are worthy of gaining the exact same marks
 	 */
-	public CorrectPoint(Long questionID, String phrase, Double marksWorth, String feedback, List<Alternative> alternatives, Integer index) {
+	public CorrectPoint(Long questionID, String phrase, Double marksWorth, String feedback, List<Alternative> alternatives, Integer indexedAt) {
 		
 		this.setQuestionID(questionID);
 		this.setPhrase(phrase);
 		this.setMarksWorth(marksWorth);
 		this.setFeedback(feedback);
 		this.setAlternatives(alternatives);
+		this.setIndexedAt(indexedAt);
 	}
 
 	/**
 	 * @return the index position
 	 */
-	public Integer getIndex() { return index; }
+	public Integer getIndexedAt() { return indexedAt; }
 
 	/**
-	 * @param index the index position
+	 * @param indexedAt the index position
 	 */
-	public void setIndex(Integer index) { this.index = index; }
+	public void setIndexedAt(Integer indexedAt) { this.indexedAt = indexedAt; }
 
 	/**
 	 * @return the list of alternatives
@@ -160,7 +161,7 @@ public class CorrectPoint {
 		sb.append(", marksWorth=").append(marksWorth);
 		sb.append(", feedback='").append(feedback).append('\'');
 		sb.append(", alternatives=").append(alternatives);
-		sb.append(", index=").append(index);
+		sb.append(", indexedAt=").append(indexedAt);
 		sb.append('}');
 		return sb.toString();
 	}

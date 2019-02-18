@@ -9,7 +9,6 @@ public class AnswerData {
 
     private QuestionAndAnswer questionAndAnswer;
     private User student;
-    private List<CorrectPoint> correctPoints;
 
     /**
      * Default constructor
@@ -21,12 +20,10 @@ public class AnswerData {
      *
      * @param questionAndAnswer question and answer data
      * @param student the student
-     * @param correctPoints the mark scheme
      */
-    public AnswerData(QuestionAndAnswer questionAndAnswer, User student, List<CorrectPoint> correctPoints) {
+    public AnswerData(QuestionAndAnswer questionAndAnswer, User student) {
         this.setQuestionAndAnswer(questionAndAnswer);
         this.setStudent(student);
-        this.setCorrectPoints(correctPoints);
     }
 
     /**
@@ -58,20 +55,6 @@ public class AnswerData {
     }
 
     /**
-     * @return the correct points
-     */
-    public List<CorrectPoint> getCorrectPoints() {
-        return correctPoints;
-    }
-
-    /**
-     * @param correctPoints the correct points
-     */
-    public void setCorrectPoints(List<CorrectPoint> correctPoints) {
-        this.correctPoints = correctPoints;
-    }
-
-    /**
      * @return the object as string
      */
     @Override
@@ -79,7 +62,6 @@ public class AnswerData {
         final StringBuilder sb = new StringBuilder("AnswerData{");
         sb.append("questionAndAnswer=").append(questionAndAnswer);
         sb.append(", student=").append(student);
-        sb.append(", correctPoints=").append(correctPoints);
         sb.append('}');
         return sb.toString();
     }

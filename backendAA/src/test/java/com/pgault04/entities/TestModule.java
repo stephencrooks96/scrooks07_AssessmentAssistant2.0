@@ -48,7 +48,7 @@ public class TestModule {
 	@Test
 	public void testModuleConstructorWithArgs() {
 		moduleObj = null;
-		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year);
+		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year, 1);
 
 		assertNotNull(moduleObj);
 		assertEquals(moduleName, moduleObj.getModuleName());
@@ -89,7 +89,7 @@ public class TestModule {
 
 	@Test
 	public void testToString() {
-		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year);
+		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year, 1);
 		moduleObj.setModuleID(moduleID);
 		assertEquals("Module{moduleID=1, moduleName='moduleName', moduleDescription='moduleDescription', tutorUserID=2, year=2018}", moduleObj.toString());
 	}

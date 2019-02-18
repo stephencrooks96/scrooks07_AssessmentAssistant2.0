@@ -3,6 +3,7 @@ package com.pgault04.controller;
 import com.pgault04.entities.QuestionType;
 import com.pgault04.entities.TestQuestion;
 import com.pgault04.entities.Tests;
+import com.pgault04.pojos.Performance;
 import com.pgault04.pojos.QuestionAndAnswer;
 import com.pgault04.pojos.QuestionAndBase64;
 import com.pgault04.pojos.TutorQuestionPojo;
@@ -87,6 +88,18 @@ public class TestController {
     @RequestMapping(value = "/getQuestionsStudent", method = RequestMethod.GET)
     public List<QuestionAndAnswer> getQuestionsStudent(Principal principal, Long testID) throws Base64DecodingException, SQLException {
         return testService.getQuestionsStudent(principal.getName(), testID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getPerformance", method = RequestMethod.GET)
+    public Performance getPerformance(Principal principal, Long testID) throws SQLException, IllegalArgumentException {
+        return testService.getPerformance(testID, principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getFeedback", method = RequestMethod.GET)
+    public Performance getFeedback(Principal principal, Long testID) throws SQLException, IllegalArgumentException {
+        return testService.getGrades(testID, principal.getName());
     }
 
     @CrossOrigin

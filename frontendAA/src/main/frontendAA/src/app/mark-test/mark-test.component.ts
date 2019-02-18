@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TestService} from "../services/test.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DomSanitizer} from "@angular/platform-browser";
-import {Alternative, Answer, AnswerData, CorrectPoint, Question, Tests, User} from "../modelObjs/objects.model";
+import {Alternative, Answer, AnswerData, CorrectPoint, Tests, User} from "../modelObjs/objects.model";
 import {MarkingService} from "../services/marking.service";
 import {ModulesService} from "../services/modules.service";
 import {NgForm} from "@angular/forms";
@@ -26,7 +26,7 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
   showQuestions = false;
   scripts: AnswerData[];
   studentSet: User[];
-  moduleAssoc : number;
+  moduleAssoc: number;
   studentDetail = new User();
   answerDetail = new AnswerData();
   editScoreShow = false;
@@ -37,9 +37,9 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
   editFeedbackShow = false;
   feedbackError;
   checkFeedback;
-  approvalFeedback : string[];
-  altToRemove : number=-1;
-  correctPointToRemove : number=-1;
+  approvalFeedback: string[];
+  altToRemove: number = -1;
+  correctPointToRemove: number = -1;
   addAlternativeEdit = false;
   addCorrectPointEdit = false;
   alternativeToInsert = new Alternative();
@@ -49,6 +49,8 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
   marksWorthError = false;
   alternativePhraseError = false;
   generalError = false;
+  studentCounter = 0;
+  answerCounter = -1;
 
   constructor(private router: Router, private route: ActivatedRoute, private testServ: TestService, private markServ: MarkingService, private modServ: ModulesService, private modalService: NgbModal, private sanitizer: DomSanitizer) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
@@ -73,7 +75,7 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
           this.test = test;
-        this.getModuleAssociation(test.moduleID);
+          this.getModuleAssociation(test.moduleID);
         }
       );
   }
@@ -85,7 +87,7 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
 
   getCorrectPoints(questionID) {
     return this.markServ.getCorrectPoints(questionID, this.testID)
-      .subscribe(correctPoints => this.answerDetail.correctPoints = correctPoints);
+      .subscribe(correctPoints => this.answerDetail.questionAndAnswer.correctPoints = correctPoints);
   }
 
   approve(answerID) {
@@ -97,7 +99,7 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
 
   removeAlt(altID) {
     this.markServ.removeAlternative(altID, this.testID)
-      .subscribe(success =>{
+      .subscribe(success => {
         this.getScriptsByTestID(this.testID);
         this.getCorrectPoints(this.answerDetail.questionAndAnswer.question.question.questionID);
       });
@@ -105,7 +107,7 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
 
   removeCorrectPoint(correctPointID) {
     this.markServ.removeCorrectPoint(correctPointID, this.testID)
-      .subscribe(success =>{
+      .subscribe(success => {
         this.getScriptsByTestID(this.testID);
         this.getCorrectPoints(this.answerDetail.questionAndAnswer.question.question.questionID);
       });
@@ -128,13 +130,16 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
               this.studentSet.push(this.scripts[x].student);
             }
           }
-          this.studentDetail = this.studentSet[0];
+          this.studentDetail = this.studentSet[this.studentCounter];
           for (let x = 0; x < this.scripts.length; x++) {
-            if (this.scripts[x].student.userID == this.studentDetail.userID && this.answerDetail.student.userID == null) {
-              this.answerDetail = this.scripts[x];
-              break;
-            } else if (this.scripts[x].questionAndAnswer.answer.answerID == this.answerDetail.questionAndAnswer.answer.answerID) {
-              this.answerDetail = this.scripts[x];
+            if (this.scripts[x].student.userID == this.studentDetail.userID) {
+              if (this.answerCounter == -1) {
+                this.answerDetail = this.scripts[x];
+                break;
+              } else {
+                this.answerDetail = this.scripts[this.answerCounter];
+                break;
+              }
             }
           }
         }
@@ -209,30 +214,30 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     this.generalError = false;
     this.correctPointToInsert.questionID = this.answerDetail.questionAndAnswer.question.question.questionID;
     if (!this.correctPointToInsert.phrase || this.correctPointToInsert.phrase.trim().length <= 0 || this.correctPointToInsert.phrase.length > 65535) {
-        this.phraseError = true;
+      this.phraseError = true;
+      this.generalError = true;
+    }
+
+    if (!this.correctPointToInsert.feedback || this.correctPointToInsert.feedback.trim().length <= 0 || this.correctPointToInsert.feedback.length > 65535) {
+      this.feedbackInsertError = true;
+      this.generalError = true;
+    }
+
+    if (!this.correctPointToInsert.marksWorth || this.correctPointToInsert.marksWorth > this.answerDetail.questionAndAnswer.question.question.maxScore || this.correctPointToInsert.marksWorth < (-1 * this.answerDetail.questionAndAnswer.question.question.maxScore)) {
+      this.marksWorthError = true;
+      this.generalError = true;
+    }
+
+    for (let j = 0; j < this.correctPointToInsert.alternatives.length; j++) {
+      if (!this.correctPointToInsert.alternatives[j].alternativePhrase || this.correctPointToInsert.alternatives[j].alternativePhrase.trim().length <= 0 || this.correctPointToInsert.alternatives[j].alternativePhrase.length > 65535) {
+        this.alternativePhraseError = true;
         this.generalError = true;
       }
+    }
 
-      if (!this.correctPointToInsert.feedback || this.correctPointToInsert.feedback.trim().length <= 0 || this.correctPointToInsert.feedback.length > 65535) {
-        this.feedbackInsertError = true;
-        this.generalError = true;
-      }
-
-      if (!this.correctPointToInsert.marksWorth || this.correctPointToInsert.marksWorth > this.answerDetail.questionAndAnswer.question.question.maxScore || this.correctPointToInsert.marksWorth < (-1 * this.answerDetail.questionAndAnswer.question.question.maxScore)) {
-        this.marksWorthError = true;
-        this.generalError = true;
-      }
-
-      for (let j = 0; j < this.correctPointToInsert.alternatives.length; j++) {
-        if (!this.correctPointToInsert.alternatives[j].alternativePhrase || this.correctPointToInsert.alternatives[j].alternativePhrase.trim().length <= 0 || this.correctPointToInsert.alternatives[j].alternativePhrase.length > 65535) {
-          this.alternativePhraseError = true;
-          this.generalError = true;
-        }
-      }
-
-      if (this.generalError) {
-        return;
-      }
+    if (this.generalError) {
+      return;
+    }
 
 
     this.markServ.addCorrectPoint(this.correctPointToInsert as CorrectPoint, this.testID)

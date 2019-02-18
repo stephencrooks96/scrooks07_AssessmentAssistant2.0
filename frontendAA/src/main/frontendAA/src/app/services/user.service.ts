@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {AuthorizationService} from "./authorization.service";
 import {Observable} from "rxjs";
-import {ChangePassword, User} from "../modelObjs/objects.model";
+import {ChangePassword, TutorRequest, User} from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
 import {AppComponent} from "../app.component";
 
@@ -26,6 +26,20 @@ export class UserService {
     return this.http.post<ChangePassword>(this.app.url + "/user/changePassword", changePassword, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Password changed.'))
+      );
+  }
+
+  submitRequest(tutorRequest): Observable<TutorRequest> {
+    return this.http.post<TutorRequest>(this.app.url + "/user/submitTutorRequest", tutorRequest, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log('Tutor request submitted.'))
+      );
+  }
+
+  getTutorRequest(): Observable<TutorRequest> {
+    return this.http.get<TutorRequest>(this.app.url + "/user/getTutorRequest", {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log('Tutor request returned.'))
       );
   }
 

@@ -11,19 +11,19 @@ import {User} from "../modelObjs/objects.model";
 export class HeaderComponent implements OnInit {
 
   currentUser: User;
-  username: string;
+  user = new User();
 
   constructor(public auth: AuthorizationService, public router: Router) {
   }
 
 
   ngOnInit() {
-    this.getUsername();
+    this.getUser();
   }
 
-  getUsername() {
-    return this.auth.getUsername()
-      .subscribe(username => this.username = username);
+  getUser() {
+    return this.auth.getUser()
+      .subscribe(user => this.user = user);
   }
 
 // login out from the app

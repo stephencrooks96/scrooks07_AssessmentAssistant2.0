@@ -39,7 +39,7 @@ public class TestModuleRepo {
         this.moduleName = "moduleName";
         this.moduleDescription = "moduleDescription";
         this.year = 2018;
-        module = new Module(moduleName, moduleDescription, TUTOR_ID_IN_DB, year);
+        module = new Module(moduleName, moduleDescription, TUTOR_ID_IN_DB, year, 1);
     }
 
     @Test

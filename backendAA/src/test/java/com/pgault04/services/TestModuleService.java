@@ -16,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,7 +68,7 @@ public class TestModuleService {
     @Before
     @Transactional
     public void setUp() throws Exception {
-        module = new Module("module", "description", 1L, 2018);
+        module = new Module("module", "description", 1L, 2018, 1);
         module = moduleRepo.insert(module);
         tests = new ArrayList<>();
         testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01 10:00:00", "2018-01-01 11:00:00", 0, 0, 0);
@@ -188,7 +189,7 @@ public class TestModuleService {
 
     @Test
     @Transactional
-    public void testActiveResults() {
+    public void testActiveResults() throws SQLException {
 
         // Sets test up to be ready for active results
         testObj.setPublishGrades(1);
@@ -256,7 +257,7 @@ public class TestModuleService {
 
      @Test
      @Transactional
-     public void testGeneratePerformance() {
+     public void testGeneratePerformance() throws SQLException {
         // Sets test up to be ready for active results
          testObj.setPublishResults(1);
          testObj = testsRepo.insert(testObj);

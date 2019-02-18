@@ -25,8 +25,8 @@ public class UserRepo {
 
     private static final Logger log = LogManager.getLogger(UserRepo.class);
 
-    private final String insertSQL = "INSERT INTO Users (username, password, firstName, lastName, enabled, userRoleID) values (:username, :password, :firstName, :lastName, :enabled, :userRoleID)";
-    private final String updateSQL = "UPDATE Users SET username=:username, password=:password, firstName=:firstName, lastName=:lastName, enabled=:enabled, userRoleID=:userRoleID WHERE userID=:userID";
+    private final String insertSQL = "INSERT INTO Users (username, password, firstName, lastName, enabled, userRoleID, tutor) values (:username, :password, :firstName, :lastName, :enabled, :userRoleID, :tutor)";
+    private final String updateSQL = "UPDATE Users SET username=:username, password=:password, firstName=:firstName, lastName=:lastName, enabled=:enabled, userRoleID=:userRoleID, tutor=:tutor WHERE userID=:userID";
     private final String selectSQL = "SELECT * FROM Users WHERE ";
 
     @Autowired

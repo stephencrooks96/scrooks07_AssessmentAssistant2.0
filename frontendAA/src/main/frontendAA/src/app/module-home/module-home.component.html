@@ -39,10 +39,9 @@
              markingCheck = false;
              testDraftCheck = false;
              reviewMarkingCheck = false"
-             class="nav-link" href="#">Active
-            Results</a>
+             class="nav-link" href="#">Grades</a>
         </li>
-        <li *ngIf="(moduleAssoc | async) == STUDENT || (moduleAssoc | async) == TUTOR" class="nav-item">
+        <li *ngIf="(moduleAssoc | async) == STUDENT" class="nav-item">
           <a (click)="activeResultCheck = false;
              activeTestCheck = false;
              performanceCheck = true;
@@ -51,7 +50,7 @@
              markingCheck = false;
              testDraftCheck = false;
              reviewMarkingCheck = false"
-             class="nav-link" href="#">Performance</a>
+             class="nav-link" href="#">Results</a>
         </li>
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
@@ -128,7 +127,7 @@
               <th>Title</th>
               <th>Deadline</th>
               <th *ngIf="(moduleAssoc | async) == STUDENT">Take</th>
-              <th *ngIf="(moduleAssoc | async) != STUDENT">View</th>
+              <th *ngIf="(moduleAssoc | async) == TUTOR">View</th>
             </tr>
             </thead>
             <tbody>
@@ -137,8 +136,8 @@
               <td data-label="Title:"> {{activeTest.testTitle}}</td>
               <td data-label="Deadline:">{{activeTest.endDateTime | date:"dd-MM-yyyy 'at' HH:mm"}}</td>
 
-              <td *ngIf="answeredSet && answeredSet.includes(activeTest.testID)">SUBMITTED</td>
-              <td data-label="Take:" *ngIf="answeredSet && !answeredSet.includes(activeTest.testID)"><a [routerLink]="['/takeTest', activeTest.testID]" style="color: white;"><i
+              <td *ngIf="answeredSet && answeredSet.includes(activeTest.testID) && (moduleAssoc | async) != TEACHING_ASSISTANT">SUBMITTED</td>
+              <td data-label="Take:" *ngIf="answeredSet && !answeredSet.includes(activeTest.testID) && (moduleAssoc | async) != TEACHING_ASSISTANT"><a [routerLink]="['/takeTest', activeTest.testID]" style="color: white;"><i
                 class="fas fa-stopwatch fa-lg"></i></a></td>
             </tr>
             </tbody>
@@ -159,9 +158,9 @@
       <div *ngIf="(moduleAssoc | async) == STUDENT" class="modHomeInner" id="activeResults">
         <div *ngIf="activeResults && activeResults.length > 0">
           <div class="title">
-            <h5 class="display-5">Active Results</h5>
+            <h5 class="display-5">Grades</h5>
           </div>
-          <table class="table table-striped">
+          <table class="table table-dark">
             <thead class="thead-dark">
             <tr>
               <th scope="col">#</th>
@@ -176,7 +175,7 @@
               <td scope="row">{{activeResult.test.testID}}</td>
               <td data-label="Title">{{activeResult.test.testTitle}}</td>
               <td data-label="Grade">{{ activeResult.grade }}</td>
-              <td data-label="Feedback"><a [routerLink]="['/testFeedback', activeResult.test.testID]">View</a></td>
+              <td data-label="Feedback"><a [routerLink]="['/feedback', activeResult.test.testID]">View</a></td>
             </tr>
 
             </tbody>
@@ -195,7 +194,7 @@
       <div *ngIf="(moduleAssoc | async) == STUDENT || (moduleAssoc | async) == TUTOR" class="modHomeInner" id="performance">
         <div *ngIf="performanceList && performanceList.length > 0">
           <div class="title">
-            <h5 class="display-5">Performance</h5>
+            <h5 class="display-5">Results</h5>
           </div>
           <table class="table table-dark">
 
@@ -203,8 +202,9 @@
             <tr>
               <th scope="col">#</th>
               <th>Test</th>
-              <th>Average</th>
+              <th>Score</th>
               <th>Class Average</th>
+              <th>Details</th>
             </tr>
             </thead>
             <tbody>
@@ -212,17 +212,9 @@
               <td scope="row">{{performance.testAndResult.test.testID}}</td>
               <td data-label="Test"> {{performance.testAndResult.test.testTitle}}</td>
 
-              <td *ngIf="performance.testAndResult.testResult.testScore > performance.classAverage"
-                  class="table-success"
-                  data-label="Average">{{performance.testAndResult.testResult.testScore / performance.testAndResult.percentageScore * 100}}</td>
-              <td *ngIf="performance.testAndResult.testResult.testScore < performance.classAverage"
-                  class="table-danger"
-                  data-label="Average">{{performance.testAndResult.testResult.testScore / performance.testAndResult.percentageScore * 100}}</td>
-              <td *ngIf="performance.testAndResult.testResult.testScore == performance.classAverage"
-                  class="table-warning"
-                  data-label="Average">{{performance.testAndResult.testResult.testScore / performance.testAndResult.percentageScore * 100}}</td>
-              <td
-                data-label="Class Average">{{performance.classAverage / performance.testAndResult.percentageScore * 100}}</td>
+              <td data-label="Score">{{performance.testAndResult.testResult.testScore / performance.testAndResult.percentageScore * 100 | number:'0.0-0'}}</td>
+              <td data-label="Class Average">{{performance.classAverage | number:'0.0-0'}}</td>
+              <td data-label="Details"><a [routerLink]="['/performance', performance.testAndResult.test.testID]">View</a></td>
             </tr>
             </tbody>
           </table>
@@ -304,6 +296,31 @@
                 *ngIf="testMarking == marking[0] ? show == testMarking.test.testID || show == 0 : show == testMarking.test.testID"
                 class="markingObj" id="testMarking.test.testID">
                 <h2>{{testMarking.test.testTitle}}</h2><span>answers marked</span>
+                <div *ngIf="(moduleAssoc | async) == TEACHING_ASSISTANT">
+
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <h2>You</h2>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <h5 class="display-4">{{testMarking.totalForYou - testMarking.toBeMarkedByYou}}
+                        / {{testMarking.totalForYou}}</h5>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <h5 class="display-4">
+                        Progress: {{ ((testMarking.totalForYou - testMarking.toBeMarkedByYou) * 100) / testMarking.totalForYou}}
+                        %</h5>
+                    </div>
+                  </div>
+
+                </div>
+
                 <div *ngIf="(moduleAssoc | async) == TUTOR">
 
                   <div class="row">

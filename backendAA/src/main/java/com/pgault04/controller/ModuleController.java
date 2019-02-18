@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +104,7 @@ public class ModuleController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getActiveResults", method = RequestMethod.GET)
-    public List<TestAndGrade> getActiveResults(Principal principal, Long moduleID) {
+    public List<TestAndGrade> getActiveResults(Principal principal, Long moduleID) throws SQLException {
         return modService.activeResults(moduleID, principal.getName());
     }
 
@@ -168,7 +169,7 @@ public class ModuleController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getPerformance", method = RequestMethod.GET)
-    public List<Performance> getPerformance(Principal principal, Long moduleID) {
+    public List<Performance> getPerformance(Principal principal, Long moduleID) throws SQLException {
         return modService.generatePerformance(moduleID, principal.getName());
     }
 

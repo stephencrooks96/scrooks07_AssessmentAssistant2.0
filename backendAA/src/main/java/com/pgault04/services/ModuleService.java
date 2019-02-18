@@ -3,6 +3,7 @@ package com.pgault04.services;
 import com.pgault04.entities.*;
 import com.pgault04.pojos.*;
 import com.pgault04.repositories.*;
+import com.pgault04.utilities.BlobUtil;
 import com.pgault04.utilities.StringToDateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +36,7 @@ public class ModuleService {
     private static final int READY_FOR_REVIEW = 0;
     private static final int PUBLISH_TRUE = 1;
     private static final int MARKER_APPROVED = 1;
+    public static final int APPROVED = 1;
 
     @Autowired
     TestsRepo testsRepo;
@@ -53,6 +56,16 @@ public class ModuleService {
     QuestionRepo questionRepo;
     @Autowired
     ModuleRepo moduleRepo;
+    @Autowired
+    OptionRepo optionRepo;
+    @Autowired
+    InputsRepo inputRepo;
+    @Autowired
+    OptionEntriesRepo optionEntriesRepo;
+    @Autowired
+    CorrectPointRepo cpRepo;
+    @Autowired
+    TestService testServ;
 
     /**
      * Performs necessary actions needed to retrieve the active tests
@@ -211,7 +224,7 @@ public class ModuleService {
      * @param username the user
      * @return the active results
      */
-    public List<TestAndGrade> activeResults(Long moduleID, String username) {
+    public List<TestAndGrade> activeResults(Long moduleID, String username) throws SQLException {
         logger.info("Request made for active results for module #{}", moduleID);
         if (AssociationType.STUDENT == checkValidAssociation(username, moduleID)) {
 
@@ -224,11 +237,11 @@ public class ModuleService {
                     for (TestResult testResult : testResultRepo.selectByTestID(test.getTestID())) {
                         if (testResult.getStudentID().equals(user.getUserID())) {
 
-                            List<Question> questions = addQuestionsToList(test);
+                            List<QuestionAndAnswer> questions = addQuestionsToList(test, user.getUserID());
 
                             double percentageScore = 0;
-                            for (Question q : questions) {
-                                percentageScore += q.getMaxScore();
+                            for (QuestionAndAnswer q : questions) {
+                                percentageScore += q.getQuestion().getQuestion().getMaxScore();
                             }
 
                             String grade = checkGrade(testResult.getTestScore() / percentageScore * 100);
@@ -250,11 +263,16 @@ public class ModuleService {
      * @param test - the test
      * @return the list of questions
      */
-    private List<Question> addQuestionsToList(Tests test) {
-        List<Question> questions = new ArrayList<>();
+    List<QuestionAndAnswer> addQuestionsToList(Tests test, Long userID) throws SQLException {
+        List<QuestionAndAnswer> questions = new ArrayList<>();
         for (TestQuestion testQuestion : testQuestionRepo.selectByTestID(test.getTestID())) {
             Question questionToAdd = questionRepo.selectByQuestionID(testQuestion.getQuestionID());
-            questions.add(questionToAdd);
+            Answer answer = answerRepo.selectByQuestionIDAndAnswererID(questionToAdd.getQuestionID(), userID);
+            String base64 = BlobUtil.blobToBase(questionToAdd.getQuestionFigure());
+            questionToAdd.setQuestionFigure(null);
+            QuestionAndBase64 questionAndBase64 = new QuestionAndBase64(base64, optionRepo.selectByQuestionID(questionToAdd.getQuestionID()), questionToAdd);
+            QuestionAndAnswer questionAndAnswer = new QuestionAndAnswer(questionAndBase64, answer, inputRepo.selectByAnswerID(answer.getAnswerID()), optionEntriesRepo.selectByAnswerID(answer.getAnswerID()), testServ.findCorrectPoints(questionToAdd.getQuestionID()));
+            questions.add(questionAndAnswer);
         }
         return questions;
     }
@@ -333,7 +351,10 @@ public class ModuleService {
         List<Module> modules = new ArrayList<>();
 
         for (ModuleAssociation m : modAssociations) {
-            modules.add(moduleRepo.selectByModuleID(m.getModuleID()));
+            Module module = moduleRepo.selectByModuleID(m.getModuleID());
+            if (module.getApproved().equals(APPROVED)) {
+                modules.add(module);
+            }
         }
 
         return modules;
@@ -346,10 +367,10 @@ public class ModuleService {
      * @param username - the user
      * @return the performance data
      */
-    public List<Performance> generatePerformance(Long moduleID, String username) {
+    public List<Performance> generatePerformance(Long moduleID, String username) throws SQLException {
         logger.info("Request made for performance statistics for module with id #{}", moduleID);
         Long check = checkValidAssociation(username, moduleID);
-        if (AssociationType.TEACHING_ASSISTANT != check) {
+        if (AssociationType.STUDENT == check) {
 
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
             User user = userRepo.selectByUsername(username);
@@ -362,11 +383,16 @@ public class ModuleService {
                     List<TestResult> testResults = testResultRepo.selectByTestID(test.getTestID());
                     for (TestResult testResult : testResults) {
                         if (testResult.getStudentID().equals(user.getUserID())) {
-                            tar = new TestAndResult(test, testResult, addQuestionsToList(test), null);
+                            tar = new TestAndResult(test, testResult, addQuestionsToList(test, user.getUserID()), user);
                         }
                         classAverage += testResult.getTestScore();
                     }
-                    classAverage /= testResults.size();
+                    int questionTotal = 0;
+                    for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
+                        Question question = questionRepo.selectByQuestionID(tq.getQuestionID());
+                        questionTotal += question.getMaxScore();
+                    }
+                    classAverage = ((classAverage * 100) / questionTotal) / testResults.size();
                     performanceList.add(new Performance(tar, classAverage));
                 }
             }

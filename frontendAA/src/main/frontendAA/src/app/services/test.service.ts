@@ -9,7 +9,7 @@ import {
   Question, QuestionAndAnswer, QuestionAndBase64,
   QuestionType,
   Tests,
-  TutorQuestionPojo
+  TutorQuestionPojo, Performance
 } from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
 
@@ -81,6 +81,18 @@ export class TestService {
   public addExistingQuestion(questionID, testID): Observable<Question> {
     return this.http.get<Question>(this.app.url + "/tests/addExistingQuestion?questionID=" + questionID + "&testID=" + testID, {headers: this.app.headers}).pipe(
       tap((question: Question) => console.log(`Added question with id=${question.questionID} to test with id=${testID}`))
+    );
+  }
+
+  public getPerformance(testID): Observable<Performance> {
+    return this.http.get<Performance>(this.app.url + "/tests/getPerformance?testID=" + testID, {headers: this.app.headers}).pipe(
+      tap(() => console.log(`Performance retrieved for test with with id=${testID}`))
+    );
+  }
+
+  public getFeedback(testID): Observable<Performance> {
+    return this.http.get<Performance>(this.app.url + "/tests/getFeedback?testID=" + testID, {headers: this.app.headers}).pipe(
+      tap(() => console.log(`Feedback retrieved for test with with id=${testID}`))
     );
   }
 

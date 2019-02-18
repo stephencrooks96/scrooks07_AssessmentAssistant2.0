@@ -28,6 +28,8 @@ public class User {
 
 	private Long userRoleID;
 
+	private Integer tutor;
+
 	/**
 	 * Default constructor
 	 */
@@ -42,13 +44,14 @@ public class User {
 	 * @param enabled whether the user is enabled or not
 	 * @param userRoleID the users user role
 	 */
-	public User(String username, String password, String firstName, String lastName, Integer enabled, Long userRoleID) {
+	public User(String username, String password, String firstName, String lastName, Integer enabled, Long userRoleID, Integer tutor) {
 		this.setUsername(username);
 		this.setPassword(password);
 		this.setFirstName(firstName);
 		this.setLastName(lastName);
 		this.setEnabled(enabled);
 		this.setUserRoleID(userRoleID);
+		this.setTutor(tutor);
 	}
 
 	/**
@@ -153,6 +156,14 @@ public class User {
 	 */
 	public void setUserRoleID(Long userRoleID) {
 		this.userRoleID = userRoleID;
+	}
+
+	public Integer getTutor() {
+		return tutor;
+	}
+
+	public void setTutor(Integer tutor) {
+		this.tutor = tutor;
 	}
 
 	/**

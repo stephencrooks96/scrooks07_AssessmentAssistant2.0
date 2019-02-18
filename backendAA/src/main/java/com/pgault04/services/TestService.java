@@ -1,21 +1,16 @@
 package com.pgault04.services;
 
 import com.pgault04.entities.*;
-import com.pgault04.pojos.QuestionAndAnswer;
-import com.pgault04.pojos.QuestionAndBase64;
-import com.pgault04.pojos.TutorQuestionPojo;
+import com.pgault04.pojos.*;
 import com.pgault04.repositories.*;
 import com.pgault04.utilities.BlobUtil;
 import com.pgault04.utilities.StringToDateUtil;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.sql.rowset.serial.SerialBlob;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
@@ -30,6 +25,7 @@ public class TestService {
 
     public static final int SCHEDULED = 1;
     public static final int UNSCHEDULED = 0;
+    public static final int PUBLISH_TRUE = 1;
     /**
      * Logs useful info for debugging and analysis needs
      */
@@ -39,6 +35,9 @@ public class TestService {
 
     @Autowired
     OptionEntriesRepo optionEntriesRepo;
+
+    @Autowired
+    TestResultRepo trRepo;
 
     @Autowired
     InputsRepo inputsRepo;
@@ -159,6 +158,7 @@ public class TestService {
                         optionEntriesRepo.insert(oe);
                         questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + o.getWorthMarks());
                         questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + o.getFeedback());
+                        questionAndAnswer.getAnswer().setMarkerApproved(1);
                     }
                 }
 
@@ -187,12 +187,13 @@ public class TestService {
             }
             for (CorrectPoint c : correctPoints) {
                 for (Inputs i : questionAndAnswer.getInputs()) {
-                    if (i.getInputValue().equalsIgnoreCase(c.getPhrase()) && i.getInputIndex().equals(c.getIndex())) {
+                    if (i.getInputValue().equalsIgnoreCase(c.getPhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
                         questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
                         questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
+                        questionAndAnswer.getAnswer().setMarkerApproved(1);
                     } else {
                         for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
-                            if (i.getInputValue().equalsIgnoreCase(alt.getAlternativePhrase()) && i.getInputIndex().equals(c.getIndex())) {
+                            if (i.getInputValue().equalsIgnoreCase(alt.getAlternativePhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
                                 questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
                                 questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
                                 break;
@@ -227,6 +228,120 @@ public class TestService {
             answer.setScore(question.getMaxScore());
         }
         answerRepo.insert(answer);
+    }
+
+    public Performance getGrades(Long testID, String username) throws SQLException, IllegalArgumentException {
+        logger.info("Request made for grades for test with id #{} and user: {}", testID, username);
+
+        Tests test = testRepo.selectByTestID(testID);
+        User user = userRepo.selectByUsername(username);
+        if (test.getPublishGrades() == PUBLISH_TRUE) {
+            int questionTotal = 0;
+            double classAverage = 0.0;
+
+            for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
+                Question question = questionRepo.selectByQuestionID(tq.getQuestionID());
+                questionTotal += question.getMaxScore();
+            }
+            TestAndResult tar = new TestAndResult();
+            List<TestResult> testResults = trRepo.selectByTestID(test.getTestID());
+            for (TestResult testResult : testResults) {
+                if (testResult.getStudentID().equals(user.getUserID())) {
+                    tar = new TestAndResult(test, testResult, modServ.addQuestionsToList(test, user.getUserID()), user);
+                }
+                classAverage += testResult.getTestScore();
+            }
+            for (QuestionAndAnswer qa : tar.getQuestions()) {
+                qa.getAnswer().setScore(0);
+                qa.setCorrectPoints(new ArrayList<>());
+                qa.getQuestion().setOptions(new ArrayList<>());
+                if (qa.getQuestion().getQuestion().getQuestionType() == QuestionType.INSERT_THE_WORD) {
+                    List<Object> insertions = prepareInsertTheWordForStudent(qa.getQuestion().getQuestion());
+                    qa.getQuestion().getQuestion().setQuestionContent((String) insertions.get(0));
+                }
+            }
+            String grade = modServ.checkGrade((double) tar.getTestResult().getTestScore() * 100 / tar.getPercentageScore());
+            switch (grade) {
+                case "A*":
+                    tar.getTestResult().setTestScore(90);
+                    break;
+                case "A":
+                    tar.getTestResult().setTestScore(80);
+                    break;
+                case "B":
+                    tar.getTestResult().setTestScore(70);
+                    break;
+                case "C":
+                    tar.getTestResult().setTestScore(60);
+                    break;
+                case "D":
+                    tar.getTestResult().setTestScore(50);
+                    break;
+                default:
+                    tar.getTestResult().setTestScore(40);
+                    break;
+            }
+            classAverage = ((classAverage * 100) / questionTotal) / testResults.size();
+            String avg = modServ.checkGrade(classAverage);
+            switch (avg) {
+                case "A*":
+                    classAverage = 90;
+                    break;
+                case "A":
+                    classAverage = 80;
+                    break;
+                case "B":
+                    classAverage = 70;
+                    break;
+                case "C":
+                    classAverage = 60;
+                    break;
+                case "D":
+                    classAverage = 50;
+                    break;
+                default:
+                    classAverage = 40;
+                    break;
+            }
+            return new Performance(tar, classAverage);
+        }
+        throw new IllegalArgumentException("This test is not publishing results or grades yet.");
+    }
+
+    /**
+     * Performs the actions necessary to get the performance data and return it to the user on front end
+     *
+     * @param testID   - the test id
+     * @param username - the user
+     * @return the performance data
+     */
+    public Performance getPerformance(Long testID, String username) throws SQLException, IllegalArgumentException {
+        logger.info("Request made for performance statistics for test with id #{} and user: {}", testID, username);
+
+        Tests test = testRepo.selectByTestID(testID);
+        User user = userRepo.selectByUsername(username);
+        if (test.getPublishResults() == PUBLISH_TRUE) {
+            int questionTotal = 0;
+            double classAverage = 0.0;
+
+            TestAndResult tar = new TestAndResult();
+            List<TestResult> testResults = trRepo.selectByTestID(test.getTestID());
+            for (TestResult testResult : testResults) {
+                classAverage += testResult.getTestScore();
+                if (testResult.getStudentID().equals(user.getUserID())) {
+                    tar = new TestAndResult(test, testResult, modServ.addQuestionsToList(test, user.getUserID()), user);
+                }
+            }
+
+            for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
+                questionTotal += questionRepo.selectByQuestionID(tq.getQuestionID()).getMaxScore();
+            }
+
+            classAverage = ((classAverage * 100) / questionTotal) / testResults.size();
+
+            return new Performance(tar, classAverage);
+        }
+        throw new IllegalArgumentException("This test is not publishing results or grades yet.");
     }
 
     /**
@@ -343,8 +458,6 @@ public class TestService {
                             inputs.add(new Inputs("", loop, null));
                         }
                     }
-
-
                     List<OptionEntries> optionEntries = new LinkedList<>();
                     List<Option> options = new LinkedList<>();
                     if (q.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
@@ -353,7 +466,6 @@ public class TestService {
                             o.setFeedback("");
                             o.setWorthMarks(0);
                         }
-
                         if (q.getAllThatApply() == 0) {
                             optionEntries.add(new OptionEntries(null, null));
                         } else {
@@ -362,10 +474,7 @@ public class TestService {
                             }
                         }
                     }
-
-
-                    QuestionAndAnswer qToAdd = new QuestionAndAnswer(new QuestionAndBase64(prepareFigure(q), options, q), new Answer(), inputs, optionEntries);
-
+                    QuestionAndAnswer qToAdd = new QuestionAndAnswer(new QuestionAndBase64(prepareFigure(q), options, q), new Answer(), inputs, optionEntries, findCorrectPoints(q.getQuestionID()));
                     qToAdd.getQuestion().getQuestion().setQuestionFigure(null);
                     questions.add(qToAdd);
                 }
@@ -529,7 +638,6 @@ public class TestService {
     }
 
 
-
     /**
      * Carries out actions needed to add an existing question in to a new test
      * The question must have been created by the requesting user and they
@@ -636,7 +744,7 @@ public class TestService {
             }
 
             for (int x = 0; x < sortedCPForInsertTheWord.size(); x++) {
-                sortedCPForInsertTheWord.get(x).setIndex(x);
+                sortedCPForInsertTheWord.get(x).setIndexedAt(x);
             }
 
             correctPoints = sortedCPForInsertTheWord;

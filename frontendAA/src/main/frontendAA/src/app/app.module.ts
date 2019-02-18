@@ -31,6 +31,9 @@ import {Ng2FileSizeModule} from "ng2-file-size";
 import { DelegateDetailComponent } from './delegate-detail/delegate-detail.component';
 import {ChartsModule} from "ng2-charts";
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { PerformanceComponent } from './performance/performance.component';
+import { FeedbackComponent } from './feedback/feedback.component';
+import { BecomeTutorComponent } from './become-tutor/become-tutor.component';
 
 
 @NgModule({
@@ -56,7 +59,10 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     AddQuestionComponent,
     OldQuestionComponent,
     DelegateDetailComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    PerformanceComponent,
+    FeedbackComponent,
+    BecomeTutorComponent
   ],
   imports: [
     BrowserModule,

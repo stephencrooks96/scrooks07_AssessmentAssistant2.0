@@ -1,6 +1,7 @@
 package com.pgault04.pojos;
 
 import com.pgault04.entities.Answer;
+import com.pgault04.entities.CorrectPoint;
 import com.pgault04.entities.Inputs;
 import com.pgault04.entities.OptionEntries;
 
@@ -12,12 +13,14 @@ public class QuestionAndAnswer {
     private Answer answer;
     private List<Inputs> inputs;
     private List<OptionEntries> optionEntries;
+    private List<CorrectPoint> correctPoints;
 
-    public QuestionAndAnswer(QuestionAndBase64 question, Answer answer, List<Inputs> inputs, List<OptionEntries> optionEntries) {
+    public QuestionAndAnswer(QuestionAndBase64 question, Answer answer, List<Inputs> inputs, List<OptionEntries> optionEntries, List<CorrectPoint> correctPoints) {
         this.setQuestion(question);
         this.setAnswer(answer);
         this.setInputs(inputs);
         this.setOptionEntries(optionEntries);
+        this.setCorrectPoints(correctPoints);
     }
 
     public QuestionAndBase64 getQuestion() {
@@ -43,6 +46,10 @@ public class QuestionAndAnswer {
     public List<OptionEntries> getOptionEntries() { return optionEntries; }
 
     public void setOptionEntries(List<OptionEntries> optionEntries) { this.optionEntries = optionEntries; }
+
+    public List<CorrectPoint> getCorrectPoints() { return correctPoints; }
+
+    public void setCorrectPoints(List<CorrectPoint> correctPoints) { this.correctPoints = correctPoints; }
 
     @Override
     public String toString() {

@@ -43,14 +43,14 @@ export class AuthorizationService {
     }));
   }
 
-  getUsername(): Observable<string> {
+  getUser(): Observable<User> {
     let headers = new HttpHeaders({
       'Accept': 'application/json',
       'Authorization': 'Basic ' + localStorage.getItem("creds")
     });
-    return this._http.get<string>(this.app.url + "/main/getUsername", {headers: headers})
+    return this._http.get<User>(this.app.url + "/main/getUser", {headers: headers})
       .pipe(
-        tap(_ => console.log('Username fetched from server.'))
+        tap(_ => console.log('User fetched from server.'))
       );
   }
 

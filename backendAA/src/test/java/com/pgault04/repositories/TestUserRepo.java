@@ -43,7 +43,7 @@ public class TestUserRepo {
 		this.lastName = "lastName";
 		this.password = "password";
 		this.enabled = 0;
-		user = new User(username, password, firstName, lastName, enabled, USER_ROLE_IN_DB);
+		user = new User(username, password, firstName, lastName, enabled, USER_ROLE_IN_DB, 0);
 	}
 
 	@Test
