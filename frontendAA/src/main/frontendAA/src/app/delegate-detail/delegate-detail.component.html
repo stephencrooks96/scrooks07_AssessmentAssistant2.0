@@ -1,0 +1,56 @@
+<div class="pre-scrollable">
+  <div class="panel panel-default default">
+    <div class="panel-body" style="padding: 10px 30px 10px 30px;">
+
+      <h2>{{markerDetail.marker.firstName + " " + markerDetail.marker.lastName}}</h2>
+
+      <div class="row" style="align-content: center;">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+          <canvas id="detail">{{detailChart}}
+          </canvas>
+        </div>
+        <div class="col-sm-3"></div>
+      </div>
+
+
+      <form #assignScriptForm="ngForm" (submit)="assign(assignScriptForm)"
+            id='assignScriptForm'
+            name='assignScriptForm' role="form"
+            style="width: 100%;">
+        <h4>Assign Scripts From Other User <span><input class="shadow button btn-sm btn-success" style="margin: 10px 0 10px 0;" id="reassign" name='reassign'
+                                                        type="submit" value="Save"/></span></h4>
+
+        <span *ngIf="percentageError">Percentage must be between 0 and 100</span>
+        <table class="table table-dark" style="align-content: center; text-align: center;">
+          <thead class="thead-dark">
+          <tr>
+            <th>Marker</th>
+            <th>Unmarked Answers</th>
+            <th>Specify Question</th>
+            <th>Reassign (%)</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let markerObj of markerWithChart.markers; let i = index">
+            <td data-label="Markers" *ngIf="markerObj.marker.userID != markerDetail.marker.userID">{{markerObj.marker.firstName + " " + markerObj.marker.lastName}}</td>
+            <td data-label="Unmarked Answers" *ngIf="markerObj.marker.userID != markerDetail.marker.userID">{{markerObj.unmarked}}</td>
+            <td *ngIf="markerObj.marker.userID != markerDetail.marker.userID">
+              <select *ngIf="reassign" [(ngModel)]="reassign[i].specifyQuestion" class="form-control"
+                      id="specifyQuestion"
+                      name="specifyQuestion">
+
+                <option [value]="0" selected="selected">Any</option>
+                <option *ngFor="let q of questions; let j = index" [value]="q.question.questionID">{{j + 1}}</option>
+              </select>
+            </td>
+            <td style="width: 20%;" *ngIf="markerObj.marker.userID != markerDetail.marker.userID && reassign"><input class="form-control" id="maxScore"
+                   min="0" max="100"
+                       name="maxScore" [(ngModel)]="reassign[i].numberToReassign" type="number"/></td>
+          </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+</div>

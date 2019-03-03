@@ -1,0 +1,26 @@
+<app-header></app-header>
+<div class="container">
+  <div class="title">
+    <h2 class="display-2">Admins</h2>
+  </div>
+
+  <div style="align-content: center;" *ngIf="!users || users.length == 0">
+    <h1 class="display-1" style="text-align: center;">No admins to show.</h1>
+  </div>
+  <div *ngIf="users && users.length > 0">
+    <div class='row' style="align-content: center;">
+      <div *ngFor="let user of users" class='col-sm-8'
+           style="margin-left: auto; margin-right: auto; margin-bottom: 30px;">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title">{{user.firstName + " " + user.lastName}}
+              <small class="text-muted" *ngIf="user.userRoleID == 1"> : ADMIN</small>
+              <small class="text-muted" *ngIf="user.tutor == 1"> : TUTOR</small>
+            </h2>
+            <h5 class="card-subtitle mb-2 text-muted">Email now: <a href="mailto:{{user.username}}?Subject=AssessmentAssistant">{{user.username}}</a></h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

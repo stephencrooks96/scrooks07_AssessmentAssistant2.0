@@ -1,0 +1,132 @@
+<app-header></app-header>
+<div class="container" style="width: 95%; max-width: 95%;">
+
+  <nav aria-label="breadcrumb" class="breadcrumbs">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="'/myModules'">Modules</a></li>
+      <li class="breadcrumb-item"><a [routerLink]="['/moduleHome', performance.testAndResult.test.moduleID]">Module
+        Home</a></li>
+      <li aria-current="page" class="breadcrumb-item active">{{performance.testAndResult.test.testTitle}}</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+
+    <div class="col-sm-1">
+      <h3>Grade</h3>
+      <h1 *ngIf="performance.testAndResult.testResult.testScore == 90">A*</h1>
+      <h1 *ngIf="performance.testAndResult.testResult.testScore == 80">A</h1>
+      <h1 *ngIf="performance.testAndResult.testResult.testScore == 70">B</h1>
+      <h1 *ngIf="performance.testAndResult.testResult.testScore == 60">C</h1>
+      <h1 *ngIf="performance.testAndResult.testResult.testScore == 50">D</h1>
+      <h1 *ngIf="performance.testAndResult.testResult.testScore == 40">F</h1>
+
+      <h3>Average Grade</h3>
+      <h1 *ngIf="performance.classAverage == 90">A*</h1>
+      <h1 *ngIf="performance.classAverage == 80">A</h1>
+      <h1 *ngIf="performance.classAverage == 70">B</h1>
+      <h1 *ngIf="performance.classAverage == 60">C</h1>
+      <h1 *ngIf="performance.classAverage == 50">D</h1>
+      <h1 *ngIf="performance.classAverage == 40">F</h1>
+    </div>
+
+    <div class="col-sm-3" style="padding-left: 30px;">
+      <div class="panel panel-default default-pre-scrollable">
+        <table class="table-striped">
+          <tbody>
+          <span *ngFor="let script of performance.testAndResult.questions; let rowIndex = index;">
+                    <tr (click)="answerDetail = script; answerCounter = rowIndex;" style="border-radius: 10px;">
+                        <td style="padding-left: 10px; border-radius: 10px 0 0 10px;">
+              <span
+                *ngIf="script.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{script.question.question.questionContent}}
+            </td>
+            <td style="border-radius: 0 10px 10px 0;">
+              <button type="button" style="background: none; border: none;"><i
+                class="fas fa-long-arrow-alt-right"></i></button>
+            </td>
+          </tr>
+          </span>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-sm-5" style="height: 500px;">
+
+      <div class="pre-scrollable">
+        <div class="panel panel-default default">
+          <div class="panel-body">
+            <div class="content"><img
+              *ngIf="answerDetail.question.base64 != null && answerDetail.question.base64.length > 0"
+              style="max-width: 80%; max-height: 200px; margin-left: auto; margin-right: auto;"
+              [src]="readyImage(answerDetail.question.base64)" alt="QuestionFigure"></div>
+            <h5>Question:</h5>
+            <h5 *ngIf="answerDetail.question.question.questionType == 3">
+              Insert the missing word(s):</h5>
+            <h4 style="margin-bottom: 30px;">{{answerDetail.question.question.questionContent}}
+              <span
+                *ngIf="answerDetail.question.mathLines && answerDetail.question.mathLines.length >0">
+                        <span *ngFor="let mathLine of answerDetail.question.mathLines;">
+                          <span style="margin-top: 3px;">
+                            <ng-katex [equation]="mathLine.content" [options]="options"></ng-katex>
+                          </span>
+                        </span>
+                      </span>
+              <small style="float: right;">({{answerDetail.question.question.maxScore}} marks)
+              </small></h4>
+            <h5>Answer:</h5>
+
+            <div class="answerArea">
+              <div *ngIf="answerDetail.question.question.questionType == 3 || answerDetail.question.question.questionType == 4">
+                <h4>Inputs</h4>
+                <ol>
+                  <div *ngFor="let input of answerDetail.inputs; let i = index;">
+                    <h4>
+                      <li>{{input.inputValue}}
+                        <ng-katex *ngIf="input.math == 1" [equation]="input.inputValue"
+                                  [options]="options"></ng-katex>
+                      </li>
+                    </h4>
+                  </div>
+                </ol>
+              </div>
+
+              <div *ngIf="answerDetail.question.question.questionType == 2">
+                <h4>Chosen Options</h4>
+                <ol>
+                  <div *ngFor="let optEntry of answerDetail.optionEntries; let i = index">
+                    <div *ngFor="let opt of answerDetail.question.options">
+                      <h4>
+                        <li *ngIf="opt.optionID == optEntry.optionID">{{opt.optionContent}}</li>
+                      </h4>
+                    </div>
+                  </div>
+                </ol>
+              </div>
+              <div *ngIf="answerDetail.question.question.questionType == 1">
+                <h4>{{answerDetail.answer.content}}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3" style="height: 500px;">
+      <div class="pre-scrollable">
+        <div class="panel panel-default default">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-sm-12">
+                <h5>Feedback</h5>
+              </div>
+              <div class="answerArea" style="margin-left: 15px; margin-right: 15px;">
+                <h5>{{answerDetail.answer.feedback}}</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

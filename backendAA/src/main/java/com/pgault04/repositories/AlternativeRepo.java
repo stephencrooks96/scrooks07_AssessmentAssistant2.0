@@ -32,8 +32,6 @@ public class AlternativeRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
-    private final String insertSQL = "INSERT INTO Alternative (correctPointID, alternativePhrase, math) values (:correctPointID, :alternativePhrase, :math)";
-    private final String updateSQL = "UPDATE Alternative SET correctPointID=:correctPointID, alternativePhrase=:alternativePhrase, math=:math WHERE alternativeID=:alternativeID";
     private final String selectSQL = "SELECT * FROM Alternative WHERE ";
 
     @Autowired
@@ -41,14 +39,11 @@ public class AlternativeRepo {
     @Autowired
     NamedParameterJdbcTemplate namedparamTmpl;
 
-    private String tableName = "Alternative";
-    private String deleteSQL = "DELETE FROM Alternative WHERE alternativeID=?";
-
     /**
      * @return the number of rows in this table
      */
     public Integer rowCount() {
-        return tmpl.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+        return tmpl.queryForObject("SELECT COUNT(*) FROM Alternative", Integer.class);
     }
 
     /**
@@ -65,6 +60,7 @@ public class AlternativeRepo {
             log.debug("Inserting new alternative...");
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
+            String insertSQL = "INSERT INTO Alternative (correctPointID, alternativePhrase, math) values (:correctPointID, :alternativePhrase, :math)";
             namedparamTmpl.update(insertSQL, namedParams, keyHolder);
             alternative.setAlternativeID(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
@@ -72,6 +68,7 @@ public class AlternativeRepo {
             log.info("New alternative inserted: {}", alternative.toString());
         } else {
             log.debug("Updating alternative: {}", alternative.toString());
+            String updateSQL = "UPDATE Alternative SET correctPointID=:correctPointID, alternativePhrase=:alternativePhrase, math=:math WHERE alternativeID=:alternativeID";
             namedparamTmpl.update(updateSQL, namedParams);
         }
         log.info("AlternativeRepo returning alternative: {}", alternative);
@@ -121,6 +118,7 @@ public class AlternativeRepo {
      */
     public void delete(Long alternativeID) {
         log.debug("AlternativeRepo delete #{}.", alternativeID);
+        String deleteSQL = "DELETE FROM Alternative WHERE alternativeID=?";
         tmpl.update(deleteSQL, alternativeID);
         log.debug("Alternative #{} deleted from database.", alternativeID);
     }
