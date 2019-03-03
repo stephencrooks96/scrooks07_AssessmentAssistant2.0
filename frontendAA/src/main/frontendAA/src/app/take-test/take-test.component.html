@@ -26,10 +26,10 @@
         </div>
       </div>
       <h3>Questions</h3>
-      <div class="panel panel-default default-pre-scrollable">
+      <div class="panel panel-default pre-scrollable"  style="max-height: 50vh; height: 50vh;">
         <table class="table-striped">
           <tr *ngFor="let question of questions; let i = index">
-            <td>{{i + 1}}</td>
+            <td style="padding-left: 5px;">{{i + 1}}</td>
             <td style="padding-left: 10px;"><span *ngIf="question.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{question.question.question.questionContent}}
             </td>
             <td>
@@ -83,12 +83,48 @@
                     [src]="readyImage(question.question.base64)" alt="QuestionFigure"></div>
                   <div class="form-row">
                     <h4 *ngIf="question.question.question.questionType == 3">Insert the missing word(s):</h4>
-                    <div class="form-group col-sm-9"><h4>{{i + 1}}
-                      . {{question.question.question.questionContent}}</h4></div>
-                    <div class="form-group col-sm-3">
-                      <h3>({{question.question.question.maxScore}} marks)</h3>
+                    <div class="form-group col-sm-12"><h4>{{i + 1}}
+                      . {{question.question.question.questionContent}}
+                      <span *ngIf="question.question.mathLines && question.question.mathLines.length >0">
+                        <span *ngFor="let mathLine of question.question.mathLines;">
+                          <span style="margin-top: 3px;">
+                            <ng-katex [equation]="mathLine.content" [options]="options"></ng-katex>
+                          </span>
+                        </span>
+                      </span>
+                      <small style="float: right;">({{question.question.question.maxScore}} marks)</small></h4>
                     </div>
                   </div>
+
+                  <div *ngIf="question.question.question.questionType == 4">
+                    <div class="col-sm-12">
+                      <button type="button" class="btn btn-primary btn-sm"
+                              (click)="addTextInput(i)" style="margin-bottom: 10px; margin-right: 3px;">Add a line of text
+                      </button>
+                      <button type="button" class="btn btn-success btn-sm"
+                              (click)="addMathInput(i)" style="margin-bottom: 10px;">Add a line of math
+                      </button>
+                      <a href="https://katex.org/docs/support_table.html" target="_blank">
+                        What's available?</a>
+                      <p>Please attempt to add only add 1 statement per math line.</p>
+                    </div>
+                    <div class="form-row" *ngFor="let input of question.inputs; let j = index;">
+                      <div class="col-sm-1" style="padding-left: 0;">
+                        <button type="button"
+                                (click)="removeInput(i, j)"
+                                style="color: #dc3545; background-color: transparent; border: none;"><i
+                          class="fas fa-times"></i></button>
+                      </div>
+                      <div class="form-group col-sm-6">
+                        <textarea [(ngModel)]="input.inputValue" class="form-control" type="text" id="inputMath_({{i}}, {{j}})"
+                                  name="inputMath_({{i}}, {{j}})" [ngStyle]="{'border-color' : input.math == 1 ? '#28a745' : '#007bff'}"></textarea>
+                      </div>
+                      <div class="col-sm-5">
+                        <ng-katex *ngIf="input.math == 1"  [equation]="input.inputValue" [options]="options"></ng-katex>
+                      </div>
+                    </div>
+                  </div>
+
                   <div *ngIf="question.question.question.questionType == 3">
                     <div class="form-row" *ngFor="let input of question.inputs; let j = index;">
                       <div class="form-group col-sm-1">

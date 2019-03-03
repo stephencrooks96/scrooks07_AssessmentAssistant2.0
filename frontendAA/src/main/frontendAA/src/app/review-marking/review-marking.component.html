@@ -11,16 +11,19 @@
   </nav>
 
   <div class="row" style="margin-bottom: 2px">
-    <div class="col-sm-4">
+    <div class="col-sm-6">
       <button class="btn btn-dark" type="button"
-              (click)="review = false;" style="margin-right: 15px;">View Chart
+              (click)="review = false; chartToShow = true" style="margin-right: 15px;">Student Performance
+      </button>
+      <button class="btn btn-dark" type="button"
+              (click)="review = false; chartToShow = false" style="margin-right: 15px;">Question Statistics
       </button>
       <button class="btn btn-dark" type="button"
               (click)="review = true;">Review Marking
       </button>
 
     </div>
-    <div class="col-sm-4"></div>
+    <div class="col-sm-2"></div>
     <div class="col-sm-4">
       <div style="position: relative; float: right;">
         <button *ngIf="test.publishGrades == 0" class="btn btn-dark" type="button"
@@ -78,28 +81,41 @@
       </button>
     </div>
   </ng-template>
-
-  <div [hidden]="!chartCheck" style="width: 95%; max-height: 500px; z-index: 2; position: absolute;">
-    <canvas id="main" height="250px" width="300px">{{chart}}
+      <!--  z-index: 2; position: absolute; -->
+  <div [hidden]="!chartCheck" style=" display: block; width: 95%; max-height: 70vh; position: absolute; background-color: #dbdbdb" [ngStyle]="{'z-index' : chartToShow ? '2' : '1'}">
+    <canvas id="main">{{chart}}
     </canvas>
+  </div>
+
+  <div [hidden]="!resultChartCheck" style="display: block; width: 95%; height: 70vh; max-height: 70vh; position: absolute; background-color: #dbdbdb;" [ngStyle]="{'z-index' : chartToShow ? '1' : '2'}">
+    <div style="width: 80%; margin-left: 10%;">
+    <canvas id="byQuestion">{{questionChart}}
+    </canvas>
+    </div>
   </div>
 
 
   <div *ngIf="review"
-       style="z-index: 3; position: absolute; width: 95%; max-height: 500px; height: 500px; background-color: #dbdbdb;">
+       style="background-color: #dbdbdb; z-index: 3; position: absolute; width: 95%; max-height: 70vh; height: 70vh; background-color: #dbdbdb;">
     <div class="row">
 
-      <div class="col-sm-1">
-        <h3>Students</h3>
+      <div *ngIf="filter == 1" class="col-sm-2">
+        <select style="margin-bottom: 5px" #cpType="ngModel" [(ngModel)]="filter" class="form-control"
+                id="filtered1"
+                name="filtered">
+          <option [value]="1">Students</option>
+          <option [value]="0">Questions</option>
+        </select>
         <div class="panel panel-default default-pre-scrollable">
           <table class="table-striped" style="width: 100%;">
             <tr *ngFor="let student of studentSet" style="border-radius: 10px;">
               <td
-                style="padding-left: 10px; border-radius: 10px 0 0 10px;">{{student.firstName + " " + student.lastName}}
+                style="padding-left: 10px; border-radius: 10px 0 0 10px;"
+                (click)="showStudent = true; showQuestions = false; studentDetail = student; newAnswerDetailUser(student.userID)">{{student.firstName + " " + student.lastName}}
               </td>
-              <td style="border-radius: 0 10px 10px 0;">
-                <button type="button" style="background: none; border: none;"
-                        (click)="showStudent = true; showQuestions = false; studentDetail = student; newAnswerDetail(student.userID)">
+              <td style="border-radius: 0 10px 10px 0;"
+                  (click)="showStudent = true; showQuestions = false; studentDetail = student; newAnswerDetailUser(student.userID)">
+                <button type="button" style="background: none; border: none;">
                   <i
                     class="fas fa-long-arrow-alt-right"></i>
                 </button>
@@ -109,7 +125,7 @@
         </div>
       </div>
 
-      <div class="col-sm-3" style="padding-left: 30px;">
+      <div *ngIf="filter == 1" class="col-sm-2" style="padding-left: 30px;">
         <h3>{{studentDetail.firstName + " " + studentDetail.lastName}}</h3>
         <div class="panel panel-default default-pre-scrollable">
           <table class="table-striped">
@@ -118,12 +134,58 @@
                     <tr style="border-radius: 10px;"
                         [ngStyle]="{'background-color' : approvalFeedback[script.questionAndAnswer.answer.tutorApproved]}"
                         *ngIf="script.questionAndAnswer.answer.answererID == studentDetail.userID">
-                        <td style="padding-left: 10px; border-radius: 10px 0 0 10px;">
+                        <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore}}</td>
+                      <td style="padding-left: 10px;" (click)="answerDetail = script;">
               <span
                 *ngIf="script.questionAndAnswer.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{script.questionAndAnswer.question.question.questionContent}}
             </td>
-            <td style="border-radius: 0 10px 10px 0;">
-              <button type="button" style="background: none; border: none;" (click)="answerDetail = script;"><i
+            <td style="border-radius: 0 10px 10px 0;" (click)="answerDetail = script;">
+              <button type="button" style="background: none; border: none;"><i
+                class="fas fa-long-arrow-alt-right"></i></button>
+            </td>
+          </tr>
+          </span>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="filter == 0" class="col-sm-2">
+        <select style="margin-bottom: 5px" #cpType="ngModel" [(ngModel)]="filter" class="form-control"
+                id="filtered"
+                name="filtered">
+          <option [value]="1">Students</option>
+          <option [value]="0">Questions</option>
+        </select>
+        <div class="panel panel-default default-pre-scrollable">
+          <table class="table-striped" style="width: 100%;">
+            <tr *ngFor="let question of questionSet; let i = index" style="border-radius: 10px;">
+              <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="showStudent = true; showQuestions = false; questionDetail = question; newAnswerDetailQuestion(question.questionID)">{{i + 1}}. {{question.questionContent}}</td>
+              <td style="border-radius: 0 10px 10px 0;" (click)="showStudent = true; showQuestions = false; questionDetail = question; newAnswerDetailQuestion(question.questionID)">
+                <button type="button" style="background: none; border: none;">
+                  <i
+                    class="fas fa-long-arrow-alt-right"></i>
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="filter == 0" class="col-sm-2" style="padding-left: 30px;">
+        <h3>{{questionDetail.questionContent}}</h3>
+        <div class="panel panel-default default-pre-scrollable">
+          <table class="table-striped">
+            <tbody>
+            <span *ngFor="let script of scripts">
+                    <tr style="border-radius: 10px;"
+                        [ngStyle]="{'background-color' : approvalFeedback[script.questionAndAnswer.answer.tutorApproved]}"
+                        *ngIf="script.questionAndAnswer.question.question.questionID == questionDetail.questionID">
+                        <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore}}</td>
+                      <td style="padding-left: 10px; " (click)="answerDetail = script;">{{script.student.firstName + " " + script.student.lastName}}
+            </td>
+            <td style="border-radius: 0 10px 10px 0;" (click)="answerDetail = script;">
+              <button type="button" style="background: none; border: none;"><i
                 class="fas fa-long-arrow-alt-right"></i></button>
             </td>
           </tr>
@@ -145,19 +207,34 @@
               <h5>Question:</h5>
               <h5 *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 3">
                 Insert the missing word(s):</h5>
-              <h4 style="margin-bottom: 30px;">{{answerDetail.questionAndAnswer.question.question.questionContent}}
-                <span style="font-size: x-large;"> ({{answerDetail.questionAndAnswer.question.question.maxScore}}
-                  marks)</span></h4>
+              <div class="form-group col-sm-12">
+                <h4>{{answerDetail.questionAndAnswer.question.question.questionContent}}
+                  <span
+                    *ngIf="answerDetail.questionAndAnswer.question.mathLines && answerDetail.questionAndAnswer.question.mathLines.length >0">
+                        <span *ngFor="let mathLine of answerDetail.questionAndAnswer.question.mathLines;">
+                          <span style="margin-top: 3px;">
+                            <ng-katex [equation]="mathLine.content" [options]="options"></ng-katex>
+                          </span>
+                        </span>
+                      </span>
+                  <small style="float: right;">({{answerDetail.questionAndAnswer.question.question.maxScore}} marks)
+                  </small>
+                </h4>
+              </div>
 
               <h5>Answer:</h5>
 
               <div class="answerArea">
-                <div *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 3">
-                  <h4>Inputs</h4>
+                <div
+                  *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 3 || answerDetail.questionAndAnswer.question.question.questionType == 4">
+                  <h4 *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 3">Inputs</h4>
                   <ol>
                     <div *ngFor="let input of answerDetail.questionAndAnswer.inputs; let i = index;">
                       <h4>
-                        <li>{{input.inputValue}}</li>
+                        <li>{{input.inputValue}}
+                          <ng-katex *ngIf="input.math == 1" [equation]="input.inputValue"
+                                    [options]="options"></ng-katex>
+                        </li>
                       </h4>
                     </div>
                   </ol>
@@ -359,7 +436,8 @@
                       class="btn btn-danger btn-sm" type="button" (click)="open(ConfirmApprove)">Disapprove
               </button>
 
-              <div *ngIf="moduleAssoc == TUTOR && answerDetail.questionAndAnswer.question.question.questionType == 1">
+              <div
+                *ngIf="moduleAssoc == TUTOR && answerDetail.questionAndAnswer.question.question.questionType == 1 || answerDetail.questionAndAnswer.question.question.questionType == 4">
                 <button style="margin-top: 15px; margin-bottom: 15px;" class="btn btn-dark btn-sm" type="button"
                         (click)="open(ConfirmCP)">Add
                   another mark allocation
@@ -371,13 +449,28 @@
                       id='addCorrectPoint'
                       name='addCorrectPoint' role="form"
                       style="width: 100%;">
+                  <div class="row">
+                    <div class="form-group col-md-8"
+                         *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 4">
+                      <label for="correctPointType{{i}}">Type </label>
+
+                      <select #cpType="ngModel" [(ngModel)]="correctPointToInsert.math" class="form-control"
+                              id="correctPointType{{i}}"
+                              name="correctPointType{{i}}">
+                        <option [value]="0">Text</option>
+                        <option [value]="1">Mathematical</option>
+                      </select>
+                    </div>
+                  </div>
                   <div class="form-row">
                     <div class="form-group col-md-12">
                       <label for="phrase">Phrase <span *ngIf="phraseError"
                                                        style="font-size: x-small; color: #dc3545;">Must have between 1 and 65,535 characters.</span></label>
-                      <input [(ngModel)]="correctPointToInsert.phrase" class="form-control" id="phrase"
-                             name="phrase"
-                             type="text"/>
+                      <textarea [(ngModel)]="correctPointToInsert.phrase" class="form-control" id="phrase"
+                                name="phrase"
+                                type="text"></textarea>
+                      <ng-katex *ngIf="correctPointToInsert.math == 1" style="align-content: start; text-align: left;"
+                                [equation]="correctPointToInsert.phrase" [options]="options"></ng-katex>
                     </div>
                     <div class="form-group col-md-12">
                       <label for="marksWorth">Allocated Mark <span *ngIf="marksWorthError"
@@ -398,19 +491,26 @@
     width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
                     </div>
                     <div class="form-group col-md-12">
-                      <label>Alternative Phrases
-                        <button (click)="initAlternative()" type="button"
+                      <label>Alternatives
+                        <button (click)="initTextAlternative(i)" type="button"
+                                style="color: #007bff; background-color: transparent; border: none;"><i
+                          class="fas fa-plus"></i> Text
+                        </button>
+                        <button *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 4"
+                                (click)="initMathAlternative(i)" type="button"
                                 style="color: #28a745; background-color: transparent; border: none;"><i
-                          class="fas fa-plus"></i></button>
+                          class="fas fa-plus"></i> Math
+                        </button>
 
                       </label><br/>
                       <span *ngIf="alternativePhraseError" style="font-size: x-small; color: #dc3545;">Must not exceed 65,535 characters.</span>
                       <div *ngFor="let alt of correctPointToInsert.alternatives; let j = index">
                         <div class="row">
                           <div class="col-sm-11" style="padding-right: 0;">
-                            <input [(ngModel)]="alt.alternativePhrase"
-                                   class="form-control" id="alternatives{{[j]}}" name="alternatives{{[j]}}"
-                                   type="text">
+                          <textarea [(ngModel)]="alt.alternativePhrase"
+                                    class="form-control" id="alternatives{{[j]}}" name="alternatives{{[j]}}"
+                                    type="text"
+                                    [ngStyle]="{'border-color' : alt.math == 1 ? '#28a745' : '#007bff'}"></textarea>
                           </div>
                           <div class="col-sm-1" style="padding-left: 0;">
                             <button type="button"
@@ -436,12 +536,14 @@
                 </h6>
                 <ngb-accordion [closeOthers]="true" #markAllocations="ngbAccordion" activeIds="ngb-panel-0"
                                class="rounded dark">
-                  <ngb-panel class="rounded dark" *ngFor="let correctPoint of answerDetail.correctPoints"
+                  <ngb-panel class="rounded dark"
+                             *ngFor="let correctPoint of answerDetail.questionAndAnswer.correctPoints"
                              title="{{correctPoint.phrase}}" style="text-decoration: none;">
                     <ng-template ngbPanelContent class="rounded dark">
 
                       <div class="row" style="padding-left: 10%; padding-right: 10%;">
-
+                        <ng-katex *ngIf="correctPoint.math == 1" [equation]="correctPoint.phrase"
+                                  [options]="options"></ng-katex>
                         <button
                           *ngIf="moduleAssoc == TUTOR && answerDetail.questionAndAnswer.question.question.questionType != 3"
                           style="margin-top: 5px; margin-bottom: 10px"
@@ -463,6 +565,8 @@
                               <button *ngIf="moduleAssoc == TUTOR" style="background: none; border: none;"
                                       (click)="altToRemove = alt.alternativeID; open(ConfirmAltRem)"><i
                                 class="fas fa-trash-alt"></i></button>
+                              <ng-katex *ngIf="alt.math == 1" style="align-content: start; text-align: left;"
+                                        [equation]="alt.alternativePhrase" [options]="options"></ng-katex>
                             </li>
                           </ul>
 
@@ -486,11 +590,28 @@
                                   style="width: 100%;">
                               <h5><label for="alternative">Alternative</label></h5>
                               <span style="font-size: x-small; margin-bottom: 2px;" *ngIf="altError">Must not exceed by empty or longer than 56535 characters.</span>
+                              <div class="row">
+                                <div class="form-group col-sm-8"
+                                     *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 4">
+                                  <label for="correctPointType{{i}}">Type </label>
+
+                                  <select #cpType="ngModel" [(ngModel)]="alternativeToInsert.math" class="form-control"
+                                          id="altType{{i}}"
+                                          name="altType{{i}}">
+                                    <option [value]="0">Text</option>
+                                    <option [value]="1">Mathematical</option>
+                                  </select>
+                                </div>
+                              </div>
                               <textarea #alternative="ngModel" [(ngModel)]="alternativeToInsert.alternativePhrase"
                                         aria-describedby="scoreHelp"
                                         class="form-control" id="alternative" name="alternative" required
                                         style="margin-right: 10px;"
                                         [ngStyle]="{'border-color' : checkAlt}"></textarea>
+                              <ng-katex *ngIf="alternativeToInsert.math == 1"
+                                        [equation]="alternativeToInsert.alternativePhrase"
+                                        [options]="options"></ng-katex>
+
                               <button style="margin-top: 5px; margin-right: 5px;" type="submit"
                                       class="btn btn-dark btn-sm">Save
                               </button>

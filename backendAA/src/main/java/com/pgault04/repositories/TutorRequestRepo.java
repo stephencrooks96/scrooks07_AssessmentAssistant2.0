@@ -105,6 +105,17 @@ public class TutorRequestRepo {
         return tutorRequests;
     }
 
+    /**
+     * @return the tutor requests
+     */
+    public List<TutorRequests> selectAll() {
+        log.debug("TutorRequestRepo selectAll");
+        List<TutorRequests> requests = tmpl.query("SELECT * FROM TutorRequests", new BeanPropertyRowMapper<>(TutorRequests.class));
+
+        log.debug("Query for requests, number of items: {}", requests.size());
+        return requests;
+    }
+
 
     /**
      * Deletes a record from the database

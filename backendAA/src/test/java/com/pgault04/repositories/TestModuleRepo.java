@@ -39,7 +39,7 @@ public class TestModuleRepo {
         this.moduleName = "moduleName";
         this.moduleDescription = "moduleDescription";
         this.year = 2018;
-        module = new Module(moduleName, moduleDescription, TUTOR_ID_IN_DB, year, 1);
+        module = new Module(moduleName, moduleDescription, TUTOR_ID_IN_DB, "dateC", "dateE", 1);
     }
 
     @Test
@@ -86,14 +86,6 @@ public class TestModuleRepo {
         // Inserts one module to table
         moduleRepo.insert(module);
         List<Module> modules = moduleRepo.selectByTutorID(TUTOR_ID_IN_DB);
-        assertTrue(modules.size() > 1);
-    }
-
-    @Test
-    public void testSelectByYear() {
-        // Inserts one module to table
-        moduleRepo.insert(module);
-        List<Module> modules = moduleRepo.selectByYear(module.getYear());
         assertTrue(modules.size() > 1);
     }
 

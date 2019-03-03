@@ -32,8 +32,8 @@ public class AlternativeRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
-    private final String insertSQL = "INSERT INTO Alternative (correctPointID, alternativePhrase) values (:correctPointID, :alternativePhrase)";
-    private final String updateSQL = "UPDATE Alternative SET correctPointID=:correctPointID, alternativePhrase=:alternativePhrase WHERE alternativeID=:alternativeID";
+    private final String insertSQL = "INSERT INTO Alternative (correctPointID, alternativePhrase, math) values (:correctPointID, :alternativePhrase, :math)";
+    private final String updateSQL = "UPDATE Alternative SET correctPointID=:correctPointID, alternativePhrase=:alternativePhrase, math=:math WHERE alternativeID=:alternativeID";
     private final String selectSQL = "SELECT * FROM Alternative WHERE ";
 
     @Autowired

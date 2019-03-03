@@ -1,10 +1,18 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Alternative, CorrectPoint, Option, QuestionType, TutorQuestionPojo} from "../modelObjs/objects.model";
+import {
+  Alternative,
+  CorrectPoint,
+  Option,
+  QuestionMathLine,
+  QuestionType,
+  TutorQuestionPojo
+} from "../modelObjs/objects.model";
 import {TestService} from "../services/test.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditTestComponent} from "../edit-test/edit-test.component";
 import {DomSanitizer} from "@angular/platform-browser";
 import {NgForm} from "@angular/forms";
+import {KatexOptions} from "ng-katex";
 
 @Component({
   selector: 'app-question-detail',
@@ -35,6 +43,11 @@ export class QuestionDetailComponent implements OnInit {
   insertError = -1;
   questionTypeChecker: number = 1;
   optFeedbackError = false;
+  fileSuccess: boolean;
+  minScoreError: boolean;
+  options: KatexOptions = {
+    displayMode: true,
+  };
 
 
   constructor(private testServ: TestService, private modalService: NgbModal, private editTest: EditTestComponent, private sanitizer: DomSanitizer) {
@@ -52,10 +65,12 @@ export class QuestionDetailComponent implements OnInit {
   }
 
   read(event: any): void {
+    this.fileSuccess = false;
     let image: File = event.target.files[0];
     this.fileSize = event.target.files[0].size;
     if (this.fileSize > 1048576) {
       this.fileError = true;
+      return;
     } else {
       this.fileError = false;
     }
@@ -66,6 +81,7 @@ export class QuestionDetailComponent implements OnInit {
     };
 
     fileReader.readAsDataURL(image);
+    this.fileSuccess = true;
   }
 
   addOption() {
@@ -79,32 +95,61 @@ export class QuestionDetailComponent implements OnInit {
 
   removeOption(i) {
     this.testServ.removeOption(this.questionDetail.options[i] as Option)
-      .subscribe(success =>{});
+      .subscribe(success => {
+      });
 
     this.questionDetail.options.splice(i, 1);
+    return false;
+  }
+
+  addMathLine() {
+    const mathLine = new QuestionMathLine();
+    mathLine.questionMathLineID = 0;
+    mathLine.content = '';
+    mathLine.indexedAt = this.questionDetail.mathLines.length;
+    mathLine.questionID = 0;
+    this.questionDetail.mathLines.push(mathLine);
+    return false;
+  }
+
+  removeMathLine(i) {
+    this.testServ.removeQuestionMathLine(this.questionDetail.mathLines[i].questionMathLineID)
+      .subscribe(success => {
+      });
+
+    this.questionDetail.mathLines.splice(i, 1);
+    return false;
+  }
+
+  addMathAlternative(i) {
+    const alternative = new Alternative();
+    alternative.alternativeID = 0;
+    alternative.correctPointID = 0;
+    alternative.alternativePhrase = '';
+    alternative.math = 1;
+    this.questionDetail.correctPoints[i].alternatives.push(alternative);
     return false;
   }
 
   addCorrectPoint() {
     const correctPoint = new CorrectPoint();
     correctPoint.alternatives = [];
-    const alternative = new Alternative();
-    alternative.alternativeID = 0;
-    alternative.correctPointID = 0;
-    alternative.alternativePhrase = '';
-    correctPoint.alternatives.push(alternative);
     correctPoint.feedback = '';
     correctPoint.marksWorth = 0;
     correctPoint.phrase = '';
     correctPoint.questionID = 0;
+    correctPoint.math = 0;
     this.questionDetail.correctPoints.push(correctPoint);
 
     return false;
   }
 
   removeCorrectPoint(i) {
-    this.testServ.removeCorrectPoint(this.questionDetail.correctPoints[i].correctPointID)
-      .subscribe(success =>{});
+    if (this.questionDetail.correctPoints[i].correctPointID > 0) {
+      this.testServ.removeCorrectPoint(this.questionDetail.correctPoints[i].correctPointID)
+        .subscribe(success => {
+        });
+    }
 
     this.questionDetail.correctPoints.splice(i, 1);
     return false;
@@ -115,14 +160,18 @@ export class QuestionDetailComponent implements OnInit {
     alternative.alternativeID = 0;
     alternative.correctPointID = 0;
     alternative.alternativePhrase = '';
-
+    alternative.math = 0;
     this.questionDetail.correctPoints[i].alternatives.push(alternative);
     return false;
   }
 
   removeAlternative(i, j) {
-    this.testServ.removeAlternative(this.questionDetail.correctPoints[i].alternatives[j].alternativeID)
-      .subscribe(success =>{ });
+
+    if (this.questionDetail.correctPoints[i].alternatives[j].alternativeID > 0) {
+      this.testServ.removeAlternative(this.questionDetail.correctPoints[i].alternatives[j].alternativeID)
+        .subscribe(success => {
+        });
+    }
     this.questionDetail.correctPoints[i].alternatives.splice(j, 1);
     return false;
   }
@@ -169,6 +218,10 @@ export class QuestionDetailComponent implements OnInit {
     if (!this.questionDetail.question.maxScore || this.questionDetail.question.maxScore <= 0) {
       this.maxScoreError = true;
       this.generalError = true;
+    }
+
+    if (!this.questionDetail.question.minScore) {
+      this.questionDetail.question.minScore = 0;
     }
 
     // Question Type value 2 is Multiple Choice
@@ -237,6 +290,7 @@ export class QuestionDetailComponent implements OnInit {
     this.testServ.editQuestion(this.questionDetail as TutorQuestionPojo)
       .subscribe(success => {
         form.reset();
+        this.editQuestion = false;
         this.addedImage = null;
         this.imageToSend = null;
         this.fileError = false;
@@ -254,7 +308,8 @@ export class QuestionDetailComponent implements OnInit {
         this.worthMarksError = false;
         this.optFeedbackError = false;
         this.editTest.getQuestions(this.editTest.testID);
-        this.ngOnInit();
+        this.questionDetail = success;
+        return;
       }, error => {
         return;
       });

@@ -5,10 +5,20 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TestService} from "../services/test.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DomSanitizer} from "@angular/platform-browser";
-import {Alternative, Answer, AnswerData, CorrectPoint, ResultChartPojo, Tests, User} from "../modelObjs/objects.model";
+import {
+  Alternative,
+  Answer,
+  AnswerData,
+  CorrectPoint,
+  Question,
+  ResultChartPojo,
+  Tests,
+  User
+} from "../modelObjs/objects.model";
 import {Test} from "tslint";
 import {NgForm} from "@angular/forms";
 import {ModulesService} from "../services/modules.service";
+import {KatexOptions} from "ng-katex";
 
 const errorColour: string = "#dc3545";
 const normalColour: string = "#202529";
@@ -21,10 +31,15 @@ const normalColour: string = "#202529";
 export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
 
   chart;
+  chartToShow = true;
+  questionChart;
   testID;
   resultChartData = new ResultChartPojo();
+  resultQuestionChartData: ResultChartPojo[] = [];
+  resultChartCheck = false;
   chartCheck = false;
   chartCount = 0;
+  resultChartCount = 0;
   test = new Tests();
   review = false;
   TUTOR = 1;
@@ -33,12 +48,15 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
   showQuestions = false;
   scripts: AnswerData[];
   studentSet: User[];
+  questionSet: Question[];
   moduleAssoc : number;
   studentDetail = new User();
+  questionDetail = new Question();
   answerDetail = new AnswerData();
   editScoreShow = false;
   scoreError;
   checkScore;
+  filter: number = 1;
   altError;
   checkAlt;
   editFeedbackShow = false;
@@ -56,6 +74,9 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
   marksWorthError = false;
   alternativePhraseError = false;
   generalError = false;
+  options: KatexOptions = {
+    displayMode: true,
+  };
 
   constructor(private modServ: ModulesService, private cdr: ChangeDetectorRef, private markServ: MarkingService, private router: Router, private route: ActivatedRoute, private testServ: TestService, private modalService: NgbModal, private sanitizer: DomSanitizer) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
@@ -66,6 +87,7 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     this.approvalFeedback.push("");
     this.approvalFeedback.push("#B2E1B8");
     this.getResultChart(this.testID);
+    this.getQuestionResultChart(this.testID);
     this.getByTestID(this.testID);
     this.getScriptsByTestID(this.testID);
   }
@@ -74,8 +96,13 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
           this.test = test;
+          this.getModuleAssociation(test.moduleID);
         }
       );
+  }
+
+  getQuestionResultChart(testID) {
+    return this.markServ.getQuestionResultChart(testID).subscribe(resultChartData => this.resultQuestionChartData = resultChartData);
   }
 
   getResultChart(testID) {
@@ -85,7 +112,7 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
   ngDoCheck() {
     if (this.resultChartData) {
       if (this.resultChartData.labels && this.resultChartData.colors && this.resultChartData.scores) {
-        if (this.resultChartData.labels.length > 1 && this.resultChartData.colors.length > 1 && this.resultChartData.scores.length > 1) {
+        if (this.resultChartData.labels.length > 0 && this.resultChartData.colors.length > 0 && this.resultChartData.scores.length > 0) {
           this.chartCheck = true;
 
           if (this.chartCount == 0) {
@@ -94,12 +121,66 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
           }
         }
       }
+
+      if (this.resultQuestionChartData && this.resultQuestionChartData[0] && this.resultQuestionChartData[1]) {
+        if (this.resultQuestionChartData[0].labels && this.resultQuestionChartData[0].scores && this.resultQuestionChartData[1].labels && this.resultQuestionChartData[1].scores) {
+          if (this.resultQuestionChartData[1].labels.length > 0 && this.resultQuestionChartData[1].scores.length > 0 && this.resultQuestionChartData[0].labels.length > 0 && this.resultQuestionChartData[0].scores.length > 0) {
+            this.resultChartCheck = true;
+
+            if (this.resultChartCount == 0) {
+              this.questionChart = this.byQuestionChartInit();
+              this.resultChartCount++;
+            }
+          }
+        }
+      }
     }
   }
 
   ngAfterViewInit() {
     this.chart = this.mainChartInit();
+    this.questionChart = this.byQuestionChartInit();
     this.cdr.detectChanges();
+  }
+
+  byQuestionChartInit() {
+    return new Chart('byQuestion', {
+      type: 'bar',
+      data: {
+        datasets: [{
+          label: 'Average Score',
+          data: this.resultQuestionChartData[1].scores,
+          backgroundColor: '#007bff',
+          borderColor: '#007bff'
+        }, {
+          label: 'Total Score',
+          data: this.resultQuestionChartData[0].scores,
+          backgroundColor: '#dc3545',
+          borderColor: '#dc3545',
+          pointRadius: 10,
+          // Changes this dataset to become a line
+          type: 'line',
+          fill: false,
+          showLine: false
+        }],
+        labels: this.resultQuestionChartData[0].labels
+      },
+      options: {
+        responsive: true,
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: this.resultQuestionChartData[0].classAverage + 1,
+              stepSize: 1
+            }
+          }],
+          xAxes: [{
+            display: false,
+          }]
+        }
+      }
+    });
   }
 
   mainChartInit() {
@@ -193,19 +274,30 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       .subscribe(scripts => {
           this.scripts = scripts;
           this.studentSet = [];
+          this.questionSet = [];
           this.chosenOptions = [];
           for (let x = 0; x < this.scripts.length; x++) {
-            let add = true;
+            let addStu = true;
             for (let y = 0; y < this.studentSet.length; y++) {
               if (this.studentSet[y].userID == this.scripts[x].student.userID) {
-                add = false;
+                addStu = false;
               }
             }
-            if (add) {
+            if (addStu) {
               this.studentSet.push(this.scripts[x].student);
+            }
+            let addQ = true;
+            for (let y = 0; y < this.questionSet.length; y++) {
+              if (this.questionSet[y].questionID == this.scripts[x].questionAndAnswer.question.question.questionID) {
+                addQ = false;
+              }
+            }
+            if (addQ) {
+              this.questionSet.push(this.scripts[x].questionAndAnswer.question.question);
             }
           }
           this.studentDetail = this.studentSet[0];
+          this.questionDetail = this.questionSet[0];
           for (let x = 0; x < this.scripts.length; x++) {
             if (this.scripts[x].student.userID == this.studentDetail.userID && this.answerDetail.student.userID == null) {
               this.answerDetail = this.scripts[x];
@@ -218,9 +310,18 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       );
   }
 
-  newAnswerDetail(studentID) {
+  newAnswerDetailUser(studentID) {
     for (let x = 0; x < this.scripts.length; x++) {
       if (this.scripts[x].student.userID == studentID) {
+        this.answerDetail = this.scripts[x];
+        break;
+      }
+    }
+  }
+
+  newAnswerDetailQuestion(questionID) {
+    for (let x = 0; x < this.scripts.length; x++) {
+      if (this.scripts[x].questionAndAnswer.question.question.questionID == questionID) {
         this.answerDetail = this.scripts[x];
         break;
       }
@@ -268,11 +369,22 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     return false;
   }
 
-  initAlternative() {
+  initTextAlternative() {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
     alternative.correctPointID = 0;
     alternative.alternativePhrase = '';
+    alternative.math = 0;
+    this.correctPointToInsert.alternatives.push(alternative);
+    return false;
+  }
+
+  initMathAlternative() {
+    const alternative = new Alternative();
+    alternative.alternativeID = 0;
+    alternative.correctPointID = 0;
+    alternative.alternativePhrase = '';
+    alternative.math = 1;
     this.correctPointToInsert.alternatives.push(alternative);
     return false;
   }

@@ -27,6 +27,8 @@ public class CorrectPoint {
 
 	private Integer indexedAt;
 
+	private Integer math;
+
 	/**
 	 * The default constructor
 	 */
@@ -40,7 +42,7 @@ public class CorrectPoint {
 	 * @param feedback the feedback given for this phrase appearing
 	 * @param alternatives the list of phrases that are worthy of gaining the exact same marks
 	 */
-	public CorrectPoint(Long questionID, String phrase, Double marksWorth, String feedback, List<Alternative> alternatives, Integer indexedAt) {
+	public CorrectPoint(Long questionID, String phrase, Double marksWorth, String feedback, List<Alternative> alternatives, Integer indexedAt, Integer math) {
 		
 		this.setQuestionID(questionID);
 		this.setPhrase(phrase);
@@ -48,6 +50,7 @@ public class CorrectPoint {
 		this.setFeedback(feedback);
 		this.setAlternatives(alternatives);
 		this.setIndexedAt(indexedAt);
+		this.setMath(math);
 	}
 
 	/**
@@ -150,6 +153,16 @@ public class CorrectPoint {
 	}
 
 	/**
+	 * @return where the correct point is of math type
+	 */
+	public Integer getMath() { return math; }
+
+	/**
+	 * @param math whether the correct point is math type
+	 */
+	public void setMath(Integer math) { this.math = math; }
+
+	/**
 	 * @return the object as a string
 	 */
 	@Override
@@ -162,6 +175,7 @@ public class CorrectPoint {
 		sb.append(", feedback='").append(feedback).append('\'');
 		sb.append(", alternatives=").append(alternatives);
 		sb.append(", indexedAt=").append(indexedAt);
+		sb.append(", math=").append(math);
 		sb.append('}');
 		return sb.toString();
 	}

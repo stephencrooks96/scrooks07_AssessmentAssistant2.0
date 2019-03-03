@@ -10,16 +10,17 @@
     <legend>Question</legend>
 
     <div class="custom-file" style="margin-top: 10px; margin-bottom: 10px;">
-      <input type="file" class="custom-file-input" name="questionFigure" id="questionFigure"
+      <input type="file" class="custom-file-input" accept=".png" name="questionFigure" id="questionFigure"
              (change)="imageAdded($event)" #imgInput>
       <label class="custom-file-label" for="questionFigure" (click)="imgInput.click()">Add an image - <span
-        *ngIf="!fileError">(max. 1MB | must be .png)</span><span *ngIf="fileError"
-                                                  style="color: #dc3545;">Invalid file size: {{fileSize / 1024 / 1024 | number: '1.0-2'}}
+        *ngIf="!fileError">(max. 1MB | must be .png)</span><span *ngIf="fileSuccess"> - File added <i
+        class="fas fa-check-circle"></i></span><span *ngIf="fileError"
+                                                     style="color: #dc3545;">Invalid file size: {{fileSize / 1024 / 1024 | number: '1.0-2'}}
         MB</span></label>
     </div>
 
     <div class="form-row">
-      <div class="form-group col-md-6">
+      <div class="form-group col-md-4">
         <label for="questionTypes">Question Type <span *ngIf="typeError" style="font-size: x-small; color: #dc3545;">You must select a type.</span></label>
 
         <select #questionType="ngModel" [(ngModel)]="questionInsert.question.questionType" class="form-control"
@@ -29,9 +30,16 @@
         </select>
 
       </div>
-      <div class="form-group col-md-6">
-        <label for="maxScore">Score <span *ngIf="maxScoreError" style="font-size: x-small; color: #dc3545;">Score must be greater than zero.</span></label>
+      <div class="form-group col-md-4">
+        <label for="maxScore">Max Score <span *ngIf="maxScoreError" style="font-size: x-small; color: #dc3545;">Question must have a max score.</span></label>
         <input #maxScore="ngModel" [(ngModel)]="questionInsert.question.maxScore" class="form-control" id="maxScore"
+               min="1"
+               name="maxScore" type="number"/>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="maxScore">Min Score <span *ngIf="minScoreError" style="font-size: x-small; color: #dc3545;">Question must have a min score.</span></label>
+        <input #maxScore="ngModel" [(ngModel)]="questionInsert.question.minScore" class="form-control" id="minScore"
                min="1"
                name="maxScore" type="number"/>
       </div>
@@ -59,6 +67,33 @@
                   name="questionContent" rows="3"
                   style="display: block;
     width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"></textarea>
+      </div>
+    </div>
+    <button type="button" class="btn btn-success btn-sm"
+            (click)="addMathLine()" style="margin-bottom: 10px;">Add a math line
+    </button>
+    <a *ngIf="questionInsert.mathLines && questionInsert.mathLines.length > 0" href="https://katex.org/docs/support_table.html" target="_blank">
+      What's available?</a>
+    <div *ngFor="let mathLine of questionInsert.mathLines; let rowIndex = index;">
+      <div class="row">
+        <div class="col-sm-6">
+          <label for="equation_{{rowIndex}}">Line {{rowIndex + 1}} </label>
+          <button type="button" (click)="removeMathLine(rowIndex)"
+                  style="color: #dc3545; background-color: transparent; border: none;"><i
+            class="fas fa-times"></i></button>
+        </div>
+        <div class="col-sm-6">
+          <label>Output</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+      <textarea class="form-control" rows="2" type="text" name="equation_{{rowIndex}}" id="equation_{{rowIndex}}"
+                [(ngModel)]="mathLine.content"></textarea>
+        </div>
+        <div class="col-sm-6">
+          <ng-katex [equation]="mathLine.content" [options]="options"></ng-katex>
+        </div>
       </div>
     </div>
   </fieldset>
@@ -133,7 +168,7 @@
   </div>
 
 
-  <div *ngIf="questionTypeChecker == 1 || questionTypeChecker == 3">
+  <div *ngIf="questionTypeChecker == 1 || questionTypeChecker == 3 || questionTypeChecker == 4">
     <fieldset id="markSchemeFieldset" style="width: 100%;">
       <legend>
         <span
@@ -151,27 +186,59 @@
           <legend>Mark Allocation <span><button type="button" (click)="removeCorrectPoint([i])"
                                                 style="color: #dc3545; background-color: transparent; border: none;"> <i
             class="fas fa-times"></i></button></span></legend>
+          <div class="row">
+            <div class="form-group col-md-4" *ngIf="questionTypeChecker == 4" >
+              <label for="correctPointType{{i}}">Type </label>
+
+              <select #cpType="ngModel" [(ngModel)]="correctPoint.math" class="form-control"
+                      id="correctPointType{{i}}"
+                      name="correctPointType{{i}}">
+                <option [value]="0">Text</option>
+                <option [value]="1">Mathematical</option>
+              </select>
+            </div>
+          </div>
           <div class="form-row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-6" style="margin-bottom: 2px;">
               <label for="phrase{{[i]}}">Phrase <span *ngIf="phraseError == i"
                                                       style="font-size: x-small; color: #dc3545;">Must have between 1 and 65,535 characters.</span></label>
               <span *ngIf="insertError == i"
                     style="font-size: x-small; color: #dc3545;"> Insertion [[{{correctPoint.phrase}}]] not found in question content.</span>
-              <input [(ngModel)]="correctPoint.phrase" class="form-control" id="phrase{{[i]}}" name="phrase{{[i]}}"
-                     type="text"/>
+            </div>
+            <div class="form-group col-md-6" style="margin-bottom: 2px;">
+              <label *ngIf="correctPoint.math == 0" for="marksWorth{{[i]}}">Allocated Mark <span
+                *ngIf="marksWorthError == i"
+                style="font-size: x-small; color: #dc3545;">Must not exceed +/- the total mark.</span></label>
+              <label *ngIf="correctPoint.math == 1" >Math output of phrase:</label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <textarea rows="1" [(ngModel)]="correctPoint.phrase" class="form-control" id="phrase{{[i]}}"
+                        name="phrase{{[i]}}"
+                        type="text"></textarea>
             </div>
             <div class="form-group col-md-6">
-              <label for="marksWorth{{[i]}}">Allocated Mark <span *ngIf="marksWorthError == i"
-                                                                  style="font-size: x-small; color: #dc3545;">Must not exceed +/- the total mark.</span></label>
-              <input [(ngModel)]="correctPoint.marksWorth" class="form-control" id="marksWorth{{[i]}}"
+              <input *ngIf="correctPoint.math == 0" [(ngModel)]="correctPoint.marksWorth" class="form-control"
+                     id="marksWorth{{[i]}}"
                      name="marksWorth{{[i]}}"
                      type="number">
+              <ng-katex *ngIf="correctPoint.math == 1" [equation]="correctPoint.phrase" id="mathOutput{{i}}"
+                        [options]="options"></ng-katex>
             </div>
           </div>
 
 
           <div class="form-row">
             <div class="form-group col-md-6">
+              <label *ngIf="correctPoint.math == 1" for="marksWorth{{[i]}}m">Allocated Mark <span
+                *ngIf="marksWorthError == i"
+                style="font-size: x-small; color: #dc3545;">Must not exceed +/- the total mark.</span></label>
+              <input *ngIf="correctPoint.math == 1" [(ngModel)]="correctPoint.marksWorth" class="form-control"
+                     id="marksWorth{{[i]}}m"
+                     name="marksWorth{{[i]}}m"
+                     type="number"/>
               <label for="feedback{{[i]}}">Feedback to give <span *ngIf="feedbackError == i"
                                                                   style="font-size: x-small; color: #dc3545;">Must have between 1 and 65,535 characters.</span></label>
               <textarea [(ngModel)]="correctPoint.feedback" class="form-control" id="feedback{{[i]}}"
@@ -183,17 +250,21 @@
             <div class="form-group col-md-6">
               <label>Alternative Phrases
                 <button (click)="addAlternative([i])" type="button"
+                        style="color: #007bff; background-color: transparent; border: none;"><i
+                  class="fas fa-plus"></i> Text</button>
+                <button *ngIf="questionTypeChecker == 4" (click)="addMathAlternative([i])" type="button"
                         style="color: #28a745; background-color: transparent; border: none;"><i
-                  class="fas fa-plus"></i></button>
+                  class="fas fa-plus"></i> Math</button>
 
               </label><br/>
               <span *ngIf="alternativePhraseError" style="font-size: x-small; color: #dc3545;">Must not exceed 65,535 characters.</span>
               <div *ngFor="let alt of correctPoint.alternatives; let j = index">
                 <div class="row">
                   <div class="col-sm-11" style="padding-right: 0;">
-                    <input [(ngModel)]="alt.alternativePhrase"
-                           class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
-                           type="text">
+                    <textarea rows="1" [(ngModel)]="alt.alternativePhrase"
+                              class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
+                              type="text" [ngStyle]="{'border-color' : alt.math == 1 ? '#28a745' : '#007bff'}"></textarea>
+                    <p style="margin-top: 3px;" *ngIf="alt.math == 1"><ng-katex [equation]="alt.alternativePhrase" [options]="options"></ng-katex></p>
                   </div>
                   <div class="col-sm-1" style="padding-left: 0;">
                     <button type="button"

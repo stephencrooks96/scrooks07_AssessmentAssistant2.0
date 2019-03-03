@@ -5,6 +5,11 @@ export class ResultChartPojo {
   colors : string[];
 }
 
+export class TokenPojo {
+  user = new User();
+  token : string;
+}
+
 export class ChangePassword {
   password : string;
   newPassword : string;
@@ -22,6 +27,16 @@ export class User {
   tutor : number;
 }
 
+export class TutorRequestPojo {
+  tutor = new User();
+  request = new TutorRequest();
+}
+
+export class ModuleRequestPojo {
+  tutor = new User();
+  module = new ModuleFE();
+}
+
 export class TutorRequest {
   tutorRequestID : number;
   reason : string;
@@ -33,7 +48,8 @@ export class ModuleFE {
   moduleID: number;
   moduleName: string = "";
   moduleDescription: string = "";
-  year: number;
+  commencementDate = new Date();
+  endDate = new Date();
   tutorUserID: number;
 
 }
@@ -83,6 +99,13 @@ export class TestResult {
 
 }
 
+export class Associate {
+  associateType : string;
+  username : string;
+  firstName : string;
+  lastName : string;
+}
+
 export class Question {
 
   questionType: number;
@@ -90,6 +113,7 @@ export class Question {
   questionContent: string = "";
   questionFigure : Blob;
   maxScore: number;
+  minScore: number;
   creatorID: number;
   allThatApply : number;
 
@@ -122,6 +146,7 @@ export class Inputs {
   inputValue : string="";
   inputIndex : number;
   answerID : number;
+  math : number;
 }
 
 export class OptionEntries {
@@ -141,6 +166,7 @@ export class QuestionAndAnswer {
 export class QuestionAndBase64 {
   question = new Question();
   options : Option[];
+  mathLines: QuestionMathLine[] = [];
   base64 : string="";
 }
 
@@ -197,6 +223,7 @@ export class TutorQuestionPojo {
   question = new Question();
   options: Option[];
   correctPoints: CorrectPoint[];
+  mathLines: QuestionMathLine[] = [];
   base64;
 }
 
@@ -215,12 +242,26 @@ export class CorrectPoint {
   marksWorth: number;
   feedback: string="";
   alternatives: Alternative[];
+  math : number;
 }
 
 export class Alternative {
   alternativeID: number;
   correctPointID: number;
   alternativePhrase: string="";
+  math : number;
+}
+
+export class QuestionMathLine {
+  questionMathLineID: number;
+  questionID: number;
+  content: string;
+  indexedAt: number;
+}
+
+export class AddModulePojo {
+  module = new ModuleFE();
+  associations = [];
 }
 
 

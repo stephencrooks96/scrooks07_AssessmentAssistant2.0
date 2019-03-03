@@ -44,7 +44,7 @@ public class TestCorrectPointRepo {
         this.feedback = "feedback";
         this.marksWorth = 0.0;
         this.alts = new ArrayList<>();
-        correctPoint = new CorrectPoint(QUESTION_ID_IN_DATABASE, phrase, marksWorth, feedback, alts, 0);
+        correctPoint = new CorrectPoint(QUESTION_ID_IN_DATABASE, phrase, marksWorth, feedback, alts, 0, 0);
     }
 
     @Test

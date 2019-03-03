@@ -3,19 +3,20 @@ package com.pgault04.services;
 import com.pgault04.entities.*;
 import com.pgault04.pojos.*;
 import com.pgault04.repositories.*;
-import com.pgault04.utilities.BlobUtil;
-import com.pgault04.utilities.StringToDateUtil;
+import com.pgault04.utilities.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import javax.mail.internet.AddressException;
 import java.security.Principal;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class to provide necessary services to transform module data input and
@@ -37,7 +38,12 @@ public class ModuleService {
     private static final int PUBLISH_TRUE = 1;
     private static final int MARKER_APPROVED = 1;
     public static final int APPROVED = 1;
+    public static final int UNAPPROVED = 0;
 
+    @Autowired
+    EmailUtil emailSender;
+    @Autowired
+    UserSessionsRepo userSessionRepo;
     @Autowired
     TestsRepo testsRepo;
     @Autowired
@@ -66,6 +72,83 @@ public class ModuleService {
     CorrectPointRepo cpRepo;
     @Autowired
     TestService testServ;
+    @Autowired
+    PasswordResetRepo passwordResetRepo;
+
+    /**
+     * @return all tutor requests along with the tutor's information
+     */
+    public List<ModuleRequestPojo> getModuleRequests() {
+        List<Module> requests = moduleRepo.selectByApproved(UNAPPROVED);
+        List<ModuleRequestPojo> moduleRequests = new ArrayList<>();
+        for (Module m : requests) {
+            User tutor = userRepo.selectByUserID(m.getTutorUserID());
+            tutor.setPassword(null);
+            moduleRequests.add(new ModuleRequestPojo(tutor, m));
+        }
+        return moduleRequests;
+    }
+
+    /**
+     * approves module request and notifies the tutor
+     * @param moduleID the module
+     */
+    public void approveModuleRequest(Long moduleID) {
+        Module module = moduleRepo.selectByModuleID(moduleID);
+        module.setApproved(APPROVED);
+        moduleRepo.insert(module);
+        emailSender.sendModuleRequestApproved(module);
+        List<ModuleAssociation> moduleAssociations = modAssocRepo.selectByModuleID(moduleID);
+        for (ModuleAssociation ma : moduleAssociations) {
+            User user = userRepo.selectByUserID(ma.getUserID());
+            emailSender.sendEnrollmentMessageFromSystemToAssociate(module, user);
+        }
+    }
+
+    /**
+     * Rejects module request and notifies tutor
+     * @param moduleID the module
+     */
+    public void rejectModuleRequest(Long moduleID) {
+        Module module = moduleRepo.selectByModuleID(moduleID);
+        moduleRepo.delete(moduleID);
+        emailSender.sendModuleRequestRejected(module);
+    }
+
+    public void removeAssociate(String username, Long moduleID, Principal principal) {
+        if (checkValidAssociation(principal.getName(), moduleID).equals(AssociationType.TUTOR)) {
+            User user = userRepo.selectByUsername(username);
+            List<ModuleAssociation> moduleAssocs = modAssocRepo.selectByModuleID(moduleID);
+            for (ModuleAssociation m : moduleAssocs) {
+                if (m.getUserID().equals(user.getUserID())) {
+                    modAssocRepo.delete(m.getAssociationID());
+                }
+            }
+            emailSender.sendRemovedFromModule(username, moduleID);
+        }
+    }
+
+    public List<Associate> getAssociates(Long moduleID, Principal principal) {
+
+        if (checkValidAssociation(principal.getName(), moduleID) != null) {
+            List<ModuleAssociation> moduleAssociations = modAssocRepo.selectByModuleID(moduleID);
+            List<Associate> associates = new ArrayList<>();
+            for (ModuleAssociation ma : moduleAssociations) {
+                User user = userRepo.selectByUserID(ma.getUserID());
+                String associationType;
+                if (ma.getAssociationType().equals(AssociationType.TUTOR)) {
+                    associationType = "Tutor";
+                } else if (ma.getAssociationType().equals(AssociationType.STUDENT)) {
+                    associationType = "Student";
+                } else {
+                    associationType = "Teaching Assistant";
+                }
+                associates.add(new Associate(associationType, user.getUsername(), user.getFirstName(), user.getLastName()));
+            }
+            return associates;
+        }
+        return null;
+    }
 
     /**
      * Performs necessary actions needed to retrieve the active tests
@@ -125,6 +208,82 @@ public class ModuleService {
             modTutors.add(new ModuleWithTutor(u, m));
         }
         return modTutors;
+    }
+
+    public void addModule(ModulePojo modulePojo, String username) throws IllegalArgumentException, AddressException {
+
+        final User user = userRepo.selectByUsername(username);
+
+        modulePojo.getModule().setApproved(UNAPPROVED);
+        modulePojo.getModule().setTutorUserID(user.getUserID());
+        modulePojo.getModule().setModuleID(-1L);
+        modulePojo.setModule(moduleRepo.insert(modulePojo.getModule()));
+        modAssocRepo.insert(new ModuleAssociation(modulePojo.getModule().getModuleID(), user.getUserID(), AssociationType.TUTOR));
+        if (modulePojo.getAssociations().size() > 0) {
+            addAssociations(modulePojo.getModule().getModuleID(), modulePojo.getAssociations(), username);
+        }
+
+        // Email tutor
+        emailSender.sendNewModuleMessageFromSystemToTutor(user.getUsername(), modulePojo.getModule());
+        // Email admins
+        List<User> admins = userRepo.selectAll();
+        for (User u : admins) {
+            if (u.getUserRoleID().equals(UserRole.ROLE_ADMIN)) {
+                emailSender.sendNewModuleMessageFromSystemToAdmin(modulePojo.getModule(), user.getUsername(), u.getUsername());
+            }
+        }
+    }
+
+    public void addAssociations(Long moduleID, List<Associate> associations, String username) throws IllegalArgumentException{
+        boolean associationTypeError = false;
+        if (checkValidAssociation(username, moduleID).equals(AssociationType.TUTOR)) {
+            for (Associate a : associations) {
+                User user = userRepo.selectByUsername(a.getUsername());
+                if (user == null) {
+                    String password = PasswordUtil.generateRandomString();
+                    user = userRepo.insert(new User(a.getUsername(), PasswordEncrypt.encrypt(password), a.getFirstName(), a.getLastName(), 0, UserRole.ROLE_USER, 0));
+                    userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + password).getBytes())), new Timestamp(System.currentTimeMillis())));
+                    passwordResetRepo.insert(new PasswordReset(user.getUserID(), PasswordUtil.generateRandomString()));
+                    emailSender.sendNewAccountMessageFromSystemToUser(user, password, username);
+                }
+                ModuleAssociation moduleAssociation = new ModuleAssociation();
+                if (a.getAssociateType().equalsIgnoreCase("TA")) {
+                    moduleAssociation.setAssociationType(AssociationType.TEACHING_ASSISTANT);
+                } else if (a.getAssociateType().equalsIgnoreCase("S")) {
+                    moduleAssociation.setAssociationType(AssociationType.STUDENT);
+                } else {
+                    associationTypeError = true;
+                    continue;
+                }
+                moduleAssociation.setAssociationID(-1L);
+                moduleAssociation.setUserID(user.getUserID());
+                moduleAssociation.setModuleID(moduleID);
+                modAssocRepo.insert(moduleAssociation);
+            }
+            if (associationTypeError) {
+                throw new IllegalArgumentException("One or more associations have included a type which is not TA or S.");
+            }
+        } else {
+            throw new IllegalArgumentException("You must be the module tutor to perform this action.");
+        }
+    }
+
+    /**
+     * Gets the modules that are awaiting approval
+     * @param username the user
+     * @return unapproved modules
+     */
+    public List<Module> getModulesPendingApproval(String username) {
+        logger.info("Requests for all pending modules for user {}", username);
+        User user = userRepo.selectByUsername(username);
+        List<Module> modules = moduleRepo.selectByTutorID(user.getUserID());
+        List<Module> modulesToReturn = new ArrayList<>();
+        for (Module m : modules) {
+            if (m.getApproved().equals(UNAPPROVED)) {
+                modulesToReturn.add(m);
+            }
+        }
+        return modulesToReturn.size() > 0 ? modulesToReturn : Collections.emptyList();
     }
 
     /**
@@ -270,7 +429,7 @@ public class ModuleService {
             Answer answer = answerRepo.selectByQuestionIDAndAnswererID(questionToAdd.getQuestionID(), userID);
             String base64 = BlobUtil.blobToBase(questionToAdd.getQuestionFigure());
             questionToAdd.setQuestionFigure(null);
-            QuestionAndBase64 questionAndBase64 = new QuestionAndBase64(base64, optionRepo.selectByQuestionID(questionToAdd.getQuestionID()), questionToAdd);
+            QuestionAndBase64 questionAndBase64 = new QuestionAndBase64(base64, optionRepo.selectByQuestionID(questionToAdd.getQuestionID()), testServ.findMathLines(questionToAdd.getQuestionID()), questionToAdd);
             QuestionAndAnswer questionAndAnswer = new QuestionAndAnswer(questionAndBase64, answer, inputRepo.selectByAnswerID(answer.getAnswerID()), optionEntriesRepo.selectByAnswerID(answer.getAnswerID()), testServ.findCorrectPoints(questionToAdd.getQuestionID()));
             questions.add(questionAndAnswer);
         }

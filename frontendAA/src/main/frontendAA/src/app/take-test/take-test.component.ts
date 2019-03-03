@@ -1,11 +1,19 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {TestService} from "../services/test.service";
-import {Answer, QuestionAndAnswer, QuestionAndBase64, Tests} from "../modelObjs/objects.model";
+import {
+  Alternative,
+  Answer,
+  CorrectPoint, Inputs,
+  QuestionAndAnswer,
+  QuestionAndBase64,
+  Tests
+} from "../modelObjs/objects.model";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {interval, Subscription} from "rxjs";
 import {DomSanitizer} from "@angular/platform-browser";
 import {NgForm} from "@angular/forms";
+import {KatexOptions} from "ng-katex";
 
 const millisecondsToSeconds = 1000;
 const secondsInDay = 86400;
@@ -31,7 +39,9 @@ export class TakeTestComponent implements OnInit {
   submitted = false;
   originalLongMessage = "The following questions are indicated to exceed the size limit, pressing next may cause your answers to be truncated. Question(s): ";
   originalShortMessage = "The following questions are indicated to not have been answered - are you sure you want to proceed? Question(s): ";
-
+  options: KatexOptions = {
+    displayMode: true,
+  };
 
   timeDifference: number;
   sub: Subscription;
@@ -72,6 +82,7 @@ export class TakeTestComponent implements OnInit {
 
 
   async ngOnInit() {
+    this.getAnsweredTests();
     this.getByTestID(this.testID);
     await this.getQuestions(this.testID);
 
@@ -80,17 +91,48 @@ export class TakeTestComponent implements OnInit {
       this.timeDifference = Math.floor((date.getTime() - new Date().getTime()) / millisecondsToSeconds);
       if (this.timeDifference <= 0) {
         this.sub.unsubscribe();
+        this.backHome();
       }
 
       this.countdown = TakeTestComponent.convertToCountdown(this.timeDifference);
     });
   }
 
+  getAnsweredTests() {
+    return this.testServ.getAnsweredTests()
+      .subscribe(answeredSet => {
+        if (answeredSet.includes(this.testID)) {
+          this.backHome();
+        }
+      });
+  }
+
   backHome() {
     this.router.navigate(['/moduleHome', this.test.moduleID]);
   }
 
+  addTextInput(i) {
+    const input = new Inputs();
+    input.inputValue = '';
+    input.inputIndex = this.questions[i].inputs.length;
+    input.math = 0;
+    this.questions[i].inputs.push(input);
+    return false;
+  }
 
+  addMathInput(i) {
+    const input = new Inputs();
+    input.inputValue = '';
+    input.inputIndex = this.questions[i].inputs.length;
+    input.math = 1;
+    this.questions[i].inputs.push(input);
+    return false;
+  }
+
+  removeInput(i) {
+    this.questions[i].inputs.splice(i, 1);
+    return false;
+  }
 
   readyImage(base64): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + base64);

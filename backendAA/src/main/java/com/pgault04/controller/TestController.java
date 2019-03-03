@@ -220,6 +220,12 @@ public class TestController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/removeQuestionMathLine", method = RequestMethod.DELETE)
+    public Boolean removeQuestionMathLine(Long questionMathLineID, Principal principal) {
+        return testService.removeQuestionMathLine(questionMathLineID, principal.getName());
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/removeOption", method = RequestMethod.DELETE)
     public Boolean removeOption(Long optionID, Principal principal) {
         return testService.removeOption(optionID, principal.getName());

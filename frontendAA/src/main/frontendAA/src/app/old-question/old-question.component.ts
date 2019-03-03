@@ -3,6 +3,7 @@ import {QuestionType, TutorQuestionPojo} from "../modelObjs/objects.model";
 import {TestService} from "../services/test.service";
 import {EditTestComponent} from "../edit-test/edit-test.component";
 import {NgForm} from "@angular/forms";
+import {KatexOptions} from "ng-katex";
 
 @Component({
   selector: 'app-old-question',
@@ -14,6 +15,9 @@ export class OldQuestionComponent implements OnInit {
   oldQuestions : TutorQuestionPojo[];
   questionTypesToShow : QuestionType[];
   testID : number;
+  options: KatexOptions = {
+    displayMode: true,
+  };
   constructor(private testServ : TestService, private editTest: EditTestComponent) {
     this.testID = this.editTest.testID;
   }

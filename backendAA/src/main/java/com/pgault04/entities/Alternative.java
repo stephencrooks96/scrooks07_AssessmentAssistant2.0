@@ -19,6 +19,8 @@ public class Alternative {
 
 	private String alternativePhrase;
 
+	private Integer math;
+
 	/**
 	 * Default constructor
 	 */
@@ -30,7 +32,7 @@ public class Alternative {
 	 * @param correctPointID the correct point id
 	 * @param alternativePhrase the alternative phrase
 	 */
-	public Alternative(Long correctPointID, String alternativePhrase) {
+	public Alternative(Long correctPointID, String alternativePhrase, Integer math) {
 		this.setCorrectPointID(correctPointID);
 		this.setAlternativePhrase(alternativePhrase);
 	}
@@ -79,6 +81,16 @@ public class Alternative {
 	public void setAlternativePhrase(String alternativePhrase) {
 		this.alternativePhrase = alternativePhrase;
 	}
+
+	/**
+	 * @return whether it is math or not
+	 */
+	public Integer getMath() { return math; }
+
+	/**
+	 * @param math whether it is math or not
+	 */
+	public void setMath(Integer math) { this.math = math; }
 
 	/**
 	 * @return the object as a string

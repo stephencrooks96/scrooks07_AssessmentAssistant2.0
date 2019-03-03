@@ -52,7 +52,6 @@ public class UserRepo {
      */
     public User insert(User user) {
         BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(user);
-        user.setPassword(PasswordEncrypt.encrypt(user.getPassword()));
         if (user.getUserID() < INSERT_CHECKER_CONSTANT) {
             // insert
             log.debug("Inserting new user...");
@@ -122,7 +121,6 @@ public class UserRepo {
             return users.get(0);
         }
         return null;
-
     }
 
     /**

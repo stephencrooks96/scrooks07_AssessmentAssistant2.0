@@ -179,17 +179,12 @@ public class MarkingService {
                     List<Long> optionEntriesIDs = new ArrayList<>();
                     List<OptionEntries> optionEntriesToCompare = optionEntriesRepo.selectByAnswerID(a.getAnswerID());
                     List<Long> optionEntriesIDsToCompare = new ArrayList<>();
-
-
                     for (OptionEntries o : optionEntriesToCompare) {
                         optionEntriesIDsToCompare.add(o.getOptionID());
                     }
-
                     for (OptionEntries o : optionEntries) {
                         optionEntriesIDs.add(o.getOptionID());
                     }
-
-
                     if (optionEntriesIDs.containsAll(optionEntriesIDsToCompare)) {
                         a.setMarkerApproved(1);
                         a.setFeedback(answer.getFeedback());
@@ -321,21 +316,23 @@ public class MarkingService {
                     optionEntries = optionEntriesRepo.selectByAnswerID(a.getAnswerID());
                 }
 
-                if (question.getQuestionType() == QuestionType.INSERT_THE_WORD || question.getQuestionType() == QuestionType.TEXT_BASED) {
+                if (question.getQuestionType() == QuestionType.INSERT_THE_WORD || question.getQuestionType() == QuestionType.TEXT_BASED || question.getQuestionType() == QuestionType.TEXT_MATH) {
                     correctPoints = correctPointRepo.selectByQuestionID(a.getQuestionID());
                     for (CorrectPoint c : correctPoints) {
                         c.setAlternatives(alternativeRepo.selectByCorrectPointID(c.getCorrectPointID()));
                     }
 
-                    if (question.getQuestionType() == QuestionType.INSERT_THE_WORD) {
-                        correctPoints.sort(Comparator.comparingInt(CorrectPoint::getIndexedAt));
+                    if (question.getQuestionType() == QuestionType.INSERT_THE_WORD || question.getQuestionType() == QuestionType.TEXT_MATH) {
+                        if (question.getQuestionType() == QuestionType.INSERT_THE_WORD) {
+                            correctPoints.sort(Comparator.comparingInt(CorrectPoint::getIndexedAt));
+                        }
                         inputs = inputsRepo.selectByAnswerID(a.getAnswerID());
                         inputs.sort(Comparator.comparingInt(Inputs::getInputIndex));
                     }
                 }
 
                 User student = userRepo.selectByUserID(a.getAnswererID());
-                scripts.add(new AnswerData(new QuestionAndAnswer(new QuestionAndBase64(base64, options, question), a, inputs, optionEntries, correctPointRepo.selectByQuestionID(question.getQuestionID())), student));
+                scripts.add(new AnswerData(new QuestionAndAnswer(new QuestionAndBase64(base64, options, testService.findMathLines(question.getQuestionID()), question), a, inputs, optionEntries, correctPoints), student));
             }
         }
         return scripts;
@@ -427,7 +424,7 @@ public class MarkingService {
                             }
                         }
                     }
-                    int reassignLevel = (questionAnswers.size() * (m.getNumberToReassign().intValue() / 100));
+                    int reassignLevel = (questionAnswers.size() * m.getNumberToReassign().intValue()) / 100;
                     for (int loop = 0; loop < questionAnswers.size(); loop++) {
                         if (loop < reassignLevel) {
                             questionAnswers.get(loop).setMarkerID(m.getMarkerID());
@@ -528,23 +525,46 @@ public class MarkingService {
     private void autoMarkNewCorrectPoint(CorrectPoint correctPoint, Answer answer) {
 
         Question question = questionRepo.selectByQuestionID(answer.getQuestionID());
-        if (answer.getContent().toLowerCase().contains(correctPoint.getPhrase().toLowerCase())) {
-            answer.setScore(answer.getScore() + correctPoint.getMarksWorth().intValue());
-            answer.setFeedback(answer.getFeedback() + "\n" + correctPoint.getFeedback());
-            answer.setTutorApproved(0);
-            answer.setMarkerApproved(0);
-        } else {
-            for (Alternative alt : alternativeRepo.selectByCorrectPointID(correctPoint.getCorrectPointID())) {
-                if (answer.getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
-                    answer.setTutorApproved(0);
-                    answer.setMarkerApproved(0);
+        if (question.getQuestionType() == QuestionType.TEXT_BASED) {
+            if (answer.getContent().toLowerCase().contains(correctPoint.getPhrase().toLowerCase())) {
+                answer.setScore(answer.getScore() + correctPoint.getMarksWorth().intValue());
+                answer.setFeedback(answer.getFeedback() + "\n" + correctPoint.getFeedback());
+                answer.setTutorApproved(0);
+                answer.setMarkerApproved(0);
+            } else {
+                for (Alternative alt : alternativeRepo.selectByCorrectPointID(correctPoint.getCorrectPointID())) {
+                    if (answer.getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
+                        answer.setTutorApproved(0);
+                        answer.setMarkerApproved(0);
+                        answer.setScore(answer.getScore() + correctPoint.getMarksWorth().intValue());
+                        answer.setFeedback(answer.getFeedback() + "\n" + correctPoint.getFeedback());
+                        break;
+                    }
+                }
+            }
+        } else if (question.getQuestionType() == QuestionType.TEXT_MATH) {
+            List<Inputs> inputs = inputsRepo.selectByAnswerID(answer.getAnswerID());
+            for (Inputs i : inputs) {
+                if (i.getInputValue().trim().equalsIgnoreCase(correctPoint.getPhrase())) {
                     answer.setScore(answer.getScore() + correctPoint.getMarksWorth().intValue());
                     answer.setFeedback(answer.getFeedback() + "\n" + correctPoint.getFeedback());
                     break;
+                } else {
+                    boolean altBroken = false;
+                    for (Alternative alt : alternativeRepo.selectByCorrectPointID(correctPoint.getCorrectPointID())) {
+                        if (i.getInputValue().contains(alt.getAlternativePhrase())) {
+                            answer.setScore(answer.getScore() + correctPoint.getMarksWorth().intValue());
+                            answer.setFeedback(answer.getFeedback() + "\n" + correctPoint.getFeedback());
+                            altBroken = true;
+                            break;
+                        }
+                    }
+                    if (altBroken) {
+                        break;
+                    }
                 }
             }
         }
-
         testService.validateScore(answer, question);
     }
 
@@ -553,14 +573,31 @@ public class MarkingService {
         Question question = questionRepo.selectByQuestionID(answer.getQuestionID());
         CorrectPoint correctPoint = correctPointRepo.selectByCorrectPointID(alternative.getCorrectPointID());
         boolean check = false;
-        if (answer.getContent().toLowerCase().contains(correctPoint.getPhrase().toLowerCase())) {
-            check = true;
-        } else {
-            for (Alternative alt : alternativeRepo.selectByCorrectPointID(correctPoint.getCorrectPointID())) {
-                if (!alternative.getAlternativeID().equals(alt.getAlternativeID()) && answer.getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
+        if (question.getQuestionType() == QuestionType.TEXT_BASED) {
+            if (answer.getContent().toLowerCase().contains(correctPoint.getPhrase().toLowerCase())) {
+                check = true;
+            } else {
+                for (Alternative alt : alternativeRepo.selectByCorrectPointID(correctPoint.getCorrectPointID())) {
+                    if (!alternative.getAlternativeID().equals(alt.getAlternativeID()) && answer.getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
+                        check = true;
+                    } else if (alternative.getAlternativeID().equals(alt.getAlternativeID()) && !answer.getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
+                        check = true;
+                    }
+                }
+            }
+        } else if (question.getQuestionType() == QuestionType.TEXT_MATH) {
+            List<Inputs> inputs = inputsRepo.selectByAnswerID(answer.getAnswerID());
+            for (Inputs i : inputs) {
+                if (i.getInputValue().trim().equalsIgnoreCase(correctPoint.getPhrase())) {
                     check = true;
-                } else if (alternative.getAlternativeID().equals(alt.getAlternativeID()) && !answer.getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
-                    check = true;
+                } else {
+                    for (Alternative alt : alternativeRepo.selectByCorrectPointID(correctPoint.getCorrectPointID())) {
+                        if (!alternative.getAlternativeID().equals(alt.getAlternativeID()) && i.getInputValue().trim().equalsIgnoreCase(alt.getAlternativePhrase())) {
+                            check = true;
+                        } else if (alternative.getAlternativeID().equals(alt.getAlternativeID()) && !i.getInputValue().trim().equalsIgnoreCase(alt.getAlternativePhrase())) {
+                            check = true;
+                        }
+                    }
                 }
             }
         }
@@ -641,7 +678,7 @@ public class MarkingService {
                 classAverage += a.getScore();
             }
             int classAverageFinal = (int) (((classAverage / totalMarks) * 100) / users.size());
-            double standardDev = calculateStandardDeviation(answers);
+            double standardDev = (calculateStandardDeviation(answers) / totalMarks) * 100;
 
             for (Long user : users) {
                 double userScore = 0.0;
@@ -654,10 +691,9 @@ public class MarkingService {
                 labels.add(u.getFirstName() + " " + u.getLastName());
                 scores.add((int) (((userScore / totalMarks)) * 100));
                 userScore = (((userScore / totalMarks)) * 100);
-                standardDev = (((standardDev / totalMarks)) * 100);
-                if (userScore  > classAverageFinal) {
+                if (userScore >= classAverageFinal) {
                     colors.add("#28a745");
-                } else if (userScore <= classAverageFinal && userScore >= classAverageFinal - standardDev) {
+                } else if (userScore < classAverageFinal && userScore >= classAverageFinal - standardDev) {
                     colors.add("#ffc107");
                 } else {
                     colors.add("#dc3545");
@@ -665,6 +701,46 @@ public class MarkingService {
             }
 
             return new ResultChartPojo(labels, scores, classAverageFinal, colors);
+        }
+        return null;
+    }
+
+    public List<ResultChartPojo> generateQuestionResultChart(Long testID, String username) {
+        logger.info("Request made for result statistics for test with id #{}", testID);
+        Tests test = testsRepo.selectByTestID(testID);
+        Long check = modService.checkValidAssociation(username, test.getModuleID());
+        List<ResultChartPojo> resultCharts = new LinkedList<>();
+        if (AssociationType.TUTOR == check) {
+
+            List<Answer> answers = answerRepo.selectByTestID(testID);
+            LinkedList<Integer> scores1 = new LinkedList<>();
+            LinkedList<Integer> scores2 = new LinkedList<>();
+            LinkedList<String> labels = new LinkedList<>();
+            Set<Long> questions = new HashSet<>();
+
+            for (Answer a : answers) {
+                questions.add(a.getQuestionID());
+            }
+
+            int counter = 1;
+            for (Long q : questions) {
+                Question question = questionRepo.selectByQuestionID(q);
+                labels.add(counter++ + ". " + question.getQuestionContent());
+                scores1.add(question.getMaxScore());
+                int totalScore = 0;
+                int userCounter = 0;
+                for (Answer a : answers) {
+                    if (q.equals(a.getQuestionID())) {
+                        totalScore += a.getScore();
+                        userCounter++;
+                    }
+                }
+                scores2.add(totalScore / userCounter);
+            }
+
+            resultCharts.add(new ResultChartPojo(labels, scores1, Collections.max(scores1), new LinkedList<>()));
+            resultCharts.add(new ResultChartPojo(labels, scores2, Collections.max(scores1), new LinkedList<>()));
+            return resultCharts;
         }
         return null;
     }

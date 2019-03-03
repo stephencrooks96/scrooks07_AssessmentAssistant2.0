@@ -121,6 +121,12 @@ public class MarkingController {
     }
 
     @CrossOrigin
+    @RequestMapping(value = "/getQuestionsResultChart", method = RequestMethod.GET)
+    public List<ResultChartPojo> getQuestionResultChart(Principal principal, Long testID) {
+        return markingService.generateQuestionResultChart(testID, principal.getName());
+    }
+
+    @CrossOrigin
     @RequestMapping(value = "/removeAlternative", method = RequestMethod.DELETE)
     public Boolean removeAlternative(Principal principal, Long alternativeID, Long testID) throws Exception {
         return markingService.removeAlternative(principal.getName(), alternativeID, testID);

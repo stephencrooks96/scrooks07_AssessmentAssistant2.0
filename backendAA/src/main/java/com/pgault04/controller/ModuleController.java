@@ -3,10 +3,7 @@ package com.pgault04.controller;
 import com.pgault04.entities.Module;
 import com.pgault04.entities.Tests;
 import com.pgault04.entities.User;
-import com.pgault04.pojos.ModuleWithTutor;
-import com.pgault04.pojos.Performance;
-import com.pgault04.pojos.TestAndGrade;
-import com.pgault04.pojos.TestMarking;
+import com.pgault04.pojos.*;
 import com.pgault04.repositories.ModuleAssociationRepo;
 import com.pgault04.repositories.ModuleRepo;
 import com.pgault04.repositories.UserRepo;
@@ -14,11 +11,9 @@ import com.pgault04.services.ModuleService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.mail.internet.AddressException;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -80,6 +75,24 @@ public class ModuleController {
     @RequestMapping(value = "/getMyModulesWithTutors", method = RequestMethod.GET)
     public List<ModuleWithTutor> getModulesWithTutors(Principal principal) {
         return modService.getMyModulesWithTutor(principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/addModule", method = RequestMethod.POST)
+    public void addModule(@RequestBody ModulePojo modulePojo, Principal principal) throws IllegalArgumentException, AddressException {
+        modService.addModule(modulePojo, principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/addAssociations", method = RequestMethod.POST)
+    public void addModule(Long moduleID, @RequestBody List<Associate> associationPojos, Principal principal) throws IllegalArgumentException {
+        modService.addAssociations(moduleID, associationPojos, principal.getName());
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getModulesPendingApproval", method = RequestMethod.GET)
+    public List<Module> getModulesPendingApproval(Principal principal) {
+        return modService.getModulesPendingApproval(principal.getName());
     }
 
     /**
@@ -184,5 +197,35 @@ public class ModuleController {
     @RequestMapping(value = "/getModuleAssociation", method = RequestMethod.GET)
     public Long getModuleAssociation(Principal principal, Long moduleID) {
         return modService.checkValidAssociation(principal.getName(), moduleID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getModuleRequests", method = RequestMethod.GET)
+    public List<ModuleRequestPojo> getModuleRequests() {
+        return modService.getModuleRequests();
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/approveModuleRequest", method = RequestMethod.GET)
+    public void approveModuleRequest(Long moduleID) {
+        modService.approveModuleRequest(moduleID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/rejectModuleRequest", method = RequestMethod.GET)
+    public void rejectModuleRequest(Long moduleID) {
+        modService.rejectModuleRequest(moduleID);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/getAssociates", method = RequestMethod.GET)
+    public List<Associate> getAssociates(Long moduleID, Principal principal) {
+        return modService.getAssociates(moduleID, principal);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/removeAssociate", method = RequestMethod.GET)
+    public void removeAssociate(String username, Long moduleID, Principal principal) {
+        modService.removeAssociate(username, moduleID, principal);
     }
 }

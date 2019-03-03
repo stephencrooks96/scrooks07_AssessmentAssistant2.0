@@ -4,6 +4,8 @@
 package com.pgault04.controller;
 
 import com.pgault04.entities.User;
+import com.pgault04.pojos.TokenPojo;
+import com.pgault04.services.MainService;
 import com.pgault04.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +32,8 @@ public class MainController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    MainService mainService;
 
     /**
      * Get username method
@@ -50,10 +54,15 @@ public class MainController {
      */
     @CrossOrigin
     @RequestMapping("/login")
-    public Principal user(Principal principal) {
+    public TokenPojo user(Principal principal) {
         logger.info("User logged in {}", principal != null ? principal.getName() : "n/a");
-        return principal;
+        return mainService.generateToken(principal);
     }
 
-
+    @CrossOrigin
+    @RequestMapping("/logout")
+    public void logout(Principal principal) {
+        logger.info("User logged in {}", principal != null ? principal.getName() : "n/a");
+        mainService.destroyToken(principal);
+    }
 }

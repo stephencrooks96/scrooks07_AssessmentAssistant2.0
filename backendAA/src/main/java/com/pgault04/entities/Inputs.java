@@ -11,6 +11,7 @@ public class Inputs {
     private String inputValue;
     private Integer inputIndex;
     private Long answerID;
+    private Integer math;
 
     public Inputs() {}
 
@@ -20,7 +21,7 @@ public class Inputs {
      * @param inputIndex the position entered at
      * @param answerID the answer id the input is associated to
      */
-    public Inputs(String inputValue, Integer inputIndex, Long answerID) {
+    public Inputs(String inputValue, Integer inputIndex, Long answerID, Integer math) {
         this.setInputValue(inputValue);
         this.setInputIndex(inputIndex);
         this.setAnswerID(answerID);
@@ -90,6 +91,16 @@ public class Inputs {
         this.answerID = answerID;
     }
 
+    /**
+     * @return whether the input is math or not
+     */
+    public Integer getMath() { return math; }
+
+    /**
+     * @param math whether the input is math or not
+     */
+    public void setMath(Integer math) { this.math = math; }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Inputs{");
@@ -97,6 +108,7 @@ public class Inputs {
         sb.append(", inputValue='").append(inputValue).append('\'');
         sb.append(", inputIndex=").append(inputIndex);
         sb.append(", answerID=").append(answerID);
+        sb.append(", math=").append(math);
         sb.append('}');
         return sb.toString();
     }

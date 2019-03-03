@@ -4,7 +4,10 @@
     <h2 class="display-2">Modules</h2>
   </div>
 
-  <div *ngIf="modulesWithTutors">
+  <div style="align-content: center;" *ngIf="!modulesWithTutors || modulesWithTutors.length == 0">
+    <h1 class="display-1" style="text-align: center;">No modules to show.</h1>
+  </div>
+  <div *ngIf="modulesWithTutors && modulesWithTutors.length > 0">
     <div class='row' style="align-content: center;">
       <div *ngFor="let moduleTutor of modulesWithTutors" class='col-sm-8'
            style="margin-left: auto; margin-right: auto; margin-bottom: 30px;">
@@ -15,7 +18,7 @@
             </h2>
             <h5 class="card-subtitle mb-2 text-muted">
               Tutor: {{moduleTutor.tutor.firstName + " " + moduleTutor.tutor.lastName}}</h5>
-            <h5 class="card-subtitle mb-2 text-muted">Email: {{moduleTutor.tutor.username}}</h5>
+            <h5 class="card-subtitle mb-2 text-muted">Email now: <a href="mailto:{{moduleTutor.tutor.username}}?Subject={{moduleTutor.module.moduleName}}" target="_top">{{moduleTutor.tutor.username}}</a></h5>
             <h5 class="card-text">{{moduleTutor.module.moduleDescription}}</h5>
             <h6><a [routerLink]="['/moduleHome', moduleTutor.module.moduleID]" class="card-link">Go
               to {{moduleTutor.module.moduleName}}</a></h6>

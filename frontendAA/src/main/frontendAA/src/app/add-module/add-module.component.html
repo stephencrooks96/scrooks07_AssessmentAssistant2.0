@@ -1,19 +1,90 @@
 <app-header></app-header>
-<form class="shadow mainForm" id="tutorRequestForm" name='tutorRequestForm' role="form"
-      #tutorRequestForm="ngForm" (submit)="submitRequest(tutorRequestForm)">
 
-  <h3>Become a Tutor:</h3>
-  <p *ngIf="request.tutorRequestID == -1">Becoming a tutor allows you to create modules and associate other users with
-    your modules. To become a tutor, please provide a reason for an admin to review.</p>
-  <p *ngIf="request.tutorRequestID != -1">You have already submitted a request to become a tutor - you can update your
-    reason here and re-submit.</p>
+<div class="container" style="width: 95%; max-width: 95%;">
 
-  <div class="form-group">
-    <label for="reason">Reason (required):</label>
-    <textarea rows="15" type="text" class="form-control" id="reason" name="reason"
-              [(ngModel)]="request.reason" required></textarea>
+  <h2 style="text-align: center; align-content: center;">Module Creation Area</h2>
+  <div class="row" style="align-content: center;">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-3">
+      <div class="pre-scrollable">
+        <div class="panel panel-default default">
+          <div class="panel-body">
+            <h3>Pending Approval</h3>
+            <ul *ngIf="modules && modules.length > 0">
+              <li *ngFor="let module of modules">{{module.moduleName}}</li>
+            </ul>
+            <p *ngIf="!modules || modules.length == 0">Nothing to show.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-5">
+      <div class="pre-scrollable">
+        <div class="panel panel-default default">
+          <div class="panel-body">
+            <form id="addModule" name='addModule' role="form"
+                  #addModuleForm="ngForm" (submit)="addModule(addModuleForm)">
+
+              <h3>New module</h3>
+              <div class="form-group">
+                <label for="name">Name</label>
+                <small *ngIf="nameError">Name must be between 1-50 characters long.</small>
+                <input [(ngModel)]="modulePojo.module.moduleName" type="text" class="form-control" id="name" name="name"
+                       required/>
+              </div>
+              <div class="form-group">
+                <label for="description">Description</label>
+                <small *ngIf="descriptError">Description must be between 1-500 characters long.</small>
+                <textarea [(ngModel)]="modulePojo.module.moduleDescription" rows="5" type="text" class="form-control"
+                          id="description" name="description"
+                          required></textarea>
+              </div>
+
+              <div class="row"  style="margin-bottom: 10px;">
+                <div class="col-sm-6">
+                  <label for="startDate">Commencement Date:</label>
+                  <p style="font-size: x-small; margin-bottom: 1px;" *ngIf="dateError">Commencement date must be before
+                    end date.</p>
+                  <p style="font-size: x-small; margin-bottom: 2px;" *ngIf="startDateError">Valid date range 365 days
+                    from today.</p>
+                  <input #startDate="ngModel" [(ngModel)]="modulePojo.module.commencementDate"
+                         aria-describedby="startDateHelp"
+                         class="form-control" id="startDate"
+                         name="startDate" required type="date" min="{{today | date:'yyyy-MM-dd'}}"
+                         max="{{nextYear | date:'yyyy-MM-dd'}}" [ngStyle]="{'border-color' : checkStartDate}"/>
+                </div>
+
+
+                <div class="col-sm-6">
+                  <label for="endDate">End Date:</label>
+                  <p style="font-size: x-small; margin-bottom: 2px;" *ngIf="endDateError">Valid date range 365 days from
+                    today.</p>
+                  <input #endDate="ngModel" [(ngModel)]="modulePojo.module.endDate" aria-describedby="endDateHelp"
+                         class="form-control" id="endDate"
+                         name="endDate" required type="date" min="{{today | date:'yyyy-MM-dd'}}"
+                         max="{{nextYear | date:'yyyy-MM-dd'}}" [ngStyle]="{'border-color' : checkEndDate}"/>
+
+                </div>
+              </div>
+
+              <a href="../../assets/Sample%20Associations.csv">Sample Associations.csv</a>
+              <p style="margin-bottom: 0;">If the user doesn't have an account, one will be created for them.</p>
+              <div class="custom-file" style="margin-top: 10px; margin-bottom: 10px;">
+                <input type="file" accept=".csv" class="custom-file-input" name="addAssociations" id="addAssociations"
+                       (change)="readAssociations($event)" #assocInput>
+                <label class="custom-file-label" for="addAssociations" (click)="assocInput.click()">Add associations -
+                  <span
+                    *ngIf="!fileError">(Must be a .csv)</span><span *ngIf="fileSuccess"> - File added <i
+                    class="fas fa-check-circle"></i></span><span *ngIf="fileError"
+                                                                 style="color: #dc3545;">{{fileErrorMessage}}</span></label>
+              </div>
+
+              <button id="submitRequest" type="submit" class="shadow btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <button id="submitRequest" type="submit" class="shadow btn btn-primary">Submit Request</button>
-</form>
-
+</div>

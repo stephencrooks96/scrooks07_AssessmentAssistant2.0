@@ -31,7 +31,7 @@ public class TestAlternativeRepo {
     @Before
     public void setUp() throws Exception {
         this.phrase = "phrase";
-        alternative = new Alternative(CORRECTPOINT_IN_DB, phrase);
+        alternative = new Alternative(CORRECTPOINT_IN_DB, phrase, 0);
     }
 
     @Test

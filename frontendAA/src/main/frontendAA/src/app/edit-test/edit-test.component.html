@@ -118,13 +118,13 @@
                 type="button" placement="bottom" ngbTooltip="Use one you have before">Reuse
         </button>
       </span></h3>
-      <div class="panel panel-default default-pre-scrollable">
-        <table class="table-striped">
+      <div class="panel panel-default pre-scrollable" style="max-height: 40vh; height: 40vh;">
+        <table class="table-striped" style="width: 100%; margin-right: 0;">
           <tr *ngFor="let tutorQuestion of questions; let rowIndex = index">
-            <td>{{rowIndex + 1}}</td>
+            <td style="padding-left: 5px;">{{rowIndex + 1}}</td>
             <td style="padding-left: 10px;">{{tutorQuestion.question.questionContent}}</td>
             <td>
-              <button type="button" class="btn btn-dark"
+              <button type="button" class="btn btn-dark" style="float: right;"
                       (click)="questionDetail = tutorQuestion; showExist = false; showAdd = false; showDetail = true;">
                 Info
               </button>

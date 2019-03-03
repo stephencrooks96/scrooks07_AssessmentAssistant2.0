@@ -22,8 +22,8 @@ public class InputsRepo {
 
     private static final Logger log = LogManager.getLogger(InputsRepo.class);
 
-    private final String insertSQL = "INSERT INTO Inputs (inputValue, inputIndex, answerID) values (:inputValue, :inputIndex, :answerID)";
-    private final String updateSQL = "UPDATE Inputs SET inputValue=:inputValue, inputIndex=:inputIndex, answerID=:answerID WHERE inputID=:inputID";
+    private final String insertSQL = "INSERT INTO Inputs (inputValue, inputIndex, answerID, math) values (:inputValue, :inputIndex, :answerID, :math)";
+    private final String updateSQL = "UPDATE Inputs SET inputValue=:inputValue, inputIndex=:inputIndex, answerID=:answerID, math=:math WHERE inputID=:inputID";
     private final String selectSQL = "SELECT * FROM Inputs WHERE ";
 
     @Autowired

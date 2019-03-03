@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="container">
+<div class="container" style="width: 80%;">
   <nav aria-label="breadcrumb" class="breadcrumbs">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="'/myModules'">Modules</a></li>
@@ -15,11 +15,13 @@
   <div class="shadow" id="moduleHomeArea">
     <nav class="navbar navbar-dark bg-dark" id="navbar-example">
       <a class="navbar-brand" style="color: white;">Module Home</a>
-      <ul class="nav nav-pills" style="color: white;">
+      <ul class="nav nav-pills" id="subHeadings" style="color: white;">
         <li class="nav-item">
           <a
             (click)="activeTestCheck = true;
+            contactAssociates = false;
             activeResultCheck = false;
+            addAssociationsCheck = false;
             addTestCheck = false;
             performanceCheck = false;
             scheduledTestCheck = false;
@@ -30,8 +32,23 @@
             Tests</a>
         </li>
 
+        <li *ngIf="TUTOR == (moduleAssoc | async)" class="nav-item">
+          <a
+            (click)="activeTestCheck = false;
+            addAssociationsCheck = true;
+            activeResultCheck = false;
+            addTestCheck = false;
+            performanceCheck = false;
+            scheduledTestCheck = false;
+            markingCheck = false;
+            testDraftCheck = false;
+            reviewMarkingCheck = false"
+            class="nav-link" href="#">Associates</a>
+        </li>
+
         <li *ngIf="STUDENT == (moduleAssoc | async)" class="nav-item">
           <a (click)="activeResultCheck = true;
+          addAssociationsCheck = false;
              activeTestCheck = false;
              addTestCheck = false;
              performanceCheck = false;
@@ -43,6 +60,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) == STUDENT" class="nav-item">
           <a (click)="activeResultCheck = false;
+          addAssociationsCheck = false;
              activeTestCheck = false;
              performanceCheck = true;
              addTestCheck = false;
@@ -54,6 +72,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
+          addAssociationsCheck = false;
              activeResultCheck = false;
              addTestCheck = true;
              performanceCheck = false;
@@ -66,6 +85,7 @@
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
+             addAssociationsCheck = false;
              addTestCheck = false;
              performanceCheck = false;
              scheduledTestCheck = true;
@@ -78,6 +98,7 @@
         <li *ngIf="(moduleAssoc | async) != STUDENT" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
+             addAssociationsCheck = false;
              addTestCheck = false;
              performanceCheck = false;
              scheduledTestCheck = false;
@@ -89,6 +110,7 @@
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
+             addAssociationsCheck = false;
              addTestCheck = false;
              performanceCheck = false;
              scheduledTestCheck = false;
@@ -101,6 +123,7 @@
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
              activeResultCheck = false;
+             addAssociationsCheck = false;
              performanceCheck = false;
              addTestCheck = false;
              scheduledTestCheck = false;
@@ -113,11 +136,11 @@
       </ul>
     </nav>
 
-    <div *ngIf="activeTestCheck">
+    <div *ngIf="activeTestCheck" class="pre-scrollable">
       <div class="modHomeInner" id="activeTests">
         <div *ngIf="activeTests && activeTests.length > 0">
           <div class="title">
-            <h5 class="display-5">Active Tests</h5>
+            <h5 class="display-5" style="margin-top: 20px;">Active Tests</h5>
           </div>
           <table class="table table-dark">
 
@@ -153,12 +176,62 @@
 
     </div>
 
+    <div *ngIf="addAssociationsCheck" class="pre-scrollable">
+      <div *ngIf="(moduleAssoc | async) == TUTOR">
+        <form id="addModule" name='addModule' role="form"
+              #addAssociationForm="ngForm" style="width: 50%; margin-left: 25%; margin-top: 2%;" (submit)="addAssociations(addAssociationForm)" >
 
-    <div *ngIf="activeResultCheck">
+          <a href="../../assets/Sample%20Associations.csv">Sample Associations.csv</a>
+          <p style="margin-bottom: 0;">If the user doesn't have an account, one will be created for them.</p>
+          <div class="custom-file" style="margin-top: 10px; margin-bottom: 10px;">
+            <input type="file" accept=".csv" class="custom-file-input" name="addAssociations" id="addAssociations"
+                   (change)="readAssociations($event)" #assocInput>
+            <label class="custom-file-label" for="addAssociations" (click)="assocInput.click()">Add associations -
+              <span
+                *ngIf="!fileError">(Must be a .csv)</span><span *ngIf="fileSuccess"> - File added <i
+                class="fas fa-check-circle"></i></span><span *ngIf="fileError"
+                                                             style="color: #dc3545;">{{fileErrorMessage}}</span></label>
+          </div>
+
+          <button id="submitRequest" type="submit" class="shadow btn btn-primary">Submit</button>
+        </form>
+
+        <div *ngIf="associates && associates.length > 0" >
+          <table class="table-striped table-dark" style="width: 50%; margin: 2% 25% 5% 25%">
+            <tr *ngFor="let user of associates;">
+              <td> </td>
+              <td>{{user.username}}</td>
+              <td  style="padding-left: 10px;"><a href="mailto:{{user.username}}?Subject={{moduleTutor.module.moduleName}}"><button style="width: 100%;" class="btn btn-primary btn-sm">Email</button></a></td>
+              <td  style="padding-left: 10px;"><button style="width: 100%;" class="btn btn-danger btn-sm" (click)="userToRemove = user.username; open(AreYouSureRemoveAssociation)">Remove</button></td>
+            </tr>
+          </table>
+        </div>
+        <div *ngIf="!associates || associates.length == 0">No associates to show.</div>
+      </div>
+    </div>
+
+    <!-- Template from ngBootstrap -->
+    <ng-template #AreYouSureRemoveAssociation let-modal>
+      <div class="modal-header">
+        <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h5>Are you sure you want to remove this user from the module?</h5>
+      </div>
+      <div class="modal-footer">
+        <button (click)="modal.close(); removeAssociation(userToRemove);" class="btn btn-outline-dark" type="button">Yes, I'm
+          sure
+        </button>
+      </div>
+    </ng-template>
+
+    <div *ngIf="activeResultCheck" class="pre-scrollable">
       <div *ngIf="(moduleAssoc | async) == STUDENT" class="modHomeInner" id="activeResults">
         <div *ngIf="activeResults && activeResults.length > 0">
           <div class="title">
-            <h5 class="display-5">Grades</h5>
+            <h5 class="display-5" style="margin-top: 20px;">Grades</h5>
           </div>
           <table class="table table-dark">
             <thead class="thead-dark">
@@ -190,11 +263,11 @@
       </div>
     </div>
 
-    <div *ngIf="performanceCheck">
+    <div *ngIf="performanceCheck" class="pre-scrollable">
       <div *ngIf="(moduleAssoc | async) == STUDENT || (moduleAssoc | async) == TUTOR" class="modHomeInner" id="performance">
         <div *ngIf="performanceList && performanceList.length > 0">
           <div class="title">
-            <h5 class="display-5">Results</h5>
+            <h5 class="display-5" style="margin-top: 20px;">Results</h5>
           </div>
           <table class="table table-dark">
 
@@ -228,16 +301,16 @@
       </div>
     </div>
 
-    <div *ngIf="addTestCheck">
+    <div *ngIf="addTestCheck" class="modHomeInner">
       <app-add-test *ngIf="(moduleAssoc | async) == TUTOR"></app-add-test>
     </div>
 
 
-    <div *ngIf="scheduledTestCheck">
+    <div *ngIf="scheduledTestCheck" class="pre-scrollable">
       <div *ngIf="(moduleAssoc | async) == TUTOR" class="modHomeInner" id="scheduledTests">
         <div *ngIf="scheduledTests.length > 0">
           <div class="title">
-            <h5 class="display-5">Scheduled Tests</h5>
+            <h5 class="display-5" style="margin-top: 20px;">Scheduled Tests</h5>
           </div>
           <table class="table table-dark">
             <thead class="thead-dark">
@@ -275,7 +348,7 @@
       <div *ngIf="(moduleAssoc | async) != STUDENT" class="modHomeInner" id="marking">
         <div *ngIf="marking.length > 0">
           <div class="title">
-            <h5 class="display-5">Marking</h5>
+            <h5 class="display-5" style="margin-top: 20px;">Marking</h5>
           </div>
           <div class="marking">
             <nav class="nav" id="markNav">
@@ -375,11 +448,11 @@
       </div>
     </div>
 
-    <div *ngIf="testDraftCheck">
+    <div *ngIf="testDraftCheck" class="pre-scrollable">
       <div *ngIf="(moduleAssoc | async) == TUTOR" class="modHomeInner" id="testDrafts">
         <div *ngIf="testDrafts.length > 0">
           <div class="title">
-            <h5 class="display-5">Test Drafts</h5>
+            <h5 class="display-5" style="margin-top: 20px;">Test Drafts</h5>
           </div>
           <table class="table table-dark">
             <thead class="thead-dark">
@@ -409,11 +482,11 @@
       </div>
     </div>
 
-    <div *ngIf="reviewMarkingCheck">
-      <div *ngIf="(moduleAssoc | async) == TUTOR" class="modHomeInner" id="reviewMarking">
+    <div *ngIf="reviewMarkingCheck" class="pre-scrollable">
+      <div *ngIf="(moduleAssoc | async) == TUTOR" class="modHomeInner panel panel-default default-pre-scrollable" id="reviewMarking">
         <div *ngIf="testsForReview.length > 0">
           <div class="title">
-            <h5 class="display-5">Review Marking</h5>
+            <h5 class="display-5" style="margin-top: 20px;">Review Marking</h5>
           </div>
           <table class="table table-dark">
             <thead class="thead-dark">
@@ -445,6 +518,4 @@
       </div>
     </div>
   </div>
-
-
 </div>

@@ -1,8 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {TestService} from "../services/test.service";
 import {EditTestComponent} from "../edit-test/edit-test.component";
-import {Alternative, CorrectPoint, QuestionType, TutorQuestionPojo, Option} from "../modelObjs/objects.model";
+import {
+  Alternative,
+  CorrectPoint,
+  QuestionType,
+  TutorQuestionPojo,
+  Option,
+  QuestionMathLine
+} from "../modelObjs/objects.model";
 import {NgForm} from "@angular/forms";
+import {KatexOptions} from "ng-katex";
 
 @Component({
   selector: 'app-add-question',
@@ -30,6 +38,11 @@ export class AddQuestionComponent implements OnInit {
   insertError = -1;
   questionTypeChecker: number = 1;
   optFeedbackError = false;
+  fileSuccess: boolean;
+  minScoreError: boolean;
+  options: KatexOptions = {
+    displayMode: true,
+  };
 
   constructor(private editTest: EditTestComponent, private testServ: TestService) {
   }
@@ -40,6 +53,8 @@ export class AddQuestionComponent implements OnInit {
     this.addCorrectPoint();
     this.questionInsert.options = [];
     this.addOption();
+
+    this.questionInsert.question.minScore = 0;
   }
 
   onTypeClick(questionType: any) {
@@ -51,6 +66,7 @@ export class AddQuestionComponent implements OnInit {
   }
 
   read(event: any): void {
+    this.fileSuccess = false;
     let image: File = event.target.files[0];
     this.fileSize = event.target.files[0].size;
     if (this.fileSize > 1048576) {
@@ -65,6 +81,7 @@ export class AddQuestionComponent implements OnInit {
     };
 
     fileReader.readAsDataURL(image);
+    this.fileSuccess = true;
   }
 
   getQuestionTypes() {
@@ -77,7 +94,6 @@ export class AddQuestionComponent implements OnInit {
     option.optionContent = '';
     option.worthMarks = 0;
     this.questionInsert.options.push(option);
-
     return false;
   }
 
@@ -89,15 +105,11 @@ export class AddQuestionComponent implements OnInit {
   addCorrectPoint() {
     const correctPoint = new CorrectPoint();
     correctPoint.alternatives = [];
-    const alternative = new Alternative();
-    alternative.alternativeID = 0;
-    alternative.correctPointID = 0;
-    alternative.alternativePhrase = '';
-    correctPoint.alternatives.push(alternative);
     correctPoint.feedback = '';
     correctPoint.marksWorth = 0;
     correctPoint.phrase = '';
     correctPoint.questionID = 0;
+    correctPoint.math = 0;
     this.questionInsert.correctPoints.push(correctPoint);
 
     return false;
@@ -113,6 +125,32 @@ export class AddQuestionComponent implements OnInit {
     alternative.alternativeID = 0;
     alternative.correctPointID = 0;
     alternative.alternativePhrase = '';
+    alternative.math = 0;
+    this.questionInsert.correctPoints[i].alternatives.push(alternative);
+    return false;
+  }
+
+  addMathLine() {
+    const mathLine = new QuestionMathLine();
+    mathLine.questionMathLineID = 0;
+    mathLine.content = '';
+    mathLine.indexedAt = this.questionInsert.mathLines.length;
+    mathLine.questionID = 0;
+    this.questionInsert.mathLines.push(mathLine);
+    return false;
+  }
+
+  removeMathLine(i) {
+    this.questionInsert.mathLines.splice(i, 1);
+    return false;
+  }
+
+  addMathAlternative(i) {
+    const alternative = new Alternative();
+    alternative.alternativeID = 0;
+    alternative.correctPointID = 0;
+    alternative.alternativePhrase = '';
+    alternative.math = 1;
     this.questionInsert.correctPoints[i].alternatives.push(alternative);
     return false;
   }
@@ -214,7 +252,7 @@ export class AddQuestionComponent implements OnInit {
         this.generalError = true;
       }
 
-      if (!this.questionInsert.correctPoints[i].marksWorth || this.questionInsert.correctPoints[i].marksWorth > this.questionInsert.question.maxScore || this.questionInsert.correctPoints[i].marksWorth < (-1 * this.questionInsert.question.maxScore)) {
+      if (this.questionInsert.correctPoints[i].marksWorth > this.questionInsert.question.maxScore || this.questionInsert.correctPoints[i].marksWorth < this.questionInsert.question.minScore) {
         this.marksWorthError = i;
         this.generalError = true;
       }

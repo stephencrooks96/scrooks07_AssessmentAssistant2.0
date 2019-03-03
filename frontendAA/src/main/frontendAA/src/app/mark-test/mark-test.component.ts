@@ -7,6 +7,7 @@ import {Alternative, Answer, AnswerData, CorrectPoint, Tests, User} from "../mod
 import {MarkingService} from "../services/marking.service";
 import {ModulesService} from "../services/modules.service";
 import {NgForm} from "@angular/forms";
+import {KatexOptions} from "ng-katex";
 
 const errorColour: string = "#dc3545";
 const normalColour: string = "#202529";
@@ -51,6 +52,9 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
   generalError = false;
   studentCounter = 0;
   answerCounter = -1;
+  options: KatexOptions = {
+    displayMode: true,
+  };
 
   constructor(private router: Router, private route: ActivatedRoute, private testServ: TestService, private markServ: MarkingService, private modServ: ModulesService, private modalService: NgbModal, private sanitizer: DomSanitizer) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
@@ -113,9 +117,16 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       });
   }
 
+  backHome() {
+    this.router.navigate(['/moduleHome', this.test.moduleID]);
+  }
+
   getScriptsByTestID(testID) {
     return this.markServ.getScriptsByTestIDMarker(testID)
       .subscribe(scripts => {
+        if (!scripts || scripts.length < 1) {
+          this.backHome();
+        }
           this.scripts = scripts;
           this.studentSet = [];
           this.chosenOptions = [];
@@ -142,6 +153,8 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
               }
             }
           }
+        }, error => {
+            this.backHome();
         }
       );
   }
@@ -182,11 +195,6 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
   initCorrectPoint() {
     const correctPoint = new CorrectPoint();
     correctPoint.alternatives = [];
-    const alternative = new Alternative();
-    alternative.alternativeID = 0;
-    alternative.correctPointID = 0;
-    alternative.alternativePhrase = '';
-    correctPoint.alternatives.push(alternative);
     correctPoint.feedback = '';
     correctPoint.marksWorth = 0;
     correctPoint.phrase = '';
@@ -196,11 +204,22 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  initAlternative() {
+  initTextAlternative() {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
     alternative.correctPointID = 0;
     alternative.alternativePhrase = '';
+    alternative.math = 0;
+    this.correctPointToInsert.alternatives.push(alternative);
+    return false;
+  }
+
+  initMathAlternative() {
+    const alternative = new Alternative();
+    alternative.alternativeID = 0;
+    alternative.correctPointID = 0;
+    alternative.alternativePhrase = '';
+    alternative.math = 1;
     this.correctPointToInsert.alternatives.push(alternative);
     return false;
   }

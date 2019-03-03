@@ -1,0 +1,8 @@
+.pre-scrollable {
+  margin-bottom: 10px;
+  padding: 15px;
+  max-height: 575px;
+  height: 575px;
+  background-color: #bdbdbd;
+  border-radius: 5px;
+}

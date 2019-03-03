@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {tap} from "rxjs/operators";
-import {Performance, User} from "../modelObjs/objects.model";
+import {Performance, TokenPojo, User} from "../modelObjs/objects.model";
 import {stringify} from "querystring";
 import {Observable} from "rxjs";
 import {AppComponent} from "../app.component";
+import {ActivatedRoute, Router, RouterStateSnapshot} from "@angular/router";
 
 
 @Injectable({
@@ -14,7 +15,7 @@ export class AuthorizationService {
 
 
   private _base64Credential: string;
-  constructor(public _http: HttpClient, private app: AppComponent) {
+  constructor(public _http: HttpClient, private app: AppComponent, private router : Router) {
   }
 
 
@@ -31,14 +32,15 @@ export class AuthorizationService {
     this._base64Credential = btoa(user.username + ':' + user.password);
     let headers = new HttpHeaders({'Accept': 'application/json', "Authorization": 'Basic ' + this._base64Credential});
 
-    return this._http.get<any>(this.app.url + "/main/login", {headers: headers}).pipe(tap(data => {
+    return this._http.get<TokenPojo>(this.app.url + "/main/login", {headers: headers}).pipe(tap(data => {
 
-      let user = data;
+      let userDetails = data.user;
       console.log(data);
-      if (user) {
+      if (userDetails) {
         // cache user details in browser
-        localStorage.setItem('principalUser', JSON.stringify(user));
-        localStorage.setItem('creds', this._base64Credential);
+        this.app.principalUser = userDetails;
+        localStorage.setItem('principalUser', JSON.stringify(userDetails));
+        localStorage.setItem('creds', data.token);
       }
     }));
   }
@@ -50,7 +52,7 @@ export class AuthorizationService {
     });
     return this._http.get<User>(this.app.url + "/main/getUser", {headers: headers})
       .pipe(
-        tap(_ => console.log('User fetched from server.'))
+        tap(_ => {console.log('User fetched from server.')})
       );
   }
 
@@ -58,7 +60,7 @@ export class AuthorizationService {
    *
    */
   public logoutServ() {
-    return this._http.post<any>(this.app.url + '/logout', {}).pipe(tap(data => {
+    return this._http.get<any>(this.app.url + '/main/logout', {headers: this.app.headers}).pipe(tap(data => {
       localStorage.removeItem('principalUser');
       localStorage.removeItem('creds');
     }));

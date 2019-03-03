@@ -52,7 +52,7 @@ public class TestTutorQuestionPojo {
     @Test
     public void testTutorQuestionPojoConstructorWithArgs() {
         tutorQuestionPojoObj = null;
-        tutorQuestionPojoObj = new TutorQuestionPojo(testID, question, options, correctPoints);
+        tutorQuestionPojoObj = new TutorQuestionPojo(testID, question, options, new ArrayList<>(), correctPoints);
 
         assertNotNull(tutorQuestionPojoObj);
         assertEquals(testID, tutorQuestionPojoObj.getTestID());
@@ -87,7 +87,7 @@ public class TestTutorQuestionPojo {
 
     @Test
     public void testToString() {
-        tutorQuestionPojoObj = new TutorQuestionPojo(testID, question, options, correctPoints);
+        tutorQuestionPojoObj = new TutorQuestionPojo(testID, question, options, new ArrayList<>(), correctPoints);
         assertEquals("TutorQuestionPojo{testID=1, question=Question{questionType=null, questionID=-1, questionContent='null', questionFigure='null', maxScore=null, creatorID=null}, options=[Option{optionID=-1, questionID=null, optionContent='null', correct=null}], correctPoints=[CorrectPoint{correctPointID=-1, questionID=null, phrase='null', marksWorth=null, feedback='null', alternatives=null}]}", tutorQuestionPojoObj.toString());
     }
 }

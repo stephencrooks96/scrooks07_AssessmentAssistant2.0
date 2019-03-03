@@ -55,12 +55,12 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
         if (user != null) {
             // Gets the users role and adds it to a list if the user exists
             grantList.add(new SimpleGrantedAuthority(this.userRoleRepo.selectByUserRoleID(user.getUserRoleID()).getRole()));
+            return new User(user.getUsername(), user.getPassword(), grantList);
         } else {
             // If user is not found an exception is thrown
             logger.debug("{}: not found.", username);
             throw new UsernameNotFoundException(username);
         }
-        return new User(user.getUsername(), user.getPassword(), grantList);
     }
 }
 

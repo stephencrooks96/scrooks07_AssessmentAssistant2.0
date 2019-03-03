@@ -2,8 +2,11 @@ package com.pgault04.configurations;
 
 import com.pgault04.services.UserDetailsServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,9 +34,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
     @Autowired
     DataSource ds;
 
+    @Value("${app.url}")
+    String appUrl;
+
     @Autowired
     UserDetailsServiceImplementation userDetails;
-
 
     /**
      * Bean encodes passwords
@@ -55,15 +60,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         auth.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
     }
 
-    /*
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/static/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/resources/static/images/**").addResourceLocations("/images/");
-        registry.addResourceHandler("/resources/static/js/**").addResourceLocations("/js/");
-    }
-    */
-
     /**
      * The security configuration for the system.
      * TODO: COMB THIS METHOD FOR REDUNDANT INFO NOW THAT ANGULAR BEING USED
@@ -72,18 +68,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
     protected void configure(HttpSecurity https) throws Exception {
 
         https.cors().and()
-                .authorizeRequests().antMatchers("/", "/main/login", "/logout", "/images/**", "/js/**", "/css/**").permitAll()
+                .authorizeRequests().antMatchers("/", "/main/login", "/user/getUsernames", "/user/createProfile", "/user/requestResetPassword", "/user/resetPassword", "/images/**", "/js/**", "/css/**").permitAll()
                 .anyRequest().fullyAuthenticated()
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/main/login")
-                .and().httpBasic().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .and().httpBasic().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests().antMatchers("/myModules/**", "/user/**", "/moduleHome/**", "/modules/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
                 .and()
-                .authorizeRequests().antMatchers("/admin").access("hasAnyRole('ROLE_ADMIN')")
+                .authorizeRequests().antMatchers("/user/getTutorRequests", "/user/approveTutorRequest", "/user/rejectTutorRequest", "/modules/getModuleRequests", "/modules/approveModuleRequest", "/modules/rejectModuleRequest", "/user/makeAdmin", "/user/makeTutor", "/user/removeUser", "/user/addUsersaeayaye ").access("hasAnyRole('ROLE_ADMIN')")
                 .and()
                 .csrf().disable();
-
-
     }
 
     /**
@@ -95,7 +89,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         return new WebMvcConfigurerAdapter() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:4200");
+                registry.addMapping("/**").allowedOrigins(appUrl);
             }
         };
     }

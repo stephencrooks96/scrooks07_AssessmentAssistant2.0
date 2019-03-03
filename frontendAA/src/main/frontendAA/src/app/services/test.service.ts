@@ -12,6 +12,7 @@ import {
   TutorQuestionPojo, Performance
 } from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
+import {AuthorizationService} from "./authorization.service";
 
 
 @Injectable({
@@ -19,7 +20,7 @@ import {tap} from "rxjs/operators";
 })
 export class TestService {
 
-  constructor(private http: HttpClient, private app: AppComponent) {
+  constructor(private http: HttpClient, private app: AppComponent, private authorization: AuthorizationService) {
   }
 
   /**
@@ -199,6 +200,13 @@ export class TestService {
     return this.http.delete<any>(this.app.url + "/tests/removeCorrectPoint?correctPointID=" + correctPointID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log(`CorrectPoint id=${correctPointID} removed.`))
+      );
+  }
+
+  removeQuestionMathLine(questionMathLineID): Observable<any> {
+    return this.http.delete<any>(this.app.url + "/tests/removeQuestionMathLine?questionMathLineID=" + questionMathLineID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log(`Question Math Line id=${questionMathLineID} removed.`))
       );
   }
 

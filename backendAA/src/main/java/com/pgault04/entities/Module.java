@@ -20,7 +20,9 @@ public class Module {
 
     private Long tutorUserID;
 
-    private Integer year;
+    private String commencementDate;
+
+    private String endDate;
 
     private Integer approved;
 
@@ -31,19 +33,21 @@ public class Module {
     }
 
     /**
-     * The constructor with args
-     *
-     * @param moduleName the module
-     * @param moduleDescription description of module
+     * Constructor with args
+     * @param moduleName modules name
+     * @param moduleDescription the description of the module
      * @param tutorUserID the tutor
-     * @param year the year
+     * @param commencementDate the start date
+     * @param endDate the end date
+     * @param approved whether the module has been approved yet or not
      */
-    public Module(String moduleName, String moduleDescription, Long tutorUserID, Integer year, Integer approved) {
+    public Module(String moduleName, String moduleDescription, Long tutorUserID, String commencementDate, String endDate, Integer approved) {
 
         this.setModuleName(moduleName);
         this.setModuleDescription(moduleDescription);
         this.setTutorUserID(tutorUserID);
-        this.setYear(year);
+        this.setCommencementDate(commencementDate);
+        this.setEndDate(endDate);
         this.setApproved(approved);
     }
 
@@ -104,31 +108,44 @@ public class Module {
     }
 
     /**
-     * @param tutorUserID
-     *            the tutorUserID to set
+     * @param tutorUserID the tutor
      */
     public void setTutorUserID(Long tutorUserID) {
         this.tutorUserID = tutorUserID;
     }
 
     /**
-     * @return the year
+     * @return start date
      */
-    public Integer getYear() {
-        return year;
+    public String getCommencementDate() {
+        return commencementDate;
     }
 
     /**
-     * @param year
-     *            the year to set
+     * @param commencementDate start date
      */
-    public void setYear(Integer year) {
-        this.year = year;
+    public void setCommencementDate(String commencementDate) {
+        this.commencementDate = commencementDate;
+    }
+
+    /**
+     * @return end date
+     */
+    public String getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * @param endDate end date
+     */
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     /*
      * the object as a string
      */
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Module{");
@@ -136,7 +153,8 @@ public class Module {
         sb.append(", moduleName='").append(moduleName).append('\'');
         sb.append(", moduleDescription='").append(moduleDescription).append('\'');
         sb.append(", tutorUserID=").append(tutorUserID);
-        sb.append(", year=").append(year);
+        sb.append(", commencementDate='").append(commencementDate).append('\'');
+        sb.append(", endDate='").append(endDate).append('\'');
         sb.append(", approved=").append(approved);
         sb.append('}');
         return sb.toString();

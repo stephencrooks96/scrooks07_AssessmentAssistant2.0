@@ -72,6 +72,9 @@ public class TestService {
     @Autowired
     OptionRepo optionRepo;
 
+    @Autowired
+    QuestionMathLineRepo questionMathLineRepo;
+
     /**
      * Method primes input data to be entered in to the database Ensures data size
      * limits are enforced
@@ -133,7 +136,7 @@ public class TestService {
                 autoMarkMultipleChoice(questionAndAnswer);
             }
 
-            if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
+            if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH)  || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
                 autoMarkCorrectPoints(questionAndAnswer);
             }
 
@@ -179,23 +182,44 @@ public class TestService {
             questionAndAnswer.getAnswer().setContent(questionAndAnswer.getAnswer().getContent().trim());
         }
 
-        if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD)) {
+        if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD) || question.getQuestionType().equals(QuestionType.TEXT_MATH)) {
 
             for (Inputs i : questionAndAnswer.getInputs()) {
                 i.setAnswerID(questionAndAnswer.getAnswer().getAnswerID());
-                inputsRepo.insert(i);
+                i = inputsRepo.insert(i);
             }
             for (CorrectPoint c : correctPoints) {
                 for (Inputs i : questionAndAnswer.getInputs()) {
-                    if (i.getInputValue().equalsIgnoreCase(c.getPhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
-                        questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
-                        questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
-                        questionAndAnswer.getAnswer().setMarkerApproved(1);
+                    if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD)) {
+                        if (i.getInputValue().equalsIgnoreCase(c.getPhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
+                            questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
+                            questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
+                            questionAndAnswer.getAnswer().setMarkerApproved(1);
+                        } else {
+                            for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
+                                if (i.getInputValue().equalsIgnoreCase(alt.getAlternativePhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
+                                    questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
+                                    questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
+                                    break;
+                                }
+                            }
+                        }
                     } else {
-                        for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
-                            if (i.getInputValue().equalsIgnoreCase(alt.getAlternativePhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
-                                questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
-                                questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
+                        if (i.getInputValue().trim().equalsIgnoreCase(c.getPhrase())) {
+                            questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
+                            questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
+                            break;
+                        } else {
+                            boolean altBroken = false;
+                            for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
+                                if (i.getInputValue().contains(alt.getAlternativePhrase())) {
+                                    questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
+                                    questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
+                                    altBroken = true;
+                                    break;
+                                }
+                            }
+                            if (altBroken) {
                                 break;
                             }
                         }
@@ -222,8 +246,8 @@ public class TestService {
     }
 
     void validateScore(Answer answer, Question question) {
-        if (answer.getScore() < (-1 * question.getMaxScore())) {
-            answer.setScore(-1 * question.getMaxScore());
+        if (answer.getScore() < question.getMinScore()) {
+            answer.setScore(question.getMinScore());
         } else if (answer.getScore() > question.getMaxScore()) {
             answer.setScore(question.getMaxScore());
         }
@@ -254,7 +278,10 @@ public class TestService {
             for (QuestionAndAnswer qa : tar.getQuestions()) {
                 qa.getAnswer().setScore(0);
                 qa.setCorrectPoints(new ArrayList<>());
-                qa.getQuestion().setOptions(new ArrayList<>());
+                for (Option o : qa.getQuestion().getOptions()) {
+                    o.setFeedback(null);
+                    o.setWorthMarks(null);
+                }
                 if (qa.getQuestion().getQuestion().getQuestionType() == QuestionType.INSERT_THE_WORD) {
                     List<Object> insertions = prepareInsertTheWordForStudent(qa.getQuestion().getQuestion());
                     qa.getQuestion().getQuestion().setQuestionContent((String) insertions.get(0));
@@ -455,7 +482,7 @@ public class TestService {
                         List<Object> insertions = prepareInsertTheWordForStudent(q);
                         q.setQuestionContent((String) insertions.get(0));
                         for (int loop = 0; loop < (Integer) insertions.get(1); loop++) {
-                            inputs.add(new Inputs("", loop, null));
+                            inputs.add(new Inputs("", loop, null, 0));
                         }
                     }
                     List<OptionEntries> optionEntries = new LinkedList<>();
@@ -474,7 +501,7 @@ public class TestService {
                             }
                         }
                     }
-                    QuestionAndAnswer qToAdd = new QuestionAndAnswer(new QuestionAndBase64(prepareFigure(q), options, q), new Answer(), inputs, optionEntries, findCorrectPoints(q.getQuestionID()));
+                    QuestionAndAnswer qToAdd = new QuestionAndAnswer(new QuestionAndBase64(prepareFigure(q), options, findMathLines(q.getQuestionID()), q), new Answer(), inputs, optionEntries, null);
                     qToAdd.getQuestion().getQuestion().setQuestionFigure(null);
                     questions.add(qToAdd);
                 }
@@ -530,7 +557,7 @@ public class TestService {
     }
 
     private List<TutorQuestionPojo> populateTutorQuestionList(Long testID, List<TutorQuestionPojo> allTutorQuestions, Question q) throws SQLException, Base64DecodingException {
-        TutorQuestionPojo tqToAdd = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
+        TutorQuestionPojo tqToAdd = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findMathLines(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
         tqToAdd.setBase64(prepareFigure(q));
         tqToAdd.getQuestion().setQuestionFigure(null);
         allTutorQuestions.add(tqToAdd);
@@ -564,6 +591,13 @@ public class TestService {
         }
         return correctPoints;
     }
+
+    /**
+     * Returns the math lines for the question
+     * @param questionID the question
+     * @return the math lines
+     */
+    public List<QuestionMathLine> findMathLines(Long questionID) { return questionMathLineRepo.selectByQuestionID(questionID); }
 
     /**
      * finds all the alternatives that are equivalent to given correct points
@@ -616,6 +650,7 @@ public class TestService {
             question.setCreatorID(user.getUserID());
 
             questionData.setQuestion(questionRepo.insert(question));
+            questionData.setMathLines(addMathLines(questionData.getQuestion().getQuestionID(), questionData.getMathLines()));
             if (!update) {
                 testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
             }
@@ -675,6 +710,7 @@ public class TestService {
 
             newQuestion.setQuestionID(-1L);
             newQuestion = questionRepo.insert(newQuestion);
+            addMathLines(newQuestion.getQuestionID(), questionMathLineRepo.selectByQuestionID(question.getQuestionID()));
             if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
                 for (Option opt : options) {
                     opt.setOptionID(-1L);
@@ -786,6 +822,17 @@ public class TestService {
         return alternatives;
     }
 
+    public List<QuestionMathLine> addMathLines(Long questionID, List<QuestionMathLine> questionMathLines) {
+        if (questionMathLines != null && questionMathLines.size() > 0) {
+            for (QuestionMathLine qm : questionMathLines) {
+                qm.setQuestionID(questionID);
+                qm.setQuestionMathLineID(questionMathLineRepo.insert(qm).getQuestionMathLineID());
+            }
+            return questionMathLines;
+        }
+        return null;
+    }
+
     public List<Option> addOptions(Long questionID, List<Option> options, Boolean update) throws Exception {
         if (options != null && options.size() > 0) {
             for (Option option : options) {
@@ -820,6 +867,19 @@ public class TestService {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    public Boolean removeQuestionMathLine(Long questionMathLineID, String username) {
+        logger.info("Request made to remove question math line #{} by {}", questionMathLineID, username);
+
+        QuestionMathLine qm = questionMathLineRepo.selectByQuestionMathLineID(questionMathLineID);
+        User user = userRepo.selectByUsername(username);
+
+        if (user.getUserID().equals(questionRepo.selectByQuestionID(qm.getQuestionID()).getCreatorID())) {
+            questionMathLineRepo.delete(questionMathLineID);
+            return true;
         }
         return false;
     }

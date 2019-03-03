@@ -4,6 +4,7 @@
 package com.pgault04.repositories;
 
 import com.pgault04.entities.Module;
+import com.pgault04.entities.TutorRequests;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class ModuleRepo {
 
     private static final Logger log = LogManager.getLogger(ModuleRepo.class);
 
-    private final String insertSQL = "INSERT INTO Modules (moduleName, moduleDescription, tutorUserID, year) values (:moduleName, :moduleDescription, :tutorUserID, :year)";
-    private final String updateSQL = "UPDATE Modules SET moduleName=:moduleName, moduleDescription=:moduleDescription, tutorUserID=:tutorUserID, year=:year WHERE moduleID=:moduleID";
+    private final String insertSQL = "INSERT INTO Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved) values (:moduleName, :moduleDescription, :tutorUserID, :commencementDate, :endDate, :approved)";
+    private final String updateSQL = "UPDATE Modules SET moduleName=:moduleName, moduleDescription=:moduleDescription, tutorUserID=:tutorUserID, commencementDate=:commencementDate, endDate=:endDate, approved=:approved WHERE moduleID=:moduleID";
     private final String selectSQL = "SELECT * FROM Modules WHERE ";
 
     @Autowired
@@ -90,6 +91,16 @@ public class ModuleRepo {
         return null;
     }
 
+    public List<Module> selectByApproved(Integer approved) {
+        log.debug("ModuleRepo selectByApproved: {}", approved);
+        String selectByApprovedSQL = selectSQL + "approved=?";
+        List<Module> modules = tmpl.query(selectByApprovedSQL, new BeanPropertyRowMapper<>(Module.class), approved);
+
+        log.debug("Query for module by approval status: {}, number of items: {}", approved, modules.size());
+
+        return modules;
+    }
+
     /**
      * Selects a list of modules based on a name
      * @param moduleName the modules name
@@ -115,20 +126,6 @@ public class ModuleRepo {
         List<Module> modules = tmpl.query(selectByTutorIDSQL, new BeanPropertyRowMapper<>(Module.class), tutorID);
 
         log.debug("Query for tutor id: #{}, number of items: {}" + modules.size());
-        return modules;
-    }
-
-    /**
-     * Selects modules based on a given year
-     * @param year the year
-     * @return the list of modules
-     */
-    public List<Module> selectByYear(Integer year) {
-        log.debug("ModuleRepo selectByYear: #{}", year);
-        String selectByYearSQL = selectSQL + "year=?";
-        List<Module> modules = tmpl.query(selectByYearSQL, new BeanPropertyRowMapper<>(Module.class), year);
-
-        log.debug("Query for year: #{}, number of items: {}", year, modules.size());
         return modules;
     }
 

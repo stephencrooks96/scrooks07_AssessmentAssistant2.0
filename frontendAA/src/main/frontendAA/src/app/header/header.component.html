@@ -5,11 +5,14 @@
 
 <div class="col">
   <div ngbDropdown class="d-inline-block" id="dropdownMenu">
-    <button class="btn btn-dark" id="dropdown" ngbDropdownToggle>Options</button>
+    <button class="btn btn-dark" id="dropdown" ngbDropdownToggle>More options...</button>
     <div ngbDropdownMenu aria-labelledby="dropdown">
+      <button class="dropdown-item" routerLink="/editProfile">Edit Profile</button>
       <button class="dropdown-item" routerLink="/changePassword">Change Password</button>
       <button *ngIf="user.tutor == 0" class="dropdown-item" routerLink="/becomeTutor">Become a tutor</button>
       <button *ngIf="user.tutor == 1" class="dropdown-item" routerLink="/addModule">Add a module</button>
+      <button *ngIf="user.userRoleID == 1" class="dropdown-item" routerLink="/adminArea">Admin Area</button>
+      <button class="dropdown-item" routerLink="/adminList">Contact the admins</button>
     </div>
   </div>
 </div>

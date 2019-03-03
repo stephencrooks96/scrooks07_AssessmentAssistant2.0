@@ -26,8 +26,8 @@ public class CorrectPointRepo {
 
     private static final Logger log = LogManager.getLogger(CorrectPointRepo.class);
 
-    private final String insertSQL = "INSERT INTO CorrectPoint (questionID, phrase, marksWorth, feedback, indexedAt) values (:questionID, :phrase, :marksWorth, :feedback, :indexedAt)";
-    private final String updateSQL = "UPDATE CorrectPoint SET questionID=:questionID, phrase=:phrase, marksWorth=:marksWorth, feedback=:feedback, indexedAt=:indexedAt WHERE correctPointID=:correctPointID";
+    private final String insertSQL = "INSERT INTO CorrectPoint (questionID, phrase, marksWorth, feedback, indexedAt, math) values (:questionID, :phrase, :marksWorth, :feedback, :indexedAt, :math)";
+    private final String updateSQL = "UPDATE CorrectPoint SET questionID=:questionID, phrase=:phrase, marksWorth=:marksWorth, feedback=:feedback, indexedAt=:indexedAt, math=:math WHERE correctPointID=:correctPointID";
     private final String selectSQL = "SELECT * FROM CorrectPoint WHERE ";
 
     @Autowired

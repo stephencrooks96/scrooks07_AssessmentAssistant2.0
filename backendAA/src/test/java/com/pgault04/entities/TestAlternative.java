@@ -38,7 +38,7 @@ public class TestAlternative {
     @Test
     public void testAlternativeConstructorWithArgs() {
         alternative = null;
-        alternative = new Alternative(correctPointID, alternativePhrase);
+        alternative = new Alternative(correctPointID, alternativePhrase, 0);
 
         assertNotNull(alternative);
         assertEquals(alternativeIDInit, alternative.getAlternativeID());

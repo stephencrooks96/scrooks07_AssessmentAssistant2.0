@@ -1,15 +1,16 @@
 import { Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from "@angular/router";
 import {Observable} from "rxjs";
+import {AuthorizationService} from "../services/authorization.service";
 
 /**
  * Permission checker class
  *
  */
 @Injectable()
-export class PermissionsPermission implements CanActivate {
+export class BasicPermission implements CanActivate {
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authorizarion : AuthorizationService) {
   }
 
   /**

@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {HttpHeaders} from "@angular/common/http";
+import {User} from "./modelObjs/objects.model";
 
 
 
@@ -14,6 +15,8 @@ export class AppComponent {
     'Accept': 'application/json',
     'Authorization': 'Basic ' + localStorage.getItem("creds")
   });
+
+  principalUser = new User();
 
   title = 'Assessment Assistant';
 

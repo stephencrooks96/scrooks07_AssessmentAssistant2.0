@@ -9,7 +9,7 @@ public class QuestionType {
 	public static final long TEXT_BASED = 1L;
 	public static final long MULTIPLE_CHOICE = 2L;
 	public static final long INSERT_THE_WORD = 3L;
-
+	public static final long TEXT_MATH = 4L;
 	/**
 	 * Used as a checker for insertions and updates
 	 */

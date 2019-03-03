@@ -14,18 +14,21 @@
       <ngb-panel class="rounded dark" *ngFor="let oldQuestion of oldQuestions"
                  title="{{oldQuestion.question.questionContent}}" style="text-decoration: none;">
         <ng-template ngbPanelContent class="rounded dark">
-          <div><span><h5><b>Content: </b>{{oldQuestion.question.questionContent}}</h5></span></div>
+          <h5><b>Content: </b>{{oldQuestion.question.questionContent}}</h5>
           <div *ngFor="let type of questionTypesToShow">
             <div *ngIf="type.questionTypeID == oldQuestion.question.questionType">
-              <span><h5><b>Type: </b>{{type.questionType}}</h5></span></div>
+              <h5><b>Type: </b>{{type.questionType}}</h5>
+            </div>
           </div>
 
-          <div><span><h5><b>Score: </b>{{oldQuestion.question.maxScore}}</h5></span></div>
+          <h5><b>Score: </b>{{oldQuestion.question.maxScore}}</h5>
           <h4>Mark Allocations:</h4>
           <div *ngFor="let correctPoint of oldQuestion.correctPoints">
-            <div><span><h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5></span></div>
-            <div><span><h5><b>Alternative Phrases: </b></h5></span></div>
-            <ol>
+            <h5><b>Phrase: </b>{{correctPoint.phrase}}</h5>
+            <h5 *ngIf="correctPoint.math == 1"><b>Math: </b><ng-katex [equation]="correctPoint.phrase" [options]="options"></ng-katex></h5>
+            <h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5>
+            <h5 *ngIf="correctPoint.alternatives && correctPoint.alternatives.length > 0"><b>Alternative Phrases: </b></h5>
+            <ol *ngIf="correctPoint.alternatives && correctPoint.alternatives.length > 0">
               <li *ngFor="let alt of correctPoint.alternatives">
                 {{alt.alternativePhrase}}
               </li>

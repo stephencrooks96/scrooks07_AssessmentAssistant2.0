@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserRole {
 
+    public static final Long ROLE_ADMIN = 1L;
+    public static final Long ROLE_USER = 2L;
+
     private Long userRoleID = -1L;
 
     private String role;

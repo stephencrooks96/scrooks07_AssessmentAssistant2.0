@@ -43,7 +43,9 @@ public class TestModuleWithTutor {
 
     private Long tutorUserID;
 
-    private Integer year;
+    private String commencementDate;
+
+    private String endDate;
 
     @Before
     public void setUp() throws Exception {
@@ -58,8 +60,9 @@ public class TestModuleWithTutor {
         moduleName = "moduleName";
         moduleDescription = "moduleDescription";
         tutorUserID = 2L;
-        year = 2018;
-        moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year, 1);
+        commencementDate = "dateC";
+        endDate = "dateE";
+        moduleObj = new Module(moduleName, moduleDescription, tutorUserID, commencementDate, endDate, 1);
     }
 
     @Test

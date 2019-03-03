@@ -66,18 +66,18 @@ public class TestTestService {
     @Before
     @Transactional
     public void setUp() throws Exception {
-        question = new Question(1L, "questionContent", null/*"hello"*/, 10, USER_IN_DB, 0);
+        question = new Question(1L, "questionContent", null/*"hello"*/, 10, 0, USER_IN_DB, 0);
         options = new ArrayList<>();
         option = new Option(null, "optionContent", 1, "feedback");
         options.add(option);
         alternatives = new ArrayList<>();
-        alternative = new Alternative(null, "alternativePhrase");
+        alternative = new Alternative(null, "alternativePhrase", 0);
         alternatives.add(alternative);
         correctPoints = new ArrayList<>();
-        correctPoint = new CorrectPoint(null, "phrase", 10.0, "feedback", alternatives, 0);
+        correctPoint = new CorrectPoint(null, "phrase", 10.0, "feedback", alternatives, 0, 0);
         correctPoints.add(correctPoint);
 
-        module = new Module("module", "description", 1L, 2018, 1);
+        module = new Module("module", "description", 1L, "dateC", "dateE", 1);
         module = moduleRepo.insert(module);
         tests = new ArrayList<>();
         testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01T10:00:00", "2018-01-01T11:00:00", 0, 0, 0);
@@ -158,14 +158,14 @@ public class TestTestService {
         testObj = testService.addTest(testObj, USERNAME_IN_DB);
 
         // Valid tutor
-        TutorQuestionPojo returnedQuestionData = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, correctPoints), USERNAME_IN_DB, false);
+        TutorQuestionPojo returnedQuestionData = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, new ArrayList<>(), correctPoints), USERNAME_IN_DB, false);
         assertEquals(question.getQuestionContent(), returnedQuestionData.getQuestion().getQuestionContent());
         assertEquals(option.getOptionContent(), returnedQuestionData.getOptions().get(0).getOptionContent());
         assertEquals(correctPoint.getPhrase(), returnedQuestionData.getCorrectPoints().get(0).getPhrase());
         assertEquals(alternative.getAlternativePhrase(), returnedQuestionData.getCorrectPoints().get(0).getAlternatives().get(0).getAlternativePhrase());
 
         // Invalid tutor
-        returnedQuestionData = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, correctPoints), OTHER_USERNAME_IN_DB, false);
+        returnedQuestionData = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, new ArrayList<>(), correctPoints), OTHER_USERNAME_IN_DB, false);
         assertNull(returnedQuestionData);
     }
 
@@ -173,7 +173,7 @@ public class TestTestService {
     @Transactional
     public void testGetQuestionsByTestIDTutorView() throws Exception {
         testObj = testService.addTest(testObj, USERNAME_IN_DB);
-        testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, correctPoints), USERNAME_IN_DB, false);
+        testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, new ArrayList<>(), correctPoints), USERNAME_IN_DB, false);
 
         // Valid tutor
         List<TutorQuestionPojo> returnedQuestionData = testService.getQuestionsByTestIDTutorView(USERNAME_IN_DB, testObj.getTestID());
@@ -193,12 +193,12 @@ public class TestTestService {
 
         // Test added and question added
         testObj = testService.addTest(testObj, USERNAME_IN_DB);
-        TutorQuestionPojo returnedQuestionOne = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, correctPoints), USERNAME_IN_DB, false);
+        TutorQuestionPojo returnedQuestionOne = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, new ArrayList<>(), correctPoints), USERNAME_IN_DB, false);
         question.setQuestionID(-1L);
         options.get(0).setOptionID(-1L);
         correctPoints.get(0).setCorrectPointID(-1L);
         correctPoints.get(0).getAlternatives().get(0).setAlternativeID(-1L);
-        testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, correctPoints), USERNAME_IN_DB, false);
+        testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, new ArrayList<>(), correctPoints), USERNAME_IN_DB, false);
 
         // Test set back to make it insertable not updatable
         testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01T10:00:00", "2018-01-01T11:00:00", 0, 0, 0);
@@ -220,7 +220,7 @@ public class TestTestService {
 
         // Test added and question added
         testObj = testService.addTest(testObj, USERNAME_IN_DB);
-        TutorQuestionPojo returnedQuestionOne = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, correctPoints), USERNAME_IN_DB, false);
+        TutorQuestionPojo returnedQuestionOne = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, new ArrayList<>(), correctPoints), USERNAME_IN_DB, false);
 
         // Test set back to make it insertable not updatable
         testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01T10:00:00", "2018-01-01T11:00:00", 0, 0, 0);
@@ -279,7 +279,7 @@ public class TestTestService {
 
         // Test added and question added
         testObj = testService.addTest(testObj, USERNAME_IN_DB);
-        TutorQuestionPojo returnedQuestionOne = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, correctPoints), USERNAME_IN_DB, false);
+        TutorQuestionPojo returnedQuestionOne = testService.newQuestion(new TutorQuestionPojo(testObj.getTestID(), question, options, new ArrayList<>(), correctPoints), USERNAME_IN_DB, false);
 
         // Invalid tutor
         Boolean check = testService.removeQuestionFromTest(testObj.getTestID(), returnedQuestionOne.getQuestion().getQuestionID(), OTHER_USERNAME_IN_DB);

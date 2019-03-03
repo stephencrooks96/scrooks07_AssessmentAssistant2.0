@@ -28,7 +28,9 @@ public class TestModule {
 
 	private Long tutorUserID;
 
-	private Integer year;
+	private String commencementDate;
+
+	private String endDate;
 
 	@Before
 	public void setUp() throws Exception {
@@ -37,7 +39,8 @@ public class TestModule {
 		moduleName = "moduleName";
 		moduleDescription = "moduleDescription";
 		tutorUserID = 2L;
-		year = 2018;
+		commencementDate = "dateC";
+		endDate = "dateE";
 	}
 
 	@Test
@@ -48,13 +51,13 @@ public class TestModule {
 	@Test
 	public void testModuleConstructorWithArgs() {
 		moduleObj = null;
-		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year, 1);
+		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, commencementDate, endDate, 1);
 
 		assertNotNull(moduleObj);
 		assertEquals(moduleName, moduleObj.getModuleName());
 		assertEquals(moduleDescription, moduleObj.getModuleDescription());
 		assertEquals(tutorUserID, moduleObj.getTutorUserID());
-		assertEquals(year, moduleObj.getYear());
+		assertEquals(commencementDate, moduleObj.getCommencementDate());
 	}
 
 	@Test
@@ -81,15 +84,11 @@ public class TestModule {
 		assertEquals(tutorUserID, moduleObj.getTutorUserID());
 	}
 
-	@Test
-	public void testGetSetYear() {
-		moduleObj.setYear(year);
-		assertEquals(year, moduleObj.getYear());
-	}
+
 
 	@Test
 	public void testToString() {
-		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, year, 1);
+		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, commencementDate, commencementDate, 1);
 		moduleObj.setModuleID(moduleID);
 		assertEquals("Module{moduleID=1, moduleName='moduleName', moduleDescription='moduleDescription', tutorUserID=2, year=2018}", moduleObj.toString());
 	}

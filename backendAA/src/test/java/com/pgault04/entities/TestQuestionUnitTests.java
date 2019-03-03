@@ -54,7 +54,7 @@ public class TestQuestionUnitTests {
 	@Test
 	public void testQuestionConstructorWithArgs() {
 		questionObj = null;
-		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, creatorID, 0);
+		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, 0, creatorID, 0);
 
 		assertNotNull(questionObj);
 		assertEquals(questionType, questionObj.getQuestionType());
@@ -105,7 +105,7 @@ public class TestQuestionUnitTests {
 
 	@Test
 	public void testToString() {
-		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, creatorID, 0);
+		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, 0, creatorID, 0);
 		questionObj.setQuestionID(questionID);
 		assertEquals("Question{questionType=1, questionID=2, questionContent='questionContent', questionFigure='questionFigure', maxScore=3, creatorID=1}", questionObj.toString());
 	}
