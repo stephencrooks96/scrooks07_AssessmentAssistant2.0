@@ -30,12 +30,12 @@ public class TestTestAndGrade {
     }
 
     @Test
-    public void testTestAndGradeDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(testAndGradeObj);
     }
 
     @Test
-    public void testTestAndGradeConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         testAndGradeObj = null;
         testAndGradeObj = new TestAndGrade(testObj, grade);
 
@@ -45,20 +45,8 @@ public class TestTestAndGrade {
     }
 
     @Test
-    public void testGetSetTest() {
-        testAndGradeObj.setTest(testObj);
-        assertEquals(testObj, testAndGradeObj.getTest());
-    }
-
-    @Test
-    public void testGetSetGrade() {
-        testAndGradeObj.setGrade(grade);
-        assertEquals(grade, testAndGradeObj.getGrade());
-    }
-
-    @Test
     public void testToString() {
         testAndGradeObj = new TestAndGrade(testObj, grade);
-        assertEquals("TestAndGrade{test=Tests{testID=-1, moduleID=null, testTitle='null', startDateTime='null', endDateTime='null', publishResults=null, scheduled=null, publishGrades=null}, grade='A'}", testAndGradeObj.toString());
+        assertEquals("TestAndGrade{test=Tests{testID=-1, moduleID=null, testTitle='null', startDateTime='null', endDateTime='null', publishResults=null, scheduled=null, publishGrades=null, practice=null}, grade='A'}", testAndGradeObj.toString());
     }
 }

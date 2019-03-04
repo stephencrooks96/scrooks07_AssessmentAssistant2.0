@@ -338,6 +338,31 @@ public class MarkingService {
         return scripts;
     }
 
+    public void insertAndUpdateTestResult(Long testID, String username) throws SQLException {
+        User user = userRepo.selectByUsername(username);
+        List<Answer> answersAll = answerRepo.selectByAnswererID(user.getUserID());
+        List<Answer> answers = new LinkedList<>();
+        for (Answer a : answersAll) {
+            if (a.getTestID().equals(testID)) {
+                answers.add(a);
+            }
+        }
+        List<AnswerData> answerData = getScripts(testID, answers);
+        TestResult testResult = new TestResult();
+        testResult.setStudentID(user.getUserID());
+        testResult.setTestID(testID);
+        testResult.setTestScore(0);
+        for (AnswerData ad : answerData) {
+            testResult.setTestScore(testResult.getTestScore() + ad.getQuestionAndAnswer().getAnswer().getScore());
+        }
+        TestResult testResultInDb = testResultRepo.selectByTestIDAndStudentID(testID, user.getUserID());
+        if (testResultInDb != null) {
+            testResult.setTestResultID(testResultInDb.getTestResultID());
+        }
+        testResultRepo.insert(testResult);
+
+    }
+
     public void insertAndUpdateTestResults(Long testID, String username) throws IllegalAccessException, SQLException {
         List<AnswerData> answerData = getScriptsTutor(testID, username);
         Set<Long> scriptSet = new HashSet<>();

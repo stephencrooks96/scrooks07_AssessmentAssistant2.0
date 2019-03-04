@@ -166,8 +166,8 @@ public class User {
 		this.tutor = tutor;
 	}
 
-	/**
-	 * @return the object as string
+	/*
+	 * the object as string
 	 */
 	@Override
 	public String toString() {
@@ -179,6 +179,7 @@ public class User {
 		sb.append(", lastName='").append(lastName).append('\'');
 		sb.append(", enabled=").append(enabled);
 		sb.append(", userRoleID=").append(userRoleID);
+		sb.append(", tutor=").append(tutor);
 		sb.append('}');
 		return sb.toString();
 	}

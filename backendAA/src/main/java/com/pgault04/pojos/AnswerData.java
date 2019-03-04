@@ -1,9 +1,6 @@
 package com.pgault04.pojos;
 
-import com.pgault04.entities.CorrectPoint;
 import com.pgault04.entities.User;
-
-import java.util.List;
 
 public class AnswerData {
 
@@ -19,7 +16,7 @@ public class AnswerData {
      * Constructor with args
      *
      * @param questionAndAnswer question and answer data
-     * @param student the student
+     * @param student           the student
      */
     public AnswerData(QuestionAndAnswer questionAndAnswer, User student) {
         this.setQuestionAndAnswer(questionAndAnswer);

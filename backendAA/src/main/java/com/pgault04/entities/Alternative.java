@@ -35,6 +35,7 @@ public class Alternative {
 	public Alternative(Long correctPointID, String alternativePhrase, Integer math) {
 		this.setCorrectPointID(correctPointID);
 		this.setAlternativePhrase(alternativePhrase);
+		this.setMath(math);
 	}
 
 	/**
@@ -101,6 +102,7 @@ public class Alternative {
 		sb.append("alternativeID=").append(alternativeID);
 		sb.append(", correctPointID=").append(correctPointID);
 		sb.append(", alternativePhrase='").append(alternativePhrase).append('\'');
+		sb.append(", math=").append(math);
 		sb.append('}');
 		return sb.toString();
 	}

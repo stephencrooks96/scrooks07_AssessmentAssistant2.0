@@ -15,6 +15,8 @@ public class QuestionAndAnswer {
     private List<OptionEntries> optionEntries;
     private List<CorrectPoint> correctPoints;
 
+    public QuestionAndAnswer() {}
+
     public QuestionAndAnswer(QuestionAndBase64 question, Answer answer, List<Inputs> inputs, List<OptionEntries> optionEntries, List<CorrectPoint> correctPoints) {
         this.setQuestion(question);
         this.setAnswer(answer);

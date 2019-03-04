@@ -34,12 +34,12 @@ public class TestTestQuestion {
     }
 
     @Test
-    public void testTestQuestionDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(testQuestionObj);
     }
 
     @Test
-    public void testTestQuestionConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         testQuestionObj = null;
         testQuestionObj = new TestQuestion(testID, questionID);
 
@@ -53,18 +53,6 @@ public class TestTestQuestion {
         testQuestionObj.setTestQuestionID(testQuestionID);
         assertEquals(testQuestionID, testQuestionObj.getTestQuestionID());
 
-    }
-
-    @Test
-    public void testGetSetTestID() {
-        testQuestionObj.setTestID(testID);
-        assertEquals(testID, testQuestionObj.getTestID());
-    }
-
-    @Test
-    public void testGetSetQuestionID() {
-        testQuestionObj.setQuestionID(questionID);
-        assertEquals(questionID, testQuestionObj.getQuestionID());
     }
 
     @Test

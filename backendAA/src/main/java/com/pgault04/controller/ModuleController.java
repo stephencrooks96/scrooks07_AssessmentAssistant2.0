@@ -108,6 +108,12 @@ public class ModuleController {
         return modService.activeTests(principal.getName(), moduleID);
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/getPracticeTests", method = RequestMethod.GET)
+    public List<Tests> getPracticeTests(Principal principal, Long moduleID) {
+        return modService.practiceTests(principal.getName(), moduleID);
+    }
+
     /**
      * Provides interface for user to make requests and have users active results for this module returned
      *

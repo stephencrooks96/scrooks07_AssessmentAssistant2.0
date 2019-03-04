@@ -32,7 +32,7 @@ public class TestAssociationType {
 	}
 
 	@Test
-	public void testAssociationTypeDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(associationTypeObj);
 	}
 
@@ -51,17 +51,9 @@ public class TestAssociationType {
 	}
 
 	@Test
-	public void testGetSetAssociationType() {
-		associationTypeObj.setAssociationType(associationType);
-		assertEquals(associationType, associationTypeObj.getAssociationType());
-	}
-
-	@Test
 	public void testToString() {
 		associationTypeObj = new AssociationType(associationType);
 		associationTypeObj.setAssociationTypeID(associationTypeID);
 		assertEquals("AssociationType{associationTypeID=1, associationType='associationType'}", associationTypeObj.toString());
 	}
-	
-
 }

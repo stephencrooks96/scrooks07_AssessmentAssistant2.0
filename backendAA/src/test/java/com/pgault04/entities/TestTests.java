@@ -35,9 +35,12 @@ public class TestTests {
 
     private Integer publishGrades;
 
+    private Integer practice;
+
     @Before
     public void setUp() throws Exception {
         this.testsObj = new Tests();
+        this.testID = 1L;
         this.moduleID = 2L;
         this.testTitle = "testTitle";
         this.startDateTime = "startDateTime";
@@ -45,19 +48,21 @@ public class TestTests {
         this.publishResults = 1;
         this.scheduled = 2;
         this.publishGrades = 1;
+        this.practice = 1;
     }
 
     @Test
-    public void testTestDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(testsObj);
     }
 
     @Test
-    public void testTestConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         testsObj = null;
-        testsObj = new Tests(moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades);
-
+        testsObj = new Tests(moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice);
+        testsObj.setTestID(testID);
         assertNotNull(testsObj);
+        assertEquals(testID, testsObj.getTestID());
         assertEquals(moduleID, testsObj.getModuleID());
         assertEquals(testTitle, testsObj.getTestTitle());
         assertEquals(startDateTime, testsObj.getStartDateTime());
@@ -65,54 +70,13 @@ public class TestTests {
         assertEquals(publishResults, testsObj.getPublishResults());
         assertEquals(scheduled, testsObj.getScheduled());
         assertEquals(publishGrades, testsObj.getPublishGrades());
-    }
-
-    @Test
-    public void testGetSetTestID() {
-        testsObj.setTestID(testID);
-        assertEquals(testID, testsObj.getTestID());
-    }
-
-    @Test
-    public void testGetSetModuleID() {
-        testsObj.setModuleID(moduleID);
-        assertEquals(moduleID, testsObj.getModuleID());
-    }
-
-    @Test
-    public void testGetSetTestTitle() {
-        testsObj.setTestTitle(testTitle);
-        assertEquals(testTitle, testsObj.getTestTitle());
-    }
-
-    @Test
-    public void testGetSetStartDateTime() {
-        testsObj.setStartDateTime(startDateTime);
-        assertEquals(startDateTime, testsObj.getStartDateTime());
-    }
-
-    @Test
-    public void testGetSetEndDateTime() {
-        testsObj.setEndDateTime(endDateTime);
-        assertEquals(endDateTime, testsObj.getEndDateTime());
-    }
-
-    @Test
-    public void testGetSetPublishResults() {
-        testsObj.setPublishResults(publishResults);
-        assertEquals(publishResults, testsObj.getPublishResults());
-    }
-
-    @Test
-    public void testGetSetScheduled() {
-        testsObj.setScheduled(scheduled);
-        assertEquals(scheduled, testsObj.getScheduled());
+        assertEquals(practice, testsObj.getPractice());
     }
 
     @Test
     public void testToString() {
-        testsObj = new Tests(moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades);
+        testsObj = new Tests(moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice);
         testsObj.setTestID(testID);
-        assertEquals("Tests{testID=null, moduleID=2, testTitle='testTitle', startDateTime='startDateTime', endDateTime='endDateTime', publishResults=1, scheduled=2, publishGrades=1}", testsObj.toString());
+        assertEquals("Tests{testID=1, moduleID=2, testTitle='testTitle', startDateTime='startDateTime', endDateTime='endDateTime', publishResults=1, scheduled=2, publishGrades=1, practice=1}", testsObj.toString());
     }
 }

@@ -28,6 +28,8 @@ public class TestCorrectPoint {
 
     private Double marksWorth;
 
+    private Integer indexedAt, math;
+
     private List<Alternative> alts;
 
     @Before
@@ -38,24 +40,28 @@ public class TestCorrectPoint {
         this.phrase = "phrase";
         this.feedback = "feedback";
         this.marksWorth = 0.0;
+        this.indexedAt = 1;
+        this.math = 1;
         this.alts = new ArrayList<>();
     }
 
     @Test
-    public void testCorrectPointDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(correctPointObj);
     }
 
     @Test
-    public void testCorrectPointConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         correctPointObj = null;
-        correctPointObj = new CorrectPoint(questionID, phrase, marksWorth, feedback, alts, 0, 0);
+        correctPointObj = new CorrectPoint(questionID, phrase, marksWorth, feedback, alts, indexedAt, math);
         assertNotNull(correctPointObj);
         assertEquals(questionID, correctPointObj.getQuestionID());
         assertEquals(phrase, correctPointObj.getPhrase());
         assertEquals(marksWorth, correctPointObj.getMarksWorth());
         assertEquals(feedback, correctPointObj.getFeedback());
         assertEquals(alts, correctPointObj.getAlternatives());
+        assertEquals(indexedAt, correctPointObj.getIndexedAt());
+        assertEquals(math, correctPointObj.getMath());
     }
 
     @Test
@@ -65,39 +71,9 @@ public class TestCorrectPoint {
     }
 
     @Test
-    public void testGetSetQuestionID() {
-        correctPointObj.setQuestionID(questionID);
-        assertEquals(questionID, correctPointObj.getQuestionID());
-    }
-
-    @Test
-    public void testGetSetPhrase() {
-        correctPointObj.setPhrase(phrase);
-        assertEquals(phrase, correctPointObj.getPhrase());
-    }
-
-    @Test
-    public void testGetSetMarksWorth() {
-        correctPointObj.setMarksWorth(marksWorth);
-        assertEquals(marksWorth, correctPointObj.getMarksWorth());
-    }
-
-    @Test
-    public void testGetSetFeedback() {
-        correctPointObj.setFeedback(feedback);
-        assertEquals(feedback, correctPointObj.getFeedback());
-    }
-
-    @Test
-    public void testGetSetAlternatives() {
-        correctPointObj.setAlternatives(alts);
-        assertEquals(alts, correctPointObj.getAlternatives());
-    }
-
-    @Test
     public void testToString() {
         correctPointObj = new CorrectPoint(questionID, phrase, marksWorth, feedback, alts, 0, 0);
         correctPointObj.setCorrectPointID(correctPointID);
-        assertEquals("CorrectPoint{correctPointID=1, questionID=2, phrase='phrase', marksWorth=0.0, feedback='feedback', alternatives=[]}", correctPointObj.toString());
+        assertEquals("CorrectPoint{correctPointID=1, questionID=2, phrase='phrase', marksWorth=0.0, feedback='feedback', alternatives=[], indexedAt=0, math=0}", correctPointObj.toString());
     }
 }

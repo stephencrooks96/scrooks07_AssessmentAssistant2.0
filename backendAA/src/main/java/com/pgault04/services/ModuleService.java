@@ -168,7 +168,27 @@ public class ModuleService {
                 try {
                     if (now.compareTo(StringToDateUtil.stringToDate(t.getStartDateTime())) >= 0
                             && now.compareTo(StringToDateUtil.stringToDate(t.getEndDateTime())) < 0
-                            && t.getScheduled() == SCHEDULED) {
+                            && t.getScheduled() == SCHEDULED && t.getPractice() == 0) {
+                        activeTests.add(t);
+                    }
+                } catch (ParseException e) { e.printStackTrace(); }
+            }
+            return activeTests;
+        }
+        return null;
+    }
+
+    public List<Tests> practiceTests(String username, Long moduleID) {
+        logger.info("Request made for practice tests for module #{}", moduleID);
+        if (checkValidAssociation(username, moduleID) != null) {
+            Date now = new Date();
+            List<Tests> activeTests = new ArrayList<>();
+            List<Tests> tests = testsRepo.selectByModuleID(moduleID);
+            for (Tests t : tests) {
+                try {
+                    if (now.compareTo(StringToDateUtil.stringToDate(t.getEndDateTime())) < 0
+                            && now.compareTo(StringToDateUtil.stringToDate(t.getStartDateTime())) >= 0
+                            && t.getScheduled() == SCHEDULED && t.getPractice() == 1) {
                         activeTests.add(t);
                     }
                 } catch (ParseException e) { e.printStackTrace(); }
@@ -392,7 +412,7 @@ public class ModuleService {
             List<TestAndGrade> testAndGradeList = new ArrayList<>();
 
             for (Tests test : tests) {
-                if (test.getPublishGrades() == PUBLISH_TRUE) {
+                if (test.getPublishGrades() == PUBLISH_TRUE && test.getPractice() == 0) {
                     for (TestResult testResult : testResultRepo.selectByTestID(test.getTestID())) {
                         if (testResult.getStudentID().equals(user.getUserID())) {
 
@@ -451,7 +471,7 @@ public class ModuleService {
             List<Tests> testReturn = new ArrayList<>();
 
             for (Tests t : tests) {
-                if (t.getScheduled() != SCHEDULED) {
+                if (t.getScheduled() != SCHEDULED || t.getPractice() == 1) {
                     testReturn.add(t);
                 }
             }
@@ -476,7 +496,7 @@ public class ModuleService {
 
             for (Tests t : tests) {
                 try {
-                    if (now.compareTo(StringToDateUtil.stringToDate(t.getEndDateTime())) >= 0) {
+                    if (now.compareTo(StringToDateUtil.stringToDate(t.getEndDateTime())) >= 0 || t.getPractice() == 1) {
                         int answersUnmarked = 0;
                         List<Answer> answers = answerRepo.selectByTestID(t.getTestID());
                         for (Answer a : answers) {
@@ -484,7 +504,7 @@ public class ModuleService {
                                 answersUnmarked++;
                             }
                         }
-                        if (answersUnmarked == READY_FOR_REVIEW) {
+                        if (answersUnmarked == READY_FOR_REVIEW || t.getPractice() == 1) {
                             TestMarking tm = new TestMarking(t, 0, 0, answers.size(), 0, 0);
                             tmList.add(tm);
                         }
@@ -515,7 +535,6 @@ public class ModuleService {
                 modules.add(module);
             }
         }
-
         return modules;
     }
 
@@ -536,7 +555,7 @@ public class ModuleService {
             List<Performance> performanceList = new ArrayList<>();
 
             for (Tests test : tests) {
-                if (test.getPublishResults() == PUBLISH_TRUE) {
+                if (test.getPublishResults() == PUBLISH_TRUE && test.getPractice() != 1) {
                     double classAverage = 0.0;
                     TestAndResult tar = null;
                     List<TestResult> testResults = testResultRepo.selectByTestID(test.getTestID());

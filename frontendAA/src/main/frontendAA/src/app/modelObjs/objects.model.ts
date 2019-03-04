@@ -70,6 +70,7 @@ export class Tests {
   moduleID: number=0;
   publishGrades : number;
   publishResults : number;
+  practice: number = 0;
 }
 
 export class TestAndResultFE {

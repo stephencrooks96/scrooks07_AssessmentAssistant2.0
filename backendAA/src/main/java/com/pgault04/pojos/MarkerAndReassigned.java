@@ -7,6 +7,8 @@ public class MarkerAndReassigned {
     private Long specifyQuestion;
     private Long numberToReassign;
 
+    public MarkerAndReassigned() {}
+
     public MarkerAndReassigned(Long markerID, Long previousMarkerID, Long specifyQuestion, Long numberToReassign) {
         this.setMarkerID(markerID);
         this.setPreviousMarkerID(previousMarkerID);

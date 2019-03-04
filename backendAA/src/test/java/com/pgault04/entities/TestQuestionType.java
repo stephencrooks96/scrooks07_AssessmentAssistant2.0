@@ -28,17 +28,18 @@ public class TestQuestionType {
 	public void setUp() throws Exception {
 
 		this.questionTypeObj = new QuestionType();
+		this.questionTypeID = 1L;
 		this.questionType = "questionType";
 
 	}
 
 	@Test
-	public void testQuestionTypeDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(questionTypeObj);
 	}
 
 	@Test
-	public void testQuestionTypeConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		questionTypeObj = null;
 		questionTypeObj = new QuestionType(questionType);
 
@@ -54,15 +55,9 @@ public class TestQuestionType {
 	}
 
 	@Test
-	public void testGetSetQuestionType() {
-		questionTypeObj.setQuestionType(questionType);
-		assertEquals(questionType, questionTypeObj.getQuestionType());
-	}
-
-	@Test
 	public void testToString() {
 		questionTypeObj = new QuestionType(questionType);
 		questionTypeObj.setQuestionTypeID(questionTypeID);
-		assertEquals("QuestionType{questionTypeID=null, questionType='questionType'}", questionTypeObj.toString());
+		assertEquals("QuestionType{questionTypeID=1, questionType='questionType'}", questionTypeObj.toString());
 	}
 }

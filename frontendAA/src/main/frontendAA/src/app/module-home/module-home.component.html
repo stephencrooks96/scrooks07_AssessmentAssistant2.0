@@ -19,6 +19,7 @@
         <li class="nav-item">
           <a
             (click)="activeTestCheck = true;
+            practiceTestCheck = false;
             contactAssociates = false;
             activeResultCheck = false;
             addAssociationsCheck = false;
@@ -32,9 +33,26 @@
             Tests</a>
         </li>
 
+        <li *ngIf="TUTOR == (moduleAssoc | async) || STUDENT == (moduleAssoc | async)" class="nav-item">
+          <a
+            (click)="activeTestCheck = false;
+            practiceTestCheck = true;
+            contactAssociates = false;
+            activeResultCheck = false;
+            addAssociationsCheck = false;
+            addTestCheck = false;
+            performanceCheck = false;
+            scheduledTestCheck = false;
+            markingCheck = false;
+            testDraftCheck = false;
+            reviewMarkingCheck = false"
+            class="nav-link" href="#">Practice Tests</a>
+        </li>
+
         <li *ngIf="TUTOR == (moduleAssoc | async)" class="nav-item">
           <a
             (click)="activeTestCheck = false;
+            practiceTestCheck = false;
             addAssociationsCheck = true;
             activeResultCheck = false;
             addTestCheck = false;
@@ -48,6 +66,7 @@
 
         <li *ngIf="STUDENT == (moduleAssoc | async)" class="nav-item">
           <a (click)="activeResultCheck = true;
+          practiceTestCheck = false;
           addAssociationsCheck = false;
              activeTestCheck = false;
              addTestCheck = false;
@@ -60,6 +79,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) == STUDENT" class="nav-item">
           <a (click)="activeResultCheck = false;
+          practiceTestCheck = false;
           addAssociationsCheck = false;
              activeTestCheck = false;
              performanceCheck = true;
@@ -72,6 +92,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
+          practiceTestCheck = false;
           addAssociationsCheck = false;
              activeResultCheck = false;
              addTestCheck = true;
@@ -84,6 +105,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
+          practiceTestCheck = false;
              activeResultCheck = false;
              addAssociationsCheck = false;
              addTestCheck = false;
@@ -97,6 +119,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) != STUDENT" class="nav-item">
           <a (click)="activeTestCheck = false;
+          practiceTestCheck = false;
              activeResultCheck = false;
              addAssociationsCheck = false;
              addTestCheck = false;
@@ -109,6 +132,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
+          practiceTestCheck = false;
              activeResultCheck = false;
              addAssociationsCheck = false;
              addTestCheck = false;
@@ -122,6 +146,7 @@
         </li>
         <li *ngIf="(moduleAssoc | async) == TUTOR" class="nav-item">
           <a (click)="activeTestCheck = false;
+             practiceTestCheck = false;
              activeResultCheck = false;
              addAssociationsCheck = false;
              performanceCheck = false;
@@ -174,6 +199,47 @@
         </div>
       </div>
 
+    </div>
+
+    <div *ngIf="practiceTestCheck" class="pre-scrollable">
+      <div class="modHomeInner" id="practiceTests">
+        <div *ngIf="practiceTests && practiceTests.length > 0">
+          <div class="title">
+            <h5 class="display-5" style="margin-top: 20px;">Practice Tests</h5>
+          </div>
+          <p>For queries on feedback contact your tutor here: <a style="text-decoration: underline; color: black;" href="mailto:moduleTutor.tutor.username}}?Subject={{moduleTutor.module.moduleName}}">{{moduleTutor.tutor.username}}</a></p>
+          <table class="table table-dark">
+
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th>Title</th>
+              <th>Deadline</th>
+              <th *ngIf="(moduleAssoc | async) == STUDENT">Take</th>
+              <th *ngIf="(moduleAssoc | async) == TUTOR">View</th>
+              <th>Feedback</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let practiceTest of practiceTests">
+              <td scope="row">{{practiceTest.testID}}</td>
+              <td data-label="Title:"> {{practiceTest.testTitle}}</td>
+              <td data-label="Deadline:">{{practiceTest.endDateTime | date:"dd-MM-yyyy 'at' HH:mm"}}</td>
+
+              <td data-label="Take:"><a [routerLink]="['/takeTest', practiceTest.testID]" style="color: white;"><i
+                class="fas fa-stopwatch fa-lg"></i></a></td>
+              <td data-label="Feedback:"><a *ngIf="answeredSet && answeredSet.includes(practiceTest.testID)" [routerLink]="['/feedback', practiceTest.testID]" style="color: white;">Feedback</a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf=" practiceTests && practiceTests.length == 0">
+          <div class="title">
+            <h5 class="display-5">Practice Tests</h5>
+            <h1 class="display-3">No practice tests to show.</h1>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div *ngIf="addAssociationsCheck" class="pre-scrollable">
@@ -317,6 +383,7 @@
             <tr>
               <th scope="col">#</th>
               <th>Title</th>
+              <th>Type</th>
               <th>Start Time</th>
               <th>Moved to Drafts</th>
             </tr>
@@ -326,6 +393,8 @@
             <tr *ngFor="let scheduledTest of scheduledTests">
               <td scope="row">{{scheduledTest.testID}}</td>
               <td data-label="Title:">{{scheduledTest.testTitle}}</td>
+              <td *ngIf="scheduledTest.practice != 1" data-label="Type">Official</td>
+              <td *ngIf="scheduledTest.practice == 1" data-label="Type">Practice</td>
               <td data-label="Starts:">{{scheduledTest.startDateTime | date: "dd-MM-yyyy 'at' HH:mm"}}</td>
               <td data-label="Not ready?"><a (click)="retractScheduled(scheduledTest.testID); getScheduledTests(moduleID)"
                                              style="color: white;"><i
@@ -459,6 +528,7 @@
             <tr>
               <th scope="col">#</th>
               <th>Title</th>
+              <th>Type</th>
               <th>Edit</th>
             </tr>
             </thead>
@@ -467,6 +537,8 @@
             <tr *ngFor="let testDraft of testDrafts">
               <td scope="row">{{testDraft.testID}}</td>
               <td data-label="Title">{{testDraft.testTitle}}</td>
+              <td *ngIf="testDraft.practice != 1" data-label="Type">Official</td>
+              <td *ngIf="testDraft.practice == 1" data-label="Type">Practice</td>
               <td data-label="Edit"><a [routerLink]="['/editTest', testDraft.testID]" style="color: white;"><i
                 class="fas fa-edit fa-lg"></i></a></td>
             </tr>
@@ -493,16 +565,16 @@
             <tr>
               <th scope="col">#</th>
               <th>Title</th>
+              <th>Type</th>
               <th>Review</th>
             </tr>
             </thead>
-
             <tbody>
             <tr *ngFor="let test of testsForReview">
-
-
               <td scope="row">{{test.test.testID}}</td>
               <td data-label="Title">{{test.test.testTitle}}</td>
+              <td *ngIf="test.test.practice != 1" data-label="Type">Official</td>
+              <td *ngIf="test.test.practice == 1" data-label="Type">Practice</td>
               <td data-label="Review"><a [routerLink]="['/reviewMarking', test.test.testID]" style="color: white;"><i
                 class="fas fa-search fa-lg"></i></a></td>
             </tr>

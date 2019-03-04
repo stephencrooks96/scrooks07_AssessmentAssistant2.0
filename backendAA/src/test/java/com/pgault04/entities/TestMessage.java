@@ -38,7 +38,7 @@ public class TestMessage {
 	}
 
 	@Test
-	public void testMessageDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(messageObj);
 	}
 
@@ -59,36 +59,6 @@ public class TestMessage {
 	public void testGetSetMessageID() {
 		messageObj.setMessageID(messageID);
 		assertEquals(messageID, messageObj.getMessageID());
-	}
-
-	@Test
-	public void testGetSetContent() {
-		messageObj.setContent(content);
-		assertEquals(content, messageObj.getContent());
-	}
-
-	@Test
-	public void testGetSetRecipientID() {
-		messageObj.setRecipientID(recipientID);
-		assertEquals(recipientID, messageObj.getRecipientID());
-	}
-
-	@Test
-	public void testGetSetSenderID() {
-		messageObj.setSenderID(senderID);
-		assertEquals(senderID, messageObj.getSenderID());
-	}
-
-	@Test
-	public void testGetSetMessageTimeStamp() {
-		messageObj.setMessageTimestamp(messageTimestamp);
-		assertEquals(messageTimestamp, messageObj.getMessageTimestamp());
-	}
-
-	@Test
-	public void testGetSetNewMessage() {
-		messageObj.setNewMessage(newMessage);
-		assertEquals(newMessage, messageObj.getNewMessage());
 	}
 
 	@Test

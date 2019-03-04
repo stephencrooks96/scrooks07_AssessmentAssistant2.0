@@ -18,16 +18,17 @@ import static org.junit.Assert.assertNotNull;
 public class TestAlternative {
 
     private Alternative alternative;
-    private Long alternativeID, correctPointID, alternativeIDInit;
+    private Long alternativeID, correctPointID;
     private String alternativePhrase;
+    private Integer math;
 
     @Before
     public void setUp() throws Exception {
         alternative = new Alternative();
-        this.alternativeIDInit = -1L;
         this.alternativeID = 1L;
         this.correctPointID = 2L;
         this.alternativePhrase = "alt";
+        this.math = 1;
     }
 
     @Test
@@ -38,24 +39,12 @@ public class TestAlternative {
     @Test
     public void testAlternativeConstructorWithArgs() {
         alternative = null;
-        alternative = new Alternative(correctPointID, alternativePhrase, 0);
+        alternative = new Alternative(correctPointID, alternativePhrase, math);
 
         assertNotNull(alternative);
-        assertEquals(alternativeIDInit, alternative.getAlternativeID());
         assertEquals(correctPointID, alternative.getCorrectPointID());
         assertEquals(alternativePhrase, alternative.getAlternativePhrase());
-    }
-
-    @Test
-    public void testGetSetCorrectPointID() {
-        alternative.setCorrectPointID(correctPointID);
-        assertEquals(correctPointID, alternative.getCorrectPointID());
-    }
-
-    @Test
-    public void testGetSetAlternativePhrase() {
-        alternative.setAlternativePhrase(alternativePhrase);
-        assertEquals(alternativePhrase, alternative.getAlternativePhrase());
+        assertEquals(math, alternative.getMath());
     }
 
     @Test
@@ -69,7 +58,8 @@ public class TestAlternative {
         alternative.setAlternativeID(alternativeID);
         alternative.setCorrectPointID(correctPointID);
         alternative.setAlternativePhrase(alternativePhrase);
-        assertEquals("Alternative{alternativeID=1, correctPointID=2, alternativePhrase='alt'}", alternative.toString());
+        alternative.setMath(math);
+        assertEquals("Alternative{alternativeID=1, correctPointID=2, alternativePhrase='alt', math=1}", alternative.toString());
     }
 
 }

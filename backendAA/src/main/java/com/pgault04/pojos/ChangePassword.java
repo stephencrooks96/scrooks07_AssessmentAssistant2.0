@@ -37,4 +37,17 @@ public class ChangePassword {
     public void setRepeatPassword(String repeatPassword) {
         this.repeatPassword = repeatPassword;
     }
+
+    /*
+     *
+     */
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ChangePassword{");
+        sb.append("password='").append(password).append('\'');
+        sb.append(", newPassword='").append(newPassword).append('\'');
+        sb.append(", repeatPassword='").append(repeatPassword).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

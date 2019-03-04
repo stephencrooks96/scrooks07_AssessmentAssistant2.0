@@ -14,6 +14,8 @@ public class QuestionAndBase64 {
     private List<QuestionMathLine> mathLines;
     private Question question;
 
+    public QuestionAndBase64() {}
+
     public QuestionAndBase64(String base64, List<Option> options, List<QuestionMathLine> mathLines, Question question) {
         this.setBase64(base64);
         this.setOptions(options);

@@ -71,7 +71,7 @@ public class TestModuleService {
         module = new Module("module", "description", 1L, "dateC", "dateE", 1);
         module = moduleRepo.insert(module);
         tests = new ArrayList<>();
-        testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01 10:00:00", "2018-01-01 11:00:00", 0, 0, 0);
+        testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01 10:00:00", "2018-01-01 11:00:00", 0, 0, 0, 0);
         modAssoc = moduleAssociationRepo.insert(new ModuleAssociation(module.getModuleID(), userRepo.selectByUsername(USERNAME_IN_DB).getUserID(), 1L));
     }
 

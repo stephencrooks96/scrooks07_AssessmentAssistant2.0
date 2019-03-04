@@ -27,6 +27,8 @@ public class Tests {
 
 	private Integer publishGrades;
 
+	private Integer practice;
+
 	/**
 	 * Default constructor
 	 */
@@ -41,9 +43,10 @@ public class Tests {
 	 * @param publishResults whether result should be available to students
 	 * @param scheduled whether the test is ready for release
 	 * @param publishGrades whether grades should be published to students
+	 * @param practice whether the test is a practice test or not
 	 */
 	public Tests(Long moduleID, String testTitle, String startDateTime, String endDateTime, Integer publishResults,
-			Integer scheduled, Integer publishGrades) {
+			Integer scheduled, Integer publishGrades, Integer practice) {
 		this.setModuleID(moduleID);
 		this.setTestTitle(testTitle);
 		this.setStartDateTime(startDateTime);
@@ -51,6 +54,7 @@ public class Tests {
 		this.setPublishResults(publishResults);
 		this.setScheduled(scheduled);
 		this.setPublishGrades(publishGrades);
+		this.setPractice(practice);
 	}
 
 	/**
@@ -166,6 +170,16 @@ public class Tests {
 	}
 
 	/**
+	 * @return - whether it is a practice test or not
+	 */
+	public Integer getPractice() { return practice; }
+
+	/**
+	 * @param practice whether it is a practice test or not
+	 */
+	public void setPractice(Integer practice) { this.practice = practice; }
+
+	/**
 	 * @return the object as string
 	 */
 	@Override
@@ -179,6 +193,7 @@ public class Tests {
 		sb.append(", publishResults=").append(publishResults);
 		sb.append(", scheduled=").append(scheduled);
 		sb.append(", publishGrades=").append(publishGrades);
+		sb.append(", practice=").append(practice);
 		sb.append('}');
 		return sb.toString();
 	}

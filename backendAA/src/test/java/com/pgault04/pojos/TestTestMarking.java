@@ -38,12 +38,12 @@ public class TestTestMarking {
     }
 
     @Test
-    public void testTestMarkingDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(testMarkingObj);
     }
 
     @Test
-    public void testTestMarkingConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         testMarkingObj = null;
         testMarkingObj = new TestMarking(testObj, toBeMarkedByYou, toBeMarkedByTAs, marked, totalForYou, totalForTAs);
 
@@ -57,44 +57,8 @@ public class TestTestMarking {
     }
 
     @Test
-    public void testGetSetTest() {
-        testMarkingObj.setTest(testObj);
-        assertEquals(testObj, testMarkingObj.getTest());
-    }
-
-    @Test
-    public void testGetSetToBeMarkedByYou() {
-        testMarkingObj.setToBeMarkedByYou(toBeMarkedByYou);
-        assertEquals(toBeMarkedByYou, testMarkingObj.getToBeMarkedByYou());
-    }
-    
-    @Test
-    public void testGetSetToBeMarkedByTAs() {
-        testMarkingObj.setToBeMarkedByTAs(toBeMarkedByTAs);
-        assertEquals(toBeMarkedByTAs, testMarkingObj.getToBeMarkedByTAs());
-    }
-
-    @Test
-    public void testGetSetMarked() {
-        testMarkingObj.setMarked(marked);
-        assertEquals(marked, testMarkingObj.getMarked());
-    }
-
-    @Test
-    public void testGetSetTotalForYou() {
-        testMarkingObj.setTotalForYou(totalForYou);
-        assertEquals(totalForYou, testMarkingObj.getTotalForYou());
-    }
-
-    @Test
-    public void testGetSetTotalForTAs() {
-        testMarkingObj.setTotalForTAs(totalForTAs);
-        assertEquals(totalForTAs, testMarkingObj.getTotalForTAs());
-    }
-
-    @Test
     public void testToString() {
         testMarkingObj = new TestMarking(testObj, toBeMarkedByYou, toBeMarkedByTAs, marked, totalForYou, totalForTAs);
-        assertEquals("TestMarking{test=Tests{testID=-1, moduleID=null, testTitle='null', startDateTime='null', endDateTime='null', publishResults=null, scheduled=null, publishGrades=null}, toBeMarkedByYou=100, toBeMarkedByTAs=50, marked=30, totalForYou=100, totalForTAs=100}", testMarkingObj.toString());
+        assertEquals("TestMarking{test=Tests{testID=-1, moduleID=null, testTitle='null', startDateTime='null', endDateTime='null', publishResults=null, scheduled=null, publishGrades=null, practice=null}, toBeMarkedByYou=100, toBeMarkedByTAs=50, marked=30, totalForYou=100, totalForTAs=100}", testMarkingObj.toString());
     }
 }

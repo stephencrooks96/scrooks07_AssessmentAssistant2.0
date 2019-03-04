@@ -26,8 +26,8 @@ public class TestsRepo {
 
     private static final Logger log = LogManager.getLogger(TestsRepo.class);
 
-    private final String insertSQL = "INSERT INTO Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (:moduleID, :testTitle, :startDateTime, :endDateTime, :publishResults, :scheduled, :publishGrades)";
-    private final String updateSQL = "UPDATE Tests SET moduleID=:moduleID, testTitle=:testTitle, startDateTime=:startDateTime, endDateTime=:endDateTime, publishResults=:publishResults, scheduled=:scheduled, publishGrades=:publishGrades WHERE testID=:testID";
+    private final String insertSQL = "INSERT INTO Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (:moduleID, :testTitle, :startDateTime, :endDateTime, :publishResults, :scheduled, :publishGrades, :practice)";
+    private final String updateSQL = "UPDATE Tests SET moduleID=:moduleID, testTitle=:testTitle, startDateTime=:startDateTime, endDateTime=:endDateTime, publishResults=:publishResults, scheduled=:scheduled, publishGrades=:publishGrades, practice=:practice WHERE testID=:testID";
     private final String selectSQL = "SELECT * FROM Tests WHERE ";
 
     @Autowired

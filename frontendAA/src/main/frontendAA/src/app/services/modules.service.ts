@@ -112,10 +112,16 @@ export class ModulesService {
   }
 
   getActiveTests(moduleID): Observable<Tests[]> {
-
     return this.http.get<Tests[]>(this.app.url + "/modules/getActiveTests?moduleID=" + moduleID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Active tests fetched from server.'))
+      );
+  }
+
+  getPracticeTests(moduleID): Observable<Tests[]> {
+    return this.http.get<Tests[]>(this.app.url + "/modules/getPracticeTests?moduleID=" + moduleID, {headers: this.app.headers})
+      .pipe(
+        tap(_ => console.log('Practice tests fetched from server.'))
       );
   }
 

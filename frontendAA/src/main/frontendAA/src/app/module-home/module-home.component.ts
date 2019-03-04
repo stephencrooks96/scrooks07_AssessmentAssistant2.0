@@ -37,6 +37,7 @@ export class ModuleHomeComponent implements OnInit {
   module = new ModuleFE();
   moduleID: number;
   activeTests: Tests[];
+  practiceTests: Tests[];
   scheduledTests: Tests[];
   testDrafts: Tests[];
   marking: TestMarking[];
@@ -48,6 +49,7 @@ export class ModuleHomeComponent implements OnInit {
   addTestCheck = false;
   performanceCheck = false;
   scheduledTestCheck = false;
+  practiceTestCheck = false;
   markingCheck = false;
   testDraftCheck = false;
   reviewMarkingCheck = false;
@@ -77,6 +79,7 @@ export class ModuleHomeComponent implements OnInit {
     this.getModuleAndTutor(this.moduleID);
     this.getModuleAssociation(this.moduleID);
     this.getActiveTests(this.moduleID);
+    this.getPracticeTests(this.moduleID);
     this.getActiveResults(this.moduleID);
     this.getScheduledTests(this.moduleID);
     this.getMarking(this.moduleID);
@@ -88,6 +91,7 @@ export class ModuleHomeComponent implements OnInit {
     this.activeSub = interval(60000)
       .subscribe((val) => {
         this.getActiveTests(this.moduleID);
+        this.getPracticeTests(this.moduleID);
         this.getScheduledTests(this.moduleID);
         this.getMarking(this.moduleID);
         this.getReviewMarking(this.moduleID);
@@ -242,6 +246,13 @@ export class ModuleHomeComponent implements OnInit {
     return this.modServ.getActiveTests(moduleID)
       .subscribe(tests => {
         this.activeTests = tests;
+      });
+  }
+
+  getPracticeTests(moduleID) {
+    return this.modServ.getPracticeTests(moduleID)
+      .subscribe(tests => {
+        this.practiceTests = tests;
       });
   }
 

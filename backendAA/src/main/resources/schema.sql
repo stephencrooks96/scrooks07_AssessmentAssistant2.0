@@ -1,14 +1,16 @@
 DROP TABLE IF EXISTS Alternative, Answer, AssociationType, CorrectPoint, Inputs, Message, Modules, ModuleAssociation, OptionEntries, OptionTbl, PasswordReset, Question, QuestionType, QuestionMathLines, TestQuestion, TestResult, Tests, TimeModifier, TutorRequests, Users, UserRole, UserSessions;
 
-CREATE TABLE IF NOT EXISTS Alternative (
-  alternativeID     int(11) NOT NULL AUTO_INCREMENT,
-  correctPointID    int(11) NOT NULL,
-  alternativePhrase text    NOT NULL,
+CREATE TABLE IF NOT EXISTS Alternative
+(
+  alternativeID     int(11)    NOT NULL AUTO_INCREMENT,
+  correctPointID    int(11)    NOT NULL,
+  alternativePhrase text       NOT NULL,
   math              tinyint(1) NOT NULL,
-  PRIMARY KEY(alternativeID)
+  PRIMARY KEY (alternativeID)
 );
 
-CREATE TABLE IF NOT EXISTS Answer (
+CREATE TABLE IF NOT EXISTS Answer
+(
   answerID       int(11) NOT NULL AUTO_INCREMENT,
   questionID     int(11) NOT NULL,
   testID         int(11) NOT NUll,
@@ -19,47 +21,52 @@ CREATE TABLE IF NOT EXISTS Answer (
   feedback       text,
   markerApproved tinyint(1),
   tutorApproved  tinyint(1),
-  PRIMARY KEY(answerID)
+  PRIMARY KEY (answerID)
 );
 
-CREATE TABLE IF NOT EXISTS AssociationType (
+CREATE TABLE IF NOT EXISTS AssociationType
+(
   associationTypeID int(11)     NOT NULL AUTO_INCREMENT,
   associationType   varchar(30) NOT NULL,
-  PRIMARY KEY(associationTypeID)
+  PRIMARY KEY (associationTypeID)
 );
 
-CREATE TABLE IF NOT EXISTS CorrectPoint (
-  correctPointID int(11) NOT NULL AUTO_INCREMENT,
-  questionID     int(11) NOT NULL,
-  phrase         text    NOT NULL,
-  marksWorth     double  NOT NULL,
-  feedback       text    NOT NULL,
+CREATE TABLE IF NOT EXISTS CorrectPoint
+(
+  correctPointID int(11)    NOT NULL AUTO_INCREMENT,
+  questionID     int(11)    NOT NULL,
+  phrase         text       NOT NULL,
+  marksWorth     double     NOT NULL,
+  feedback       text       NOT NULL,
   indexedAt      int(11),
   math           tinyint(1) NOT NULL,
-  PRIMARY KEY(correctPointID)
+  PRIMARY KEY (correctPointID)
 );
 
 
-CREATE TABLE IF NOT EXISTS Inputs (
-  inputID    int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS Inputs
+(
+  inputID    int(11)    NOT NULL AUTO_INCREMENT,
   inputValue text,
-  inputIndex int(11) NOT NULL,
-  answerID   int(11) NOT NULL,
+  inputIndex int(11)    NOT NULL,
+  answerID   int(11)    NOT NULL,
   math       tinyint(1) NOT NULL,
-  PRIMARY KEY(inputID)
+  PRIMARY KEY (inputID)
 );
 
-CREATE TABLE IF NOT EXISTS Message (
+CREATE TABLE IF NOT EXISTS Message
+(
   messageID        int(11)      NOT NULL AUTO_INCREMENT,
   content          text         NOT NULL,
   recipientID      int(11)      NOT NULL,
   senderID         int(11)      NOT NULL,
   messageTimestamp timestamp(3) NOT NULL,
   newMessage       tinyint(1)   NOT NULL,
-  PRIMARY KEY(messageID)
+  PRIMARY KEY (messageID)
 );
 
-CREATE TABLE IF NOT EXISTS Modules (
+CREATE TABLE IF NOT EXISTS Modules
+(
   moduleID          int(11)      NOT NULL AUTO_INCREMENT,
   moduleName        varchar(50)  NOT NULL,
   moduleDescription varchar(500) NOT NULL,
@@ -71,37 +78,42 @@ CREATE TABLE IF NOT EXISTS Modules (
 );
 
 
-CREATE TABLE IF NOT EXISTS ModuleAssociation (
+CREATE TABLE IF NOT EXISTS ModuleAssociation
+(
   associationID   int(11) NOT NULL AUTO_INCREMENT,
   moduleID        int(11) NOT NULL,
   userID          int(11) NOT NULL,
   associationType int(11) NOT NULL,
-  PRIMARY KEY(associationID)
+  PRIMARY KEY (associationID)
 );
 
 
-CREATE TABLE IF NOT EXISTS OptionTbl (
+CREATE TABLE IF NOT EXISTS OptionTbl
+(
   optionID      int(11) NOT NULL AUTO_INCREMENT,
   questionID    int(11) NOT NULL,
   optionContent text    NOT NULL,
   worthMarks    int(11) NOT NULL,
   feedback      text    NOT NULL,
-  PRIMARY KEY(optionID)
+  PRIMARY KEY (optionID)
 );
 
-CREATE TABLE IF NOT EXISTS OptionEntries (
+CREATE TABLE IF NOT EXISTS OptionEntries
+(
   optionEntryID int(11) NOT NULL AUTO_INCREMENT,
   optionID      int(11) NOT NULL,
   answerID      int(11) NOT NULL,
-  PRIMARY KEY(optionEntryID)
+  PRIMARY KEY (optionEntryID)
 );
 
-CREATE TABLE IF NOT EXISTS PasswordReset (
-  userID      int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS PasswordReset
+(
+  userID      int(11)     NOT NULL,
   resetString varchar(15) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Question (
+CREATE TABLE IF NOT EXISTS Question
+(
   questionType    int(11) NOT NULL,
   questionID      int(11) NOT NULL AUTO_INCREMENT,
   questionContent text    NOT NULL,
@@ -110,10 +122,11 @@ CREATE TABLE IF NOT EXISTS Question (
   minScore        int(11) NOT NULL,
   creatorID       int(11) NOT NULL,
   allThatApply    tinyint(1),
-  PRIMARY KEY(questionID)
+  PRIMARY KEY (questionID)
 );
 
-CREATE TABLE IF NOT EXISTS QuestionMathLines (
+CREATE TABLE IF NOT EXISTS QuestionMathLines
+(
   questionMathLineID int(11) NOT NULL AUTO_INCREMENT,
   questionID         int(11) NOT NULL,
   content            text    NOT NULL,
@@ -122,28 +135,32 @@ CREATE TABLE IF NOT EXISTS QuestionMathLines (
 );
 
 
-CREATE TABLE IF NOT EXISTS QuestionType (
-  questionTypeID int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS QuestionType
+(
+  questionTypeID int(11)      NOT NULL AUTO_INCREMENT,
   questionType   varchar(255) NOT NULL,
-  PRIMARY KEY(questionTypeID)
+  PRIMARY KEY (questionTypeID)
 );
 
-CREATE TABLE IF NOT EXISTS TestQuestion (
+CREATE TABLE IF NOT EXISTS TestQuestion
+(
   testQuestionID int(11) NOT NULL AUTO_INCREMENT,
   testID         int(11) NOT NULL,
   questionID     int(11) NOT NULL,
-  PRIMARY KEY(testQuestionID)
+  PRIMARY KEY (testQuestionID)
 );
 
-CREATE TABLE IF NOT EXISTS TestResult (
+CREATE TABLE IF NOT EXISTS TestResult
+(
   testResultID int(11) NOT NULL AUTO_INCREMENT,
   testID       int(11) NOT NULL,
   studentID    int(11) NOT NULL,
   testScore    int(11) NOT NULL,
-  PRIMARY KEY(testResultID)
+  PRIMARY KEY (testResultID)
 );
 
-CREATE TABLE IF NOT EXISTS Tests (
+CREATE TABLE IF NOT EXISTS Tests
+(
   testID         int(11)     NOT NULL AUTO_INCREMENT,
   moduleID       int(11)     NOT NULL,
   testTitle      varchar(50) NOT NULL,
@@ -152,23 +169,27 @@ CREATE TABLE IF NOT EXISTS Tests (
   publishResults tinyint(1)  NOT NULL,
   scheduled      tinyint(1)  NOT NULL,
   publishGrades  tinyint(1)  NOT NULL,
-  PRIMARY KEY(testID)
+  practice       tinyint(1)  NOT NULL,
+  PRIMARY KEY (testID)
 );
 
-CREATE TABLE IF NOT EXISTS TimeModifier (
-  userID       int(11)    NOT NULL,
-  timeModifier double NOT NULL
+CREATE TABLE IF NOT EXISTS TimeModifier
+(
+  userID       int(11) NOT NULL,
+  timeModifier double  NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS TutorRequests (
+CREATE TABLE IF NOT EXISTS TutorRequests
+(
   tutorRequestID int(11)    NOT NULL AUTO_INCREMENT,
   userID         int(11)    NOT NULL UNIQUE,
   reason         text       NOT NULL,
   approved       tinyint(1) NOT NULL,
-  PRIMARY KEY(tutorRequestID)
+  PRIMARY KEY (tutorRequestID)
 );
 
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE IF NOT EXISTS Users
+(
   userID     int(11)      NOT NULL AUTO_INCREMENT,
   username   varchar(50)  NOT NULL,
   password   varchar(200) NOT NULL,
@@ -177,64 +198,66 @@ CREATE TABLE IF NOT EXISTS Users (
   enabled    tinyint(1)   NOT NULL,
   userRoleID int(11)      NOT NULL,
   tutor      tinyint(1)   NOT NULL,
-  PRIMARY KEY(userID)
+  PRIMARY KEY (userID)
 );
 
-CREATE TABLE IF NOT EXISTS UserRole (
+CREATE TABLE IF NOT EXISTS UserRole
+(
   userRoleID int(11)     NOT NULL AUTO_INCREMENT,
   role       varchar(50) NOT NULL,
-  PRIMARY KEY(userRoleID)
+  PRIMARY KEY (userRoleID)
 );
 
-CREATE TABLE IF NOT EXISTS UserSessions (
-  username   VARCHAR(64)       NOT NULL,
-  token      VARCHAR(255)      NOT NULL,
-  lastActive TIMESTAMP         NOT NULL
+CREATE TABLE IF NOT EXISTS UserSessions
+(
+  username   VARCHAR(64)  NOT NULL,
+  token      VARCHAR(255) NOT NULL,
+  lastActive TIMESTAMP    NOT NULL
 );
 
-CREATE INDEX correctPointIDAlt ON Alternative(correctPointID);
+CREATE INDEX correctPointIDAlt ON Alternative (correctPointID);
 
-CREATE INDEX questionIDAns ON Answer(questionID);
-CREATE INDEX markerID ON Answer(markerID);
-CREATE INDEX testID ON Answer(testID);
+CREATE INDEX questionIDAns ON Answer (questionID);
+CREATE INDEX markerID ON Answer (markerID);
+CREATE INDEX testID ON Answer (testID);
 
-CREATE INDEX questionIDCorrect ON CorrectPoint(questionID);
+CREATE INDEX questionIDCorrect ON CorrectPoint (questionID);
 
-CREATE INDEX answerID_input ON Inputs(answerID);
+CREATE INDEX answerID_input ON Inputs (answerID);
 
-CREATE INDEX recipientID ON Message(recipientID);
-CREATE INDEX senderID ON Message(senderID);
+CREATE INDEX recipientID ON Message (recipientID);
+CREATE INDEX senderID ON Message (senderID);
 
-CREATE INDEX tutorUserID ON Modules(tutorUserID);
+CREATE INDEX tutorUserID ON Modules (tutorUserID);
 
-CREATE INDEX moduleIDAssoc ON ModuleAssociation(moduleID);
-CREATE INDEX userIDAssoc ON ModuleAssociation(userID);
-CREATE INDEX associationType ON ModuleAssociation(associationType);
+CREATE INDEX moduleIDAssoc ON ModuleAssociation (moduleID);
+CREATE INDEX userIDAssoc ON ModuleAssociation (userID);
+CREATE INDEX associationType ON ModuleAssociation (associationType);
 
-CREATE INDEX questionIDOpt ON OptionTbl(questionID);
+CREATE INDEX questionIDOpt ON OptionTbl (questionID);
 
-CREATE INDEX optionIDEnt ON OptionEntries(optionID);
-CREATE INDEX answerIDEnt ON OptionEntries(answerID);
+CREATE INDEX optionIDEnt ON OptionEntries (optionID);
+CREATE INDEX answerIDEnt ON OptionEntries (answerID);
 
-CREATE INDEX questionIDMath ON QuestionMathLines(questionID);
+CREATE INDEX questionIDMath ON QuestionMathLines (questionID);
 
-CREATE INDEX questionType ON Question(questionType);
-CREATE INDEX creatorID ON Question(creatorID);
+CREATE INDEX questionType ON Question (questionType);
+CREATE INDEX creatorID ON Question (creatorID);
 
-CREATE INDEX testIDTestQ ON TestQuestion(testID);
-CREATE INDEX questionIDTestQ ON TestQuestion(questionID);
+CREATE INDEX testIDTestQ ON TestQuestion (testID);
+CREATE INDEX questionIDTestQ ON TestQuestion (questionID);
 
-CREATE INDEX studentID ON TestResult(studentID);
-CREATE INDEX testIDTestRes ON TestResult(testID);
+CREATE INDEX studentID ON TestResult (studentID);
+CREATE INDEX testIDTestRes ON TestResult (testID);
 
-CREATE INDEX moduleIDTests ON Tests(moduleID);
+CREATE INDEX moduleIDTests ON Tests (moduleID);
 
-CREATE INDEX userIDTutorRequest ON TutorRequests(userID);
+CREATE INDEX userIDTutorRequest ON TutorRequests (userID);
 
-CREATE UNIQUE INDEX username ON Users(username);
-CREATE INDEX userRoleID ON Users(userRoleID);
+CREATE UNIQUE INDEX username ON Users (username);
+CREATE INDEX userRoleID ON Users (userRoleID);
 
-CREATE UNIQUE INDEX usernameS ON UserSessions(username);
+CREATE UNIQUE INDEX usernameS ON UserSessions (username);
 
 ALTER TABLE Answer
   ADD FOREIGN KEY (questionID) REFERENCES Question (questionID) ON UPDATE CASCADE ON DELETE CASCADE;
@@ -319,118 +342,195 @@ values ('ROLE_ADMIN');
 insert into UserRole (role)
 values ('ROLE_USER');
 
-insert into QuestionType (questionType) values ('Text-based');
-insert into QuestionType (questionType) values ('Multiple-Choice');
-insert into QuestionType (questionType) values ('Insert the word');
-insert into QuestionType (questionType) values ('Math/Text');
+insert into QuestionType (questionType)
+values ('Text-based');
+insert into QuestionType (questionType)
+values ('Multiple-Choice');
+insert into QuestionType (questionType)
+values ('Insert the word');
+insert into QuestionType (questionType)
+values ('Math/Text');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Paul', 'Gault', 1, 1, 0);
-insert into UserSessions (username, token, lastActive) values ('pgault04@qub.ac.uk','cGdhdWx0MDRAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
+insert into UserSessions (username, token, lastActive)
+values ('pgault04@qub.ac.uk', 'cGdhdWx0MDRAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Richard', 'Gault', 1, 2, 1);
-insert into UserSessions (username, token, lastActive) values ('richard.gault@qub.ac.uk','cmljaGFyZC5nYXVsdEBxdWIuYWMudWs6MTIz', '0000-01-01 00:00:00');
+values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Richard', 'Gault',
+        1, 2, 1);
+insert into UserSessions (username, token, lastActive)
+values ('richard.gault@qub.ac.uk', 'cmljaGFyZC5nYXVsdEBxdWIuYWMudWs6MTIz', '0000-01-01 00:00:00');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('bart.simpson@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bart', 'Simpson', 1, 2, 0);
-insert into UserSessions (username, token, lastActive) values ('bart.simpson@qub.ac.uk','YmFydC5zaW1wc29uQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
+values ('bart.simpson@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bart', 'Simpson', 1,
+        2, 0);
+insert into UserSessions (username, token, lastActive)
+values ('bart.simpson@qub.ac.uk', 'YmFydC5zaW1wc29uQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('clark.kent@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Clark', 'Kent', 1, 2, 0);
-insert into UserSessions (username, token, lastActive) values ('clark.kent@qub.ac.uk','Y2xhcmsua2VudEBxdWIuYWMudWs6MTIz', '0000-01-01 00:00:00');
+values ('clark.kent@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Clark', 'Kent', 1, 2,
+        0);
+insert into UserSessions (username, token, lastActive)
+values ('clark.kent@qub.ac.uk', 'Y2xhcmsua2VudEBxdWIuYWMudWs6MTIz', '0000-01-01 00:00:00');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('bruce.wayne@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bruce', 'Wayne', 1, 2, 0);
-insert into UserSessions (username, token, lastActive) values ('bruce.wayne@qub.ac.uk','YnJ1Y2Uud2F5bmVAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
+values ('bruce.wayne@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bruce', 'Wayne', 1, 2,
+        0);
+insert into UserSessions (username, token, lastActive)
+values ('bruce.wayne@qub.ac.uk', 'YnJ1Y2Uud2F5bmVAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('peter.parker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Peter', 'Parker', 1, 2, 0);
-insert into UserSessions (username, token, lastActive) values ('peter.parker@qub.ac.uk','cGV0ZXIucGFya2VyQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
+values ('peter.parker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Peter', 'Parker', 1,
+        2, 0);
+insert into UserSessions (username, token, lastActive)
+values ('peter.parker@qub.ac.uk', 'cGV0ZXIucGFya2VyQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('luke.skywalker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Luke', 'Skywalker', 1, 2, 0);
-insert into UserSessions (username, token, lastActive) values ('luke.skywalker@qub.ac.uk','bHVrZS5za3l3YWxrZXJAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
+values ('luke.skywalker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Luke', 'Skywalker',
+        1, 2, 0);
+insert into UserSessions (username, token, lastActive)
+values ('luke.skywalker@qub.ac.uk', 'bHVrZS5za3l3YWxrZXJAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('harry.potter@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Harry', 'Potter', 1, 2, 0);
-insert into UserSessions (username, token, lastActive) values ('harry.potter@qub.ac.uk','aGFycnkucG90dGVyQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
+values ('harry.potter@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Harry', 'Potter', 1,
+        2, 0);
+insert into UserSessions (username, token, lastActive)
+values ('harry.potter@qub.ac.uk', 'aGFycnkucG90dGVyQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
 
-insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved) values ('Foundation Physics', 'Physics for beginners', 2, '2018-09-01', '2019-09-01', 1);
-insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved) values ('Ad Physics', 'Advanced Physics', 2, '2018-09-01', '2019-09-01', 1);
+insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved)
+values ('Foundation Physics', 'Physics for beginners', 2, '2018-09-01', '2019-09-01', 1);
+insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved)
+values ('Ad Physics', 'Advanced Physics', 2, '2018-09-01', '2019-09-01', 1);
 
-insert into AssociationType (associationType) values ('tutor');
-insert into AssociationType (associationType) values ('student');
-insert into AssociationType (associationType) values ('teaching assistant');
+insert into AssociationType (associationType)
+values ('tutor');
+insert into AssociationType (associationType)
+values ('student');
+insert into AssociationType (associationType)
+values ('teaching assistant');
 
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 1, 2);
-insert into ModuleAssociation (moduleID, userID, associationType) values (2, 1, 2);
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 2, 1);
-insert into ModuleAssociation (moduleID, userID, associationType) values (2, 2, 1);
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 3, 3);
-insert into ModuleAssociation (moduleID, userID, associationType) values (2, 3, 3);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 1, 2);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (2, 1, 2);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 2, 1);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (2, 2, 1);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 3, 3);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (2, 3, 3);
 
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 4, 2);
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 5, 2);
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 6, 2);
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 7, 2);
-insert into ModuleAssociation (moduleID, userID, associationType) values (1, 8, 2);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 4, 2);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 5, 2);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 6, 2);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 7, 2);
+insert into ModuleAssociation (moduleID, userID, associationType)
+values (1, 8, 2);
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Quantum Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Medical Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Astrophysics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-
-
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Quantum Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Medical Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Astrophysics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-
-
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Quantum Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Medical Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Astrophysics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Quantum Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Medical Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Astrophysics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
 
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Quantum Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Medical Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'Astrophysics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Quantum Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Medical Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Astrophysics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
 
-insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) values (1, 'What is the name of the negatively charged particles in an atom?', null, 3, 0, 2, 0);
-insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) values (1, 'How much wood would a wood chuck chuck if a wood chuck could chuck wood?', null, 3, 0, 2, 0);
-insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) values (1, 'In Star Wars what color was Luke Skywalkers lightsaber?', null, 2, 0, 2, 0);
 
-insert into TestQuestion(testID, questionID) values (7, 1);
-insert into TestQuestion(testID, questionID) values (7, 2);
-insert into TestQuestion(testID, questionID) values (7, 3);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Quantum Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Medical Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Astrophysics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
 
-insert into TestQuestion(testID, questionID) values (8, 1);
-insert into TestQuestion(testID, questionID) values (8, 2);
-insert into TestQuestion(testID, questionID) values (8, 3);
 
-insert into TestQuestion(testID, questionID) values (9, 1);
-insert into TestQuestion(testID, questionID) values (9, 2);
-insert into TestQuestion(testID, questionID) values (9, 3);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Quantum Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Medical Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
+values (1, 'Astrophysics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
 
-insert into TestQuestion(testID, questionID) values (10, 1);
-insert into TestQuestion(testID, questionID) values (10, 2);
-insert into TestQuestion(testID, questionID) values (10, 3);
+insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
+values (1, 'What is the name of the negatively charged particles in an atom?', null, 3, 0, 2, 0);
+insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
+values (1, 'How much wood would a wood chuck chuck if a wood chuck could chuck wood?', null, 3, 0, 2, 0);
+insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
+values (1, 'In Star Wars what color was Luke Skywalkers lightsaber?', null, 2, 0, 2, 0);
 
-insert into TestQuestion(testID, questionID) values (11, 1);
-insert into TestQuestion(testID, questionID) values (11, 2);
-insert into TestQuestion(testID, questionID) values (11, 3);
+insert into TestQuestion(testID, questionID)
+values (7, 1);
+insert into TestQuestion(testID, questionID)
+values (7, 2);
+insert into TestQuestion(testID, questionID)
+values (7, 3);
 
-insert into TestQuestion(testID, questionID) values (12, 1);
-insert into TestQuestion(testID, questionID) values (12, 2);
-insert into TestQuestion(testID, questionID) values (12, 3);
+insert into TestQuestion(testID, questionID)
+values (8, 1);
+insert into TestQuestion(testID, questionID)
+values (8, 2);
+insert into TestQuestion(testID, questionID)
+values (8, 3);
 
-insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved) values (1, 10, 1, 2, 'Electrons', null, 1, 0);
-insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved) values (2, 10, 1, 3, 'A lot', 3, 1 ,0);
-insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved) values (3, 10, 1, 2, 'Blue then green', 2, 0, 0);
+insert into TestQuestion(testID, questionID)
+values (9, 1);
+insert into TestQuestion(testID, questionID)
+values (9, 2);
+insert into TestQuestion(testID, questionID)
+values (9, 3);
 
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (1, 11, 1, 2, 'Electrons', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (2, 11, 1, 2, 'A lot', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (3, 11, 1, 2, 'Blue then green', null);
+insert into TestQuestion(testID, questionID)
+values (10, 1);
+insert into TestQuestion(testID, questionID)
+values (10, 2);
+insert into TestQuestion(testID, questionID)
+values (10, 3);
 
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (1, 12, 1, 2, 'Electrons', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (2, 12, 1, 3, 'A lot', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score) values (3, 12, 1, 2, 'Blue then green', 2);
+insert into TestQuestion(testID, questionID)
+values (11, 1);
+insert into TestQuestion(testID, questionID)
+values (11, 2);
+insert into TestQuestion(testID, questionID)
+values (11, 3);
+
+insert into TestQuestion(testID, questionID)
+values (12, 1);
+insert into TestQuestion(testID, questionID)
+values (12, 2);
+insert into TestQuestion(testID, questionID)
+values (12, 3);
+
+insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved)
+values (1, 10, 1, 2, 'Electrons', null, 1, 0);
+insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved)
+values (2, 10, 1, 3, 'A lot', 3, 1, 0);
+insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved)
+values (3, 10, 1, 2, 'Blue then green', 2, 0, 0);
+
+insert into Answer(questionID, testID, answererID, markerID, content, score)
+values (1, 11, 1, 2, 'Electrons', null);
+insert into Answer(questionID, testID, answererID, markerID, content, score)
+values (2, 11, 1, 2, 'A lot', null);
+insert into Answer(questionID, testID, answererID, markerID, content, score)
+values (3, 11, 1, 2, 'Blue then green', null);
+
+insert into Answer(questionID, testID, answererID, markerID, content, score)
+values (1, 12, 1, 2, 'Electrons', null);
+insert into Answer(questionID, testID, answererID, markerID, content, score)
+values (2, 12, 1, 3, 'A lot', null);
+insert into Answer(questionID, testID, answererID, markerID, content, score)
+values (3, 12, 1, 2, 'Blue then green', 2);

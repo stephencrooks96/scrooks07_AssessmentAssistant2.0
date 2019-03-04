@@ -42,9 +42,10 @@ public class TutorQuestionPojo {
      * @param mathLines     question math lines
      * @param correctPoints the correct points
      */
-    public TutorQuestionPojo(Long testID, Question question, List<Option> options, List<QuestionMathLine> mathLines, List<CorrectPoint> correctPoints) {
+    public TutorQuestionPojo(Long testID, String base64, Question question, List<Option> options, List<QuestionMathLine> mathLines, List<CorrectPoint> correctPoints) {
         this.setTestID(testID);
         this.setQuestion(question);
+        this.setBase64(base64);
         this.setOptions(options);
         this.setMathLines(mathLines);
         this.setCorrectPoints(correctPoints);

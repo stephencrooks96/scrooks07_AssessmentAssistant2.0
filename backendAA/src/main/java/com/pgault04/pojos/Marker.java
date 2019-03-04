@@ -15,6 +15,8 @@ public class Marker {
     private Integer marked;
     private Integer unmarked;
 
+    public Marker() {}
+
     public Marker(Tests test, User marker, String markerType, List<Answer> scripts, Integer marked, Integer unmarked) {
         this.setTest(test);
         this.setMarker(marker);

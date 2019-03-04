@@ -40,4 +40,15 @@ public class Associate {
     public String getLastName() { return lastName; }
 
     public void setLastName(String lastName) { this.lastName = lastName; }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Associate{");
+        sb.append("associateType='").append(associateType).append('\'');
+        sb.append(", username='").append(username).append('\'');
+        sb.append(", firstName='").append(firstName).append('\'');
+        sb.append(", lastName='").append(lastName).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

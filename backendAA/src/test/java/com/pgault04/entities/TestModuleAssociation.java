@@ -38,12 +38,12 @@ public class TestModuleAssociation {
 	}
 
 	@Test
-	public void testModuleAssociationDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(moduleAssociationObj);
 	}
 
 	@Test
-	public void testModuleAssociationConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		moduleAssociationObj = null;
 		moduleAssociationObj = new ModuleAssociation(moduleID, userID, associationType);
 		assertNotNull(moduleAssociationObj);
@@ -56,24 +56,6 @@ public class TestModuleAssociation {
 	public void testGetSetAssociationID() {
 		moduleAssociationObj.setAssociationID(associationID);
 		assertEquals(associationID, moduleAssociationObj.getAssociationID());
-	}
-
-	@Test
-	public void testGetSetModuleID() {
-		moduleAssociationObj.setModuleID(moduleID);
-		assertEquals(moduleID, moduleAssociationObj.getModuleID());
-	}
-
-	@Test
-	public void testGetSetUserID() {
-		moduleAssociationObj.setUserID(userID);
-		assertEquals(userID, moduleAssociationObj.getUserID());
-	}
-
-	@Test
-	public void testGetSetAssociationType() {
-		moduleAssociationObj.setAssociationType(associationType);
-		assertEquals(associationType, moduleAssociationObj.getAssociationType());
 	}
 
 	@Test

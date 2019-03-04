@@ -66,12 +66,12 @@ public class TestModuleWithTutor {
     }
 
     @Test
-    public void testModuleWithTutorDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(moduleWithTutor);
     }
 
     @Test
-    public void testModuleWithTutorConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         moduleWithTutor = null;
         moduleWithTutor = new ModuleWithTutor(userObj, moduleObj);
 
@@ -81,20 +81,8 @@ public class TestModuleWithTutor {
     }
 
     @Test
-    public void testGetSetTutor() {
-        moduleWithTutor.setTutor(userObj);
-        assertEquals(userObj, moduleWithTutor.getTutor());
-    }
-
-    @Test
-    public void testGetSetModule() {
-        moduleWithTutor.setModule(moduleObj);
-        assertEquals(moduleObj, moduleWithTutor.getModule());
-    }
-
-    @Test
     public void testToString() {
         moduleWithTutor = new ModuleWithTutor(userObj, moduleObj);
-        assertEquals("ModuleWithTutor{tutor=User{userID=-1, username='username', password='password', firstName='firstName', lastName='lastName', enabled=1, userRoleID=2}, module=Module{moduleID=-1, moduleName='moduleName', moduleDescription='moduleDescription', tutorUserID=2, year=2018}}", moduleWithTutor.toString());
+        assertEquals("ModuleWithTutor{tutor=User{userID=-1, username='username', password='password', firstName='firstName', lastName='lastName', enabled=1, userRoleID=2, tutor=0}, module=Module{moduleID=-1, moduleName='moduleName', moduleDescription='moduleDescription', tutorUserID=2, commencementDate='dateC', endDate='dateE', approved=1}}", moduleWithTutor.toString());
     }
 }

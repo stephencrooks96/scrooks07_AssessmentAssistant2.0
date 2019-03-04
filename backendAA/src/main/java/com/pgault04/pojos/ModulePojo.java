@@ -12,8 +12,8 @@ public class ModulePojo {
     public ModulePojo() {}
 
     public ModulePojo(Module module, List<Associate> associations) {
-        this.module = module;
-        this.associations = associations;
+        this.setModule(module);
+        this.setAssociations(associations);
     }
 
     public Module getModule() {
@@ -30,5 +30,14 @@ public class ModulePojo {
 
     public void setAssociations(List<Associate> associations) {
         this.associations = associations;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ModulePojo{");
+        sb.append("module=").append(module);
+        sb.append(", associations=").append(associations);
+        sb.append('}');
+        return sb.toString();
     }
 }

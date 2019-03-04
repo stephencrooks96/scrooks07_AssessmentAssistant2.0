@@ -31,4 +31,13 @@ public class TutorRequestPojo {
     public void setRequest(TutorRequests request) {
         this.request = request;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TutorRequestPojo{");
+        sb.append("tutor=").append(tutor);
+        sb.append(", request=").append(request);
+        sb.append('}');
+        return sb.toString();
+    }
 }

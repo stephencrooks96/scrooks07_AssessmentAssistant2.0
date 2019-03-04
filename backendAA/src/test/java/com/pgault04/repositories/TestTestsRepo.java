@@ -45,7 +45,7 @@ public class TestTestsRepo {
 		this.publishResults = 1;
 		this.scheduled = 1;
 		this.publishGrades = 1;
-		test = new Tests(MODULE_ID_IN_DB, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades);
+		test = new Tests(MODULE_ID_IN_DB, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, 0);
 	}
 
 	@Test

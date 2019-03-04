@@ -29,12 +29,12 @@ public class TestPerformance {
     }
 
     @Test
-    public void testPerformanceDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(performance);
     }
 
     @Test
-    public void testPerformanceConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         performance = null;
         performance = new Performance(testAndResultObj, classAverage);
 
@@ -44,20 +44,8 @@ public class TestPerformance {
     }
 
     @Test
-    public void testGetSetTestAndResult() {
-        performance.setTestAndResult(testAndResultObj);
-        assertEquals(testAndResultObj, performance.getTestAndResult());
-    }
-
-    @Test
-    public void testGetSetClassAverage() {
-        performance.setClassAverage(classAverage);
-        assertEquals(classAverage, performance.getClassAverage());
-    }
-
-    @Test
     public void testToString() {
         performance = new Performance(testAndResultObj, classAverage);
-        assertEquals("Performance{testAndResult=TestAndResult{test=null, testResult=null, questions=null, answers=null, percentageScore=null}, classAverage=100.0}", performance.toString());
+        assertEquals("Performance{testAndResult=TestAndResult{test=null, testResult=null, questions=null, percentageScore=null}, classAverage=100.0}", performance.toString());
     }
 }

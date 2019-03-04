@@ -19,20 +19,9 @@ import com.pgault04.entities.User;
 public class TestUser {
 
 	private User userObj;
-
-	private Long userID;
-
-	private String username;
-	
-	private String password;
-
-	private String firstName;
-
-	private String lastName;
-	
-	private Integer enabled;
-
-	private Long userRoleID;
+	private Long userID, userRoleID;
+	private String username, password, firstName, lastName;
+	private Integer enabled, tutor;
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,17 +33,18 @@ public class TestUser {
 		this.password = "password";
 		this.enabled = 1;
 		this.userRoleID = 2L;
+		this.tutor = 1;
 	}
 
 	@Test
-	public void testUserDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(userObj);
 	}
 
 	@Test
-	public void testUserConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		userObj = null;
-		userObj = new User(username, password, firstName, lastName, enabled, userRoleID, 0);
+		userObj = new User(username, password, firstName, lastName, enabled, userRoleID, tutor);
 
 		assertNotNull(userObj);
 		assertEquals(username, userObj.getUsername());
@@ -62,6 +52,7 @@ public class TestUser {
 		assertEquals(lastName, userObj.getLastName());
 		assertEquals(password, userObj.getPassword());
 		assertEquals(enabled, userObj.getEnabled());
+		assertEquals(tutor, userObj.getTutor());
 		assertEquals(userRoleID, userObj.getUserRoleID());
 	}
 
@@ -72,39 +63,9 @@ public class TestUser {
 	}
 
 	@Test
-	public void testGetSetUsername() {
-		userObj.setUsername(username);
-		assertEquals(username, userObj.getUsername());
-	}
-
-	@Test
-	public void testGetSetFirstName() {
-		userObj.setFirstName(firstName);
-		assertEquals(firstName, userObj.getFirstName());
-	}
-
-	@Test
-	public void testGetSetLastName() {
-		userObj.setLastName(lastName);
-		assertEquals(lastName, userObj.getLastName());
-	}
-
-	@Test
-	public void testGetSetEnabled() {
-		userObj.setEnabled(enabled);
-		assertEquals(enabled, userObj.getEnabled());
-	}
-
-	@Test
-	public void testGetSetUserRole() {
-		userObj.setUserRoleID(userRoleID);
-		assertEquals(userRoleID, userObj.getUserRoleID());
-	}
-
-	@Test
 	public void testToString() {
-		userObj = new User(username, password, firstName, lastName, enabled, userRoleID, 0);
+		userObj = new User(username, password, firstName, lastName, enabled, userRoleID, tutor);
 		userObj.setUserID(userID);
-		assertEquals("User{userID=1, username='username', password='password', firstName='firstName', lastName='lastName', enabled=1, userRoleID=2}", userObj.toString());
+		assertEquals("User{userID=1, username='username', password='password', firstName='firstName', lastName='lastName', enabled=1, userRoleID=2, tutor=1}", userObj.toString());
 	}
 }

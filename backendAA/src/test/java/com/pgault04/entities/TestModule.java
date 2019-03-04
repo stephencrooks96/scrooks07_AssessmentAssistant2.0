@@ -32,6 +32,8 @@ public class TestModule {
 
 	private String endDate;
 
+	private Integer approved;
+
 	@Before
 	public void setUp() throws Exception {
 		moduleObj = new Module();
@@ -41,23 +43,26 @@ public class TestModule {
 		tutorUserID = 2L;
 		commencementDate = "dateC";
 		endDate = "dateE";
+		approved = 1;
 	}
 
 	@Test
-	public void testModuleDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(moduleObj);
 	}
 
 	@Test
-	public void testModuleConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		moduleObj = null;
-		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, commencementDate, endDate, 1);
+		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved);
 
 		assertNotNull(moduleObj);
 		assertEquals(moduleName, moduleObj.getModuleName());
 		assertEquals(moduleDescription, moduleObj.getModuleDescription());
 		assertEquals(tutorUserID, moduleObj.getTutorUserID());
 		assertEquals(commencementDate, moduleObj.getCommencementDate());
+		assertEquals(endDate, moduleObj.getEndDate());
+		assertEquals(approved, moduleObj.getApproved());
 	}
 
 	@Test
@@ -67,29 +72,9 @@ public class TestModule {
 	}
 
 	@Test
-	public void testGetSetModuleName() {
-		moduleObj.setModuleName(moduleName);
-		assertEquals(moduleName, moduleObj.getModuleName());
-	}
-
-	@Test
-	public void testGetSetModuleDescription() {
-		moduleObj.setModuleDescription(moduleDescription);
-		assertEquals(moduleDescription, moduleObj.getModuleDescription());
-	}
-
-	@Test
-	public void testGetSetTutorUserID() {
-		moduleObj.setTutorUserID(tutorUserID);
-		assertEquals(tutorUserID, moduleObj.getTutorUserID());
-	}
-
-
-
-	@Test
 	public void testToString() {
-		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, commencementDate, commencementDate, 1);
+		moduleObj = new Module(moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved);
 		moduleObj.setModuleID(moduleID);
-		assertEquals("Module{moduleID=1, moduleName='moduleName', moduleDescription='moduleDescription', tutorUserID=2, year=2018}", moduleObj.toString());
+		assertEquals("Module{moduleID=1, moduleName='moduleName', moduleDescription='moduleDescription', tutorUserID=2, commencementDate='dateC', endDate='dateE', approved=1}", moduleObj.toString());
 	}
 }

@@ -20,7 +20,7 @@ public class TestAnswer {
 
 	private Answer answer;
 	private Long answerID, questionID, answererID, markerID, testID;
-	private Integer score;
+	private Integer score, markerApproved, tutorApproved;
 	private String content, feedback;
 
 
@@ -35,17 +35,19 @@ public class TestAnswer {
 		this.score = 5;
 		this.content = "content";
 		this.feedback = "feedback";
+		this.markerApproved = 1;
+		this.tutorApproved = 1;
 	}
 
 	@Test
-	public void testAnswerDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(answer);
 	}
 
 	@Test
-	public void testAnswerConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		answer = null;
-		answer = new Answer(questionID, answererID, markerID, testID, content, score, feedback, 0, 0);
+		answer = new Answer(questionID, answererID, markerID, testID, content, score, feedback, markerApproved, tutorApproved);
 
 		assertNotNull(answer);
 		assertEquals(questionID, answer.getQuestionID());
@@ -55,54 +57,14 @@ public class TestAnswer {
 		assertEquals(content, answer.getContent());
 		assertEquals(score, answer.getScore());
 		assertEquals(feedback, answer.getFeedback());
+		assertEquals(markerApproved, answer.getMarkerApproved());
+		assertEquals(tutorApproved, answer.getTutorApproved());
 	}
 
 	@Test
 	public void testGetSetAnswerID() {
 		answer.setAnswerID(answerID);
 		assertEquals(answerID, answer.getAnswerID());
-	}
-
-	@Test
-	public void testGetSetQuestionID() {
-		answer.setQuestionID(questionID);
-		assertEquals(questionID, answer.getQuestionID());
-	}
-
-	@Test
-	public void testGetSetAnswererID() {
-		answer.setAnswererID(answererID);
-		assertEquals(answererID, answer.getAnswererID());
-	}
-
-	@Test
-	public void testGetSetMarkerID() {
-		answer.setMarkerID(markerID);
-		assertEquals(markerID, answer.getMarkerID());
-	}
-
-	@Test
-	public void testGetSetTestID() {
-		answer.setTestID(testID);
-		assertEquals(testID, answer.getTestID());
-	}
-
-	@Test
-	public void testGetSetContent() {
-		answer.setContent(content);
-		assertEquals(content, answer.getContent());
-	}
-
-	@Test
-	public void testGetSetScore() {
-		answer.setScore(score);
-		assertEquals(score, answer.getScore());
-	}
-
-	@Test
-	public void testGetSetFeedback() {
-		answer.setFeedback(feedback);
-		assertEquals(feedback, answer.getFeedback());
 	}
 
 	@Test
@@ -114,8 +76,11 @@ public class TestAnswer {
 		answer.setTestID(testID);
 		answer.setContent(content);
 		answer.setScore(score);
+		answer.setFeedback(feedback);
+		answer.setMarkerApproved(markerApproved);
+		answer.setTutorApproved(tutorApproved);
 
-		assertEquals("Answer{answerID=1, questionID=2, answererID=3, markerID=4, testID=5, content='content', score=5, feedback='feedback'}", answer.toString());
+		assertEquals("Answer{answerID=1, questionID=2, answererID=3, markerID=4, testID=5, content='content', score=5, feedback='feedback', markerApproved=1, tutorApproved=1}", answer.toString());
 	}
 
 }

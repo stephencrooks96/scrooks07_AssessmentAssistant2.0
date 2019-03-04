@@ -40,12 +40,12 @@ public class TestOption {
     }
 
     @Test
-    public void testCorrectPointDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(optionObj);
     }
 
     @Test
-    public void testCorrectPointConstructorWithArgs() {
+    public void testConstructorWithArgs() {
         optionObj = null;
         optionObj = new Option(questionID, option, worthMarks, feedback);
         assertNotNull(optionObj);
@@ -59,30 +59,6 @@ public class TestOption {
     public void testGetSetOptionID() {
         optionObj.setOptionID(optionID);
         assertEquals(optionID, optionObj.getOptionID());
-    }
-
-    @Test
-    public void testGetSetQuestionID() {
-        optionObj.setQuestionID(questionID);
-        assertEquals(questionID, optionObj.getQuestionID());
-    }
-
-    @Test
-    public void testGetSetOptionContent() {
-        optionObj.setOptionContent(option);
-        assertEquals(option, optionObj.getOptionContent());
-    }
-
-    @Test
-    public void testGetSetWorthMarks() {
-        optionObj.setWorthMarks(worthMarks);
-        assertEquals(worthMarks, optionObj.getWorthMarks());
-    }
-
-    @Test
-    public void testGetSetFeedback() {
-        optionObj.setFeedback(feedback);
-        assertEquals(feedback, optionObj.getFeedback());
     }
 
     @Test

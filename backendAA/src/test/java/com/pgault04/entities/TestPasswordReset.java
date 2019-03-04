@@ -30,28 +30,16 @@ public class TestPasswordReset {
 	}
 
 	@Test
-	public void testPasswordDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(passwordResetObj);
 	}
 
 	@Test
-	public void testPasswordConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		passwordResetObj = null;
 		passwordResetObj = new PasswordReset(userID, resetString);
 		assertNotNull(passwordResetObj);
 		assertEquals(userID, passwordResetObj.getUserID());
-		assertEquals(resetString, passwordResetObj.getResetString());
-	}
-
-	@Test
-	public void testGetSetUserID() {
-		passwordResetObj.setUserID(userID);
-		assertEquals(userID, passwordResetObj.getUserID());
-	}
-
-	@Test
-	public void testGetSetResetString() {
-		passwordResetObj.setResetString(resetString);
 		assertEquals(resetString, passwordResetObj.getResetString());
 	}
 

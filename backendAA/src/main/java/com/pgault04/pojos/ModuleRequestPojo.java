@@ -31,4 +31,13 @@ public class ModuleRequestPojo {
     public void setModule(Module module) {
         this.module = module;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ModuleRequestPojo{");
+        sb.append("tutor=").append(tutor);
+        sb.append(", module=").append(module);
+        sb.append('}');
+        return sb.toString();
+    }
 }

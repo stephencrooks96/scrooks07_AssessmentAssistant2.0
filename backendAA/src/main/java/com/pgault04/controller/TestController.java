@@ -54,7 +54,7 @@ public class TestController {
 
     @CrossOrigin
     @RequestMapping(value = "/submitTest", method = RequestMethod.POST)
-    public boolean submitTest(Principal principal, @RequestBody List<QuestionAndAnswer> script) {
+    public boolean submitTest(Principal principal, @RequestBody List<QuestionAndAnswer> script) throws SQLException, IllegalAccessException {
         return testService.submitTest(script, principal.getName());
     }
 

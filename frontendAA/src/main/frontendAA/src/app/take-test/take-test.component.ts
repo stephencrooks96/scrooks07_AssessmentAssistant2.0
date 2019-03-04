@@ -1,14 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {TestService} from "../services/test.service";
-import {
-  Alternative,
-  Answer,
-  CorrectPoint, Inputs,
-  QuestionAndAnswer,
-  QuestionAndBase64,
-  Tests
-} from "../modelObjs/objects.model";
+import {Inputs, QuestionAndAnswer, Tests} from "../modelObjs/objects.model";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {interval, Subscription} from "rxjs";
 import {DomSanitizer} from "@angular/platform-browser";
@@ -82,7 +75,6 @@ export class TakeTestComponent implements OnInit {
 
 
   async ngOnInit() {
-    this.getAnsweredTests();
     this.getByTestID(this.testID);
     await this.getQuestions(this.testID);
 
@@ -142,6 +134,9 @@ export class TakeTestComponent implements OnInit {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
           this.test = test;
+          if (test.practice != 1) {
+            this.getAnsweredTests();
+          }
         }
       );
   }

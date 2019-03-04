@@ -32,6 +32,10 @@ public class TestQuestionUnitTests {
 	private SerialBlob questionFigure;
 
 	private Integer maxScore;
+
+	private Integer minScore;
+
+	private Integer allThatApply;
 	
 	private Long creatorID;
 
@@ -41,33 +45,31 @@ public class TestQuestionUnitTests {
 		this.questionType = 1L;
 		this.questionID = 2L;
 		this.questionContent = "questionContent";
-		//this.questionFigure = Blob.valueof("questionFigure");
+		this.questionFigure = new SerialBlob("questionFigure".getBytes());
 		this.maxScore = 3;
+		this.minScore = 0;
+		this.allThatApply = 1;
 		this.creatorID = 1L;
 	}
 
 	@Test
-	public void testQuestionDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(questionObj);
 	}
 
 	@Test
-	public void testQuestionConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		questionObj = null;
-		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, 0, creatorID, 0);
+		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply);
 
 		assertNotNull(questionObj);
 		assertEquals(questionType, questionObj.getQuestionType());
 		assertEquals(questionContent, questionObj.getQuestionContent());
 		assertEquals(questionFigure, questionObj.getQuestionFigure());
 		assertEquals(maxScore, questionObj.getMaxScore());
+		assertEquals(minScore, questionObj.getMinScore());
 		assertEquals(creatorID, questionObj.getCreatorID());
-	}
-
-	@Test
-	public void testGetSetQuestionType() {
-		questionObj.setQuestionType(questionType);
-		assertEquals(questionType, questionObj.getQuestionType());
+		assertEquals(allThatApply, questionObj.getAllThatApply());
 	}
 
 	@Test
@@ -77,36 +79,9 @@ public class TestQuestionUnitTests {
 	}
 
 	@Test
-	public void testGetSetQuestionContent() {
-		questionObj.setQuestionContent(questionContent);
-		assertEquals(questionContent, questionObj.getQuestionContent());
-	}
-
-	/*
-	@Test
-	public void testGetSetQuestionFigure() {
-		questionObj.setQuestionFigure(questionFigure);
-		assertEquals(questionFigure, questionObj.getQuestionFigure());
-	}
-	*/
-
-	@Test
-	public void testGetSetMaxScore() {
-		questionObj.setMaxScore(maxScore);
-		assertEquals(maxScore, questionObj.getMaxScore());
-	}
-
-	@Test
-	public void testGetSetCreatorID() {
-		questionObj.setCreatorID(creatorID);
-		assertEquals(creatorID, questionObj.getCreatorID());
-	}
-
-
-	@Test
 	public void testToString() {
 		questionObj = new Question(questionType, questionContent, questionFigure, maxScore, 0, creatorID, 0);
 		questionObj.setQuestionID(questionID);
-		assertEquals("Question{questionType=1, questionID=2, questionContent='questionContent', questionFigure='questionFigure', maxScore=3, creatorID=1}", questionObj.toString());
+		assertEquals("Question{questionType=1, questionID=2, questionContent='questionContent', questionFigure=javax.sql.rowset.serial.SerialBlob@34a7100a, maxScore=3, minScore=0, creatorID=1, allThatApply=0}", questionObj.toString());
 	}
 }

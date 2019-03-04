@@ -1,9 +1,6 @@
 package com.pgault04.pojos;
 
-import com.pgault04.entities.Answer;
-import com.pgault04.entities.Question;
-import com.pgault04.entities.TestResult;
-import com.pgault04.entities.Tests;
+import com.pgault04.entities.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,82 +24,52 @@ public class TestTestAndResult {
 
     private TestAndResult testAndResultObj;
     private Double perentageScore;
-    private List<Answer> answers;
-    private List<Question> questions;
-
+    private List<QuestionAndAnswer> questions;
+    private User user;
     private Tests testsObj;
-    private Question questionObj, questionWithScore;
-    private Answer answer;
+    private QuestionAndAnswer questionAndAnswerObj;
+    private QuestionAndBase64 questionAndBaseObj;
+    private Question question;
     private TestResult testResultObj;
 
     @Before
     public void setUp() throws Exception {
         testAndResultObj = new TestAndResult();
-        this.perentageScore = 100.0;
-        answers = new ArrayList<>();
+        perentageScore = 100.0;
         questions = new ArrayList<>();
+        user = new User();
         testsObj = new Tests();
-        questionObj = new Question();
-        answer = new Answer();
-        questionWithScore = new Question();
-        questionWithScore.setMaxScore(100);
+        questionAndAnswerObj = new QuestionAndAnswer();
+        question = new Question();
+        question.setMaxScore(100);
+        questionAndBaseObj = new QuestionAndBase64();
+        questionAndBaseObj.setQuestion(question);
+        questionAndAnswerObj.setQuestion(questionAndBaseObj);
         testResultObj = new TestResult();
-        answers.add(answer);
-        questions.add(questionWithScore);
-        questions.add(questionObj);
+        questions.add(questionAndAnswerObj);
     }
 
     @Test
-    public void testTestAndResultDefaultConstructor() {
+    public void testDefaultConstructor() {
         assertNotNull(testAndResultObj);
     }
 
-    @Test @Ignore
-    public void testTestAndResultConstructorWithArgs() {
+    @Test
+    public void testConstructorWithArgs() {
         testAndResultObj = null;
-       // testAndResultObj = new TestAndResult(testsObj, testResultObj, questions);
+        testAndResultObj = new TestAndResult(testsObj, testResultObj, questions, user);
 
         assertNotNull(testAndResultObj);
         assertEquals(testsObj, testAndResultObj.getTest());
         assertEquals(testResultObj, testAndResultObj.getTestResult());
         assertEquals(questions, testAndResultObj.getQuestions());
-       // assertEquals(answers, testAndResultObj.getAnswers());
+        assertEquals(user, testAndResultObj.getUser());
         assertEquals(100.0, testAndResultObj.getPercentageScore(), 0.0);
     }
 
     @Test
-    public void testGetSetTest() {
-        testAndResultObj.setTest(testsObj);
-        assertEquals(testsObj, testAndResultObj.getTest());
-    }
-
-    @Test
-    public void testGetSetTestResult() {
-        testAndResultObj.setTestResult(testResultObj);
-        assertEquals(testResultObj, testAndResultObj.getTestResult());
-    }
-
-    @Test @Ignore
-    public void testGetSetQuestions() {
-       // testAndResultObj.setQuestions(questions);
-        assertEquals(questions, testAndResultObj.getQuestions());
-    }
-
-    @Test @Ignore
-    public void testGetSetAnswers() {
-      //  testAndResultObj.setAnswers(answers);
-      //  assertEquals(answers, testAndResultObj.getAnswers());
-    }
-
-    @Test
-    public void testGetSetPercentageScore() {
-        testAndResultObj.setPercentageScore(perentageScore);
-        assertEquals(perentageScore, testAndResultObj.getPercentageScore());
-    }
-
-    @Test @Ignore
     public void testToString() {
-       // testAndResultObj = new TestAndResult(testsObj, testResultObj, questions, answers);
-        assertEquals("TestAndResult{test=Tests{testID=-1, moduleID=null, testTitle='null', startDateTime='null', endDateTime='null', publishResults=null, scheduled=null, publishGrades=null}, testResult=TestResult{testResultID=-1, testID=null, studentID=null, testScore=null}, questions=[Question{questionType=null, questionID=-1, questionContent='null', questionFigure='null', maxScore=100, creatorID=null}, Question{questionType=null, questionID=-1, questionContent='null', questionFigure='null', maxScore=null, creatorID=null}], answers=[Answer{answerID=-1, questionID=null, answererID=null, markerID=null, testID=null, content='null', score=null}], percentageScore=100.0}", testAndResultObj.toString());
+        testAndResultObj = new TestAndResult(testsObj, testResultObj, questions, user);
+        assertEquals("TestAndResult{test=Tests{testID=-1, moduleID=null, testTitle='null', startDateTime='null', endDateTime='null', publishResults=null, scheduled=null, publishGrades=null, practice=null}, testResult=TestResult{testResultID=-1, testID=null, studentID=null, testScore=null}, questions=[QuestionAndAnswer{question=QuestionAndBase64{base64='null', options=null, mathLines=null, question=Question{questionType=null, questionID=-1, questionContent='null', questionFigure=null, maxScore=100, minScore=null, creatorID=null, allThatApply=null}}, answer=null, inputs=null, optionEntries=null}], percentageScore=100.0}", testAndResultObj.toString());
     }
 }

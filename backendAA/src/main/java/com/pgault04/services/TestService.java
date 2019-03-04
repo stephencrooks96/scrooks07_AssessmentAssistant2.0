@@ -52,6 +52,9 @@ public class TestService {
     UserRepo userRepo;
 
     @Autowired
+    MarkingService markingService;
+
+    @Autowired
     ModuleService modServ;
 
     @Autowired
@@ -94,6 +97,9 @@ public class TestService {
         test.setTestID(-1L);
         test.setScheduled(0);
         test.setPublishResults(0);
+        if (test.getPractice() == 1) {
+            test.setPublishGrades(1);
+        }
         test.setTestTitle(test.getTestTitle().trim());
         User user = userRepo.selectByUsername(username);
         Module module = modRepo.selectByModuleID(test.getModuleID());
@@ -115,7 +121,7 @@ public class TestService {
         return null;
     }
 
-    public boolean submitTest(List<QuestionAndAnswer> script, String username) {
+    public boolean submitTest(List<QuestionAndAnswer> script, String username) throws SQLException, IllegalAccessException {
         logger.info("Request made to add a test to the database by {}", username);
 
         User student = userRepo.selectByUsername(username);
@@ -130,16 +136,24 @@ public class TestService {
             questionAndAnswer.getAnswer().setTutorApproved(0);
             questionAndAnswer.getAnswer().setMarkerApproved(0);
 
-            Answer answer = answerRepo.insert(questionAndAnswer.getAnswer());
-
+            List<Answer> answers = answerRepo.selectByAnswererID(student.getUserID());
+                if (answers != null && answers.size() > 0) {
+                    for (Answer a : answers) {
+                        if (a.getQuestionID().equals(questionAndAnswer.getQuestion().getQuestion().getQuestionID()) && a.getTestID().equals(test.getTestID())) {
+                            answerRepo.delete(a.getAnswerID());
+                        }
+                    }
+                }
+            answerRepo.insert(questionAndAnswer.getAnswer());
             if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
                 autoMarkMultipleChoice(questionAndAnswer);
             }
-
             if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH)  || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
                 autoMarkCorrectPoints(questionAndAnswer);
             }
-
+        }
+        if (test.getPractice() == 1) {
+            markingService.insertAndUpdateTestResult(test.getTestID(), username);
         }
         return true;
     }
@@ -390,6 +404,9 @@ public class TestService {
         Module module = modRepo.selectByModuleID(test.getModuleID());
 
         if (AssociationType.TUTOR == modServ.checkValidAssociation(username, test.getModuleID())) {
+            if (test.getPractice() == 1) {
+                test.setPublishGrades(1);
+            }
             try {
                 // Parse exceptions could be thrown here
                 test.setEndDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getEndDateTime()));
@@ -557,8 +574,7 @@ public class TestService {
     }
 
     private List<TutorQuestionPojo> populateTutorQuestionList(Long testID, List<TutorQuestionPojo> allTutorQuestions, Question q) throws SQLException, Base64DecodingException {
-        TutorQuestionPojo tqToAdd = new TutorQuestionPojo(testID, q, findOptions(q.getQuestionID()), findMathLines(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
-        tqToAdd.setBase64(prepareFigure(q));
+        TutorQuestionPojo tqToAdd = new TutorQuestionPojo(testID, prepareFigure(q), q, findOptions(q.getQuestionID()), findMathLines(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
         tqToAdd.getQuestion().setQuestionFigure(null);
         allTutorQuestions.add(tqToAdd);
         return allTutorQuestions;

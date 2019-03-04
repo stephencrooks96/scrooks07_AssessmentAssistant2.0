@@ -45,6 +45,7 @@ export class AddTestComponent implements OnInit {
       this.titleError = true;
       this.generalError = true;
     }
+
     if (this.testInsert.startDateTime.valueOf() >= this.testInsert.endDateTime.valueOf()) {
       this.dateError = true;
       this.generalError = true;

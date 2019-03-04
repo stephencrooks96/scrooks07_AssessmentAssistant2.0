@@ -32,29 +32,17 @@ public class TestTimeModifier {
 	}
 
 	@Test
-	public void testTimeModifierDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(timeModifierObj);
 	}
 
 	@Test
-	public void testTimeModifierConstructorWithArgs() {
+	public void testConstructorWithArgs() {
 		timeModifierObj = null;
 		timeModifierObj = new TimeModifier(userID, timeModifier);
 
 		assertNotNull(timeModifierObj);
 		assertEquals(userID, timeModifierObj.getUserID());
-		assertEquals(timeModifier, timeModifierObj.getTimeModifier());
-	}
-
-	@Test
-	public void testGetSetUserID() {
-		timeModifierObj.setUserID(userID);
-		assertEquals(userID, timeModifierObj.getUserID());
-	}
-
-	@Test
-	public void testGetSetTimeModifier() {
-		timeModifierObj.setTimeModifier(timeModifier);
 		assertEquals(timeModifier, timeModifierObj.getTimeModifier());
 	}
 

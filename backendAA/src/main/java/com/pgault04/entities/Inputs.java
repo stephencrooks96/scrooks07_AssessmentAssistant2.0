@@ -25,6 +25,7 @@ public class Inputs {
         this.setInputValue(inputValue);
         this.setInputIndex(inputIndex);
         this.setAnswerID(answerID);
+        this.setMath(math);
     }
 
     /**

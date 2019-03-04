@@ -32,7 +32,7 @@ public class TestUserRole {
 	}
 
 	@Test
-	public void testUserRoleDefaultConstructor() {
+	public void testDefaultConstructor() {
 		assertNotNull(userRoleObj);
 	}
 
@@ -49,12 +49,6 @@ public class TestUserRole {
 	public void testGetSetUserRoleID() {
 		userRoleObj.setUserRoleID(userRoleID);
 		assertEquals(userRoleID, userRoleObj.getUserRoleID());
-	}
-
-	@Test
-	public void testGetSetUserRole() {
-		userRoleObj.setRole(userRole);
-		assertEquals(userRole, userRoleObj.getRole());
 	}
 
 	@Test

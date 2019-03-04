@@ -2,13 +2,10 @@ package com.pgault04.pojos;
 
 import com.pgault04.entities.User;
 
-import java.security.Principal;
-
 public class TokenPojo {
 
     private User user;
     private String token;
-
 
     public TokenPojo() {
     }
@@ -32,5 +29,17 @@ public class TokenPojo {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    /*
+     * object as string
+     */
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TokenPojo{");
+        sb.append("user=").append(user);
+        sb.append(", token='").append(token).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
