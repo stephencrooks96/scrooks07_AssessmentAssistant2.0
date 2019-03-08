@@ -74,6 +74,16 @@ public class TestAnswerRepo {
     }
 
     @Test
+    public void testSelectByQuestionIDAndAnswererIDAndTestID() {
+        // Inserts one answer to table
+        answerRepo.insert(answer);
+        Answer answer = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(QUESTION_ID_IN_DATABASE, ANSWERER_ID_IN_DB, TEST_ID_IN_DB);
+        assertEquals(QUESTION_ID_IN_DATABASE, answer.getQuestionID(), 0);
+        assertEquals(ANSWERER_ID_IN_DB, answer.getAnswererID(), 0);
+        assertNull(answerRepo.selectByQuestionIDAndAnswererIDAndTestID(null, null, null));
+    }
+
+    @Test
     public void testSelectByTestID() {
         // Inserts one answer to table
         Answer returnedAnswer = answerRepo.insert(answer);

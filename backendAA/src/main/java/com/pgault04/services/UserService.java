@@ -9,7 +9,7 @@ import com.pgault04.repositories.TutorRequestRepo;
 import com.pgault04.repositories.UserRepo;
 import com.pgault04.repositories.UserSessionsRepo;
 import com.pgault04.utilities.EmailUtil;
-import com.pgault04.utilities.PasswordEncrypt;
+import com.pgault04.utilities.PasswordUtil;
 import com.pgault04.utilities.PasswordUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,7 +87,7 @@ public class UserService {
             User user = userRepo.selectByUserID(userID);
             user.setUserRoleID(user.getUserRoleID().equals(UserRole.ROLE_USER) ? UserRole.ROLE_ADMIN : UserRole.ROLE_USER);
             userRepo.insert(user);
-            emailSender.sendTutorRequestApproved(user);
+            emailSender.sendAdminApproved(user);
         }
     }
 
@@ -123,7 +123,7 @@ public class UserService {
                 User user = userRepo.selectByUsername(u.getUsername());
                 if (user == null) {
                     String password = PasswordUtil.generateRandomString();
-                    user = userRepo.insert(new User(u.getUsername(), PasswordEncrypt.encrypt(password), u.getFirstName(), u.getLastName(), 0, UserRole.ROLE_USER, u.getTutor()));
+                    user = userRepo.insert(new User(u.getUsername(), PasswordUtil.encrypt(password), u.getFirstName(), u.getLastName(), 0, UserRole.ROLE_USER, u.getTutor()));
                     passwordResetRepo.insert(new PasswordReset(user.getUserID(), PasswordUtil.generateRandomString()));
                     userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + password).getBytes())), new Timestamp(System.currentTimeMillis())));
                     emailSender.sendNewAccountMessageFromSystemToUser(user, password, username);
@@ -162,21 +162,19 @@ public class UserService {
 
     public User getUser(String username) {
         User user = userRepo.selectByUsername(username);
-
         if (user != null) {
             logger.info("Returning user {}", username);
             user.setPassword(null);
             return user;
         }
         throw new IllegalArgumentException("No principal user.");
-
     }
 
     public Boolean changePassword(ChangePassword changePassword, String username) {
         User user = userRepo.selectByUsername(username);
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
         if (bcrypt.matches(changePassword.getPassword(), user.getPassword())) {
-            user.setPassword(PasswordEncrypt.encrypt(changePassword.getNewPassword()));
+            user.setPassword(PasswordUtil.encrypt(changePassword.getNewPassword()));
             userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + changePassword.getNewPassword()).getBytes())), new Timestamp(System.currentTimeMillis())));
             userRepo.insert(user);
             return true;
@@ -190,7 +188,7 @@ public class UserService {
         PasswordReset passwordReset = passwordResetRepo.selectByUserID(user.getUserID());
 
         if (resetString.equals(passwordReset.getResetString())) {
-            user.setPassword(PasswordEncrypt.encrypt(newPassword));
+            user.setPassword(PasswordUtil.encrypt(newPassword));
             userRepo.insert(user);
             userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + newPassword).getBytes())), new Timestamp(System.currentTimeMillis())));
             passwordReset.setResetString(PasswordUtil.generateRandomString());
@@ -255,12 +253,11 @@ public class UserService {
      * @param username the username to check
      * @return whether the username is used or not
      */
-    public boolean usernameCheck(String username, Principal principal) {
+    public boolean usernameCheck(String username, String principal) {
         List<User> users = userRepo.selectAll();
-
         for (User u : users) {
             if (u.getUsername().equals(username)) {
-                if (principal == null || !principal.getName().equals(username)) {
+                if (principal == null || !principal.equals(username)) {
                     return true;
                 }
             }
@@ -279,7 +276,7 @@ public class UserService {
             user.setUserID(-1L);
             user.setEnabled(0);
             String passwordUnencrypted = user.getPassword();
-            user.setPassword(PasswordEncrypt.encrypt(passwordUnencrypted));
+            user.setPassword(PasswordUtil.encrypt(passwordUnencrypted));
             user.setUserRoleID(UserRole.ROLE_USER);
             user = userRepo.insert(user);
             userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + passwordUnencrypted).getBytes())), new Timestamp(System.currentTimeMillis())));
@@ -295,8 +292,8 @@ public class UserService {
      * @return the user
      * @throws IllegalArgumentException if the user name is in use
      */
-    public User editProfile(User user, Principal principal) throws IllegalArgumentException {
-        User principalUser = userRepo.selectByUsername(principal.getName());
+    public User editProfile(User user, String principal) throws IllegalArgumentException {
+        User principalUser = userRepo.selectByUsername(principal);
         if (!usernameCheck(user.getUsername(), principal)) {
             UserSession userSession = userSessionRepo.selectByUsername(principalUser.getUsername());
             String userSessionBefore = new String(Base64.getDecoder().decode((userSession.getToken())));

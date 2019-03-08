@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class TestPasswordResetRepo {
 
-    private static final long USER_ID_IN_DB = 1L;
+    private static final long USER_IN_DB = 2L;
 
     @Autowired
     PasswordResetRepo passwordResetRepo;
@@ -33,7 +33,7 @@ public class TestPasswordResetRepo {
 
     @Before
     public void setUp() throws Exception {
-        passwordResetObj = new PasswordReset(USER_ID_IN_DB, resetString);
+        passwordResetObj = new PasswordReset(USER_IN_DB, resetString);
     }
 
     @Test

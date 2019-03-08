@@ -5,13 +5,9 @@ import com.pgault04.entities.TestQuestion;
 import com.pgault04.entities.Tests;
 import com.pgault04.pojos.Performance;
 import com.pgault04.pojos.QuestionAndAnswer;
-import com.pgault04.pojos.QuestionAndBase64;
 import com.pgault04.pojos.TutorQuestionPojo;
 import com.pgault04.repositories.QuestionTypeRepo;
 import com.pgault04.services.TestService;
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +50,7 @@ public class TestController {
 
     @CrossOrigin
     @RequestMapping(value = "/submitTest", method = RequestMethod.POST)
-    public boolean submitTest(Principal principal, @RequestBody List<QuestionAndAnswer> script) throws SQLException, IllegalAccessException {
+    public boolean submitTest(Principal principal, @RequestBody List<QuestionAndAnswer> script) throws SQLException {
         return testService.submitTest(script, principal.getName());
     }
 
@@ -86,7 +82,7 @@ public class TestController {
 
     @CrossOrigin
     @RequestMapping(value = "/getQuestionsStudent", method = RequestMethod.GET)
-    public List<QuestionAndAnswer> getQuestionsStudent(Principal principal, Long testID) throws Base64DecodingException, SQLException {
+    public List<QuestionAndAnswer> getQuestionsStudent(Principal principal, Long testID) throws SQLException {
         return testService.getQuestionsStudent(principal.getName(), testID);
     }
 
@@ -117,7 +113,7 @@ public class TestController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getQuestionsByTestIDTutorView", method = RequestMethod.GET)
-    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(Principal principal, Long testID) throws Base64DecodingException, SQLException {
+    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(Principal principal, Long testID) throws SQLException {
         return testService.getQuestionsByTestIDTutorView(principal.getName(), testID);
     }
 
@@ -130,7 +126,7 @@ public class TestController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getOldQuestions", method = RequestMethod.GET)
-    public List<TutorQuestionPojo> getOldQuestions(Principal principal, Long testID) throws Base64DecodingException, SQLException {
+    public List<TutorQuestionPojo> getOldQuestions(Principal principal, Long testID) throws SQLException {
         return testService.getOldQuestions(principal.getName(), testID);
     }
 
@@ -154,10 +150,9 @@ public class TestController {
      */
     @CrossOrigin
     @RequestMapping(value = "/editQuestion", method = RequestMethod.POST)
-    public TutorQuestionPojo editQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
-        try {
-            return testService.newQuestion(questionData, principal.getName(), true);
-        } catch (Exception e) { e.printStackTrace(); return null; }
+    public TutorQuestionPojo editQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) throws SQLException {
+        return testService.newQuestion(questionData, principal.getName(), true);
+
     }
 
     /**
@@ -169,10 +164,8 @@ public class TestController {
      */
     @CrossOrigin
     @RequestMapping(value = "/addQuestion", method = RequestMethod.POST)
-    public TutorQuestionPojo newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) {
-        try {
-            return testService.newQuestion(questionData, principal.getName(), false);
-        } catch (Exception e) { e.printStackTrace(); return null; }
+    public TutorQuestionPojo newQuestion(@RequestBody TutorQuestionPojo questionData, Principal principal) throws SQLException {
+        return testService.newQuestion(questionData, principal.getName(), false);
     }
 
     /**
@@ -186,17 +179,13 @@ public class TestController {
     @CrossOrigin
     @RequestMapping(value = "/addExistingQuestion", method = RequestMethod.GET)
     public TestQuestion addExistingQuestion(Long questionID, Long testID, Principal principal) {
-        try {
-            return testService.addExistingQuestion(questionID, testID, principal.getName());
-        } catch (Exception e) { return null; }
+        return testService.addExistingQuestion(questionID, testID, principal.getName());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/duplicateQuestion", method = RequestMethod.GET)
-    public Boolean addExistingQuestion(Long questionID, Principal principal) {
-        try {
-            return testService.duplicateQuestion(questionID, principal.getName());
-        } catch (Exception e) { return null; }
+    public Boolean duplicateQuestion(Long questionID, Principal principal) {
+        return testService.duplicateQuestion(questionID, principal.getName());
     }
 
     /**

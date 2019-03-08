@@ -1,8 +1,6 @@
 package com.pgault04.repositories;
 
 import com.pgault04.entities.TutorRequests;
-import com.pgault04.entities.User;
-import com.pgault04.utilities.PasswordEncrypt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 

@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.pgault04.controller;
 
 import com.pgault04.entities.User;
@@ -25,44 +22,36 @@ import java.security.Principal;
 @RequestMapping("/main")
 public class MainController {
 
-    /**
-     * Logs useful info for debugging and analysis needs
-     */
-    private static final Logger logger = LogManager.getLogger(MainController.class);
-
     @Autowired
     UserService userService;
     @Autowired
     MainService mainService;
 
     /**
-     * Get username method
+     * Returns the logged in user to the frontend
      *
      * @param principal - the user
      * @return the users username
      */
     @CrossOrigin
     @RequestMapping("/getUser")
-    public User username(Principal principal) throws IllegalArgumentException {
-        return userService.getUser(principal.getName());
-    }
+    public User username(Principal principal) throws IllegalArgumentException { return userService.getUser(principal.getName()); }
 
     /**
-     * Login method
+     * Provides rest endpoint for user to log in to the system
+     *
      * @param principal - the user
      * @return the user
      */
     @CrossOrigin
     @RequestMapping("/login")
-    public TokenPojo user(Principal principal) {
-        logger.info("User logged in {}", principal != null ? principal.getName() : "n/a");
-        return mainService.generateToken(principal);
-    }
+    public TokenPojo user(Principal principal) { return mainService.generateToken(principal != null ? principal.getName() : null); }
 
+    /**
+     * Provides the rest endpoint for the user to log out of the system
+     * @param principal - the user
+     */
     @CrossOrigin
     @RequestMapping("/logout")
-    public void logout(Principal principal) {
-        logger.info("User logged in {}", principal != null ? principal.getName() : "n/a");
-        mainService.destroyToken(principal);
-    }
+    public void logout(Principal principal) { mainService.destroyToken(principal != null ? principal.getName() : null); }
 }

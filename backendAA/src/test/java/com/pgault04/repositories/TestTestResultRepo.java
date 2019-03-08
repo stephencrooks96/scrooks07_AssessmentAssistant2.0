@@ -73,6 +73,17 @@ public class TestTestResultRepo {
 	}
 
 	@Test
+	public void testSelectByTestIDAndStudentID() {
+		// Inserts one test to table
+		TestResult returnedTestResult = testResultRepo.insert(testResult);
+		TestResult testResults = testResultRepo.selectByTestIDAndStudentID(returnedTestResult.getTestID(), returnedTestResult.getStudentID());
+		assertEquals(TEST_ID_IN_DB, testResults.getTestID(), 0);
+		assertEquals(USER_ID_IN_DB, testResults.getStudentID(), 0);
+		TestResult testResults2 = testResultRepo.selectByTestIDAndStudentID(1L, 2L);
+		assertNull(testResults2);
+	}
+
+	@Test
 	public void testSelectByTestResultIDNullReturn() {
 		assertNull(testResultRepo.selectByTestResultID(999L));
 	}

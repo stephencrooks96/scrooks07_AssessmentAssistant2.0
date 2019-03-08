@@ -93,17 +93,18 @@ public class AnswerRepo {
     /**
      * Method for selecting answer by its unique id
      *
-     * @param answerID the answer id
+     * @param answererID the answerer id
+     * @param questionID the question's id
      * @return the returned answer
      */
-    public Answer selectByQuestionIDAndAnswererID(Long questionID, Long answererID) {
-        log.debug("AnswerRepo selectByQuestionIDAndAnswererID: {} {}", questionID, answererID);
-        String selectByQuestionIDAndAnswererIDSQL = selectSQL + "questionID=? AND answererID=?";
+    public Answer selectByQuestionIDAndAnswererIDAndTestID(Long questionID, Long answererID, Long testID) {
+        log.debug("AnswerRepo selectByQuestionIDAndAnswererIDAndTestID: {} {} {}", questionID, answererID, testID);
+        String selectByQuestionIDAndAnswererIDSQL = selectSQL + "questionID=? AND answererID=? AND testID=?";
         List<Answer> answers = tmpl.query(selectByQuestionIDAndAnswererIDSQL, new BeanPropertyRowMapper<>(Answer.class),
-                questionID, answererID);
+                questionID, answererID, testID);
 
         if (answers != null && answers.size() > 0) {
-            log.debug("Query for answer with questionID and answererID: #{} and #{}, number of items: {}", questionID, answererID, answers.size());
+            log.debug("Query for answer with questionID, answererID and testID: #{}, #{} and #{}, number of items: {}", questionID, answererID, testID, answers.size());
             return answers.get(0);
         }
         return null;

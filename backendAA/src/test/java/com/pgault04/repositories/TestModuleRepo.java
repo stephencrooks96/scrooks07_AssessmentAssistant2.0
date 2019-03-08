@@ -32,14 +32,15 @@ public class TestModuleRepo {
     // Module vars
     private Module module;
     private String moduleName, moduleDescription;
-    private Integer year;
+    private String commencementDate, endDate;
 
     @Before
     public void setUp() throws Exception {
         this.moduleName = "moduleName";
         this.moduleDescription = "moduleDescription";
-        this.year = 2018;
-        module = new Module(moduleName, moduleDescription, TUTOR_ID_IN_DB, "dateC", "dateE", 1);
+        this.commencementDate = "2018-09-01";
+        this.endDate = "2018-09-01";
+        module = new Module(moduleName, moduleDescription, TUTOR_ID_IN_DB, commencementDate, endDate, 1);
     }
 
     @Test
@@ -86,6 +87,14 @@ public class TestModuleRepo {
         // Inserts one module to table
         moduleRepo.insert(module);
         List<Module> modules = moduleRepo.selectByTutorID(TUTOR_ID_IN_DB);
+        assertTrue(modules.size() > 1);
+    }
+
+    @Test
+    public void testSelectByApproved() {
+        // Inserts one module to table
+        moduleRepo.insert(module);
+        List<Module> modules = moduleRepo.selectByApproved(1);
         assertTrue(modules.size() > 1);
     }
 

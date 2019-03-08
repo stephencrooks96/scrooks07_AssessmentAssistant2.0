@@ -5,7 +5,6 @@ import com.pgault04.pojos.*;
 import com.pgault04.repositories.*;
 import com.pgault04.utilities.BlobUtil;
 import com.pgault04.utilities.StringToDateUtil;
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +92,6 @@ public class TestService {
      */
     public Tests addTest(Tests test, String username) {
         logger.info("Request made to add a test to the database by {}", username);
-
         test.setTestID(-1L);
         test.setScheduled(0);
         test.setPublishResults(0);
@@ -118,37 +116,24 @@ public class TestService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
-    public boolean submitTest(List<QuestionAndAnswer> script, String username) throws SQLException, IllegalAccessException {
+    public boolean submitTest(List<QuestionAndAnswer> script, String username) throws SQLException {
         logger.info("Request made to add a test to the database by {}", username);
-
         User student = userRepo.selectByUsername(username);
         Tests test = testRepo.selectByTestID(script.get(0).getAnswer().getTestID());
         Module module = modRepo.selectByModuleID(test.getModuleID());
         User tutor = userRepo.selectByUserID(module.getTutorUserID());
-
         for (QuestionAndAnswer questionAndAnswer : script) {
-            questionAndAnswer.getAnswer().setQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID());
-            questionAndAnswer.getAnswer().setAnswererID(student.getUserID());
-            questionAndAnswer.getAnswer().setMarkerID(tutor.getUserID());
-            questionAndAnswer.getAnswer().setTutorApproved(0);
-            questionAndAnswer.getAnswer().setMarkerApproved(0);
-
-            List<Answer> answers = answerRepo.selectByAnswererID(student.getUserID());
-                if (answers != null && answers.size() > 0) {
-                    for (Answer a : answers) {
-                        if (a.getQuestionID().equals(questionAndAnswer.getQuestion().getQuestion().getQuestionID()) && a.getTestID().equals(test.getTestID())) {
-                            answerRepo.delete(a.getAnswerID());
-                        }
-                    }
-                }
+            prepareAnswerForSubmission(student, tutor, questionAndAnswer);
+            deletePreviousSubmissions(student, test, questionAndAnswer);
             answerRepo.insert(questionAndAnswer.getAnswer());
             if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
                 autoMarkMultipleChoice(questionAndAnswer);
             }
-            if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH)  || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
+            if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
                 autoMarkCorrectPoints(questionAndAnswer);
             }
         }
@@ -158,105 +143,136 @@ public class TestService {
         return true;
     }
 
-    public void autoMarkMultipleChoice(QuestionAndAnswer questionAndAnswer) {
+    private void prepareAnswerForSubmission(User student, User tutor, QuestionAndAnswer questionAndAnswer) {
+        questionAndAnswer.getAnswer().setQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID());
+        questionAndAnswer.getAnswer().setAnswererID(student.getUserID());
+        questionAndAnswer.getAnswer().setMarkerID(tutor.getUserID());
+        questionAndAnswer.getAnswer().setTutorApproved(0);
+        questionAndAnswer.getAnswer().setMarkerApproved(0);
+    }
 
+    private void deletePreviousSubmissions(User student, Tests test, QuestionAndAnswer questionAndAnswer) {
+        List<Answer> answers = answerRepo.selectByAnswererID(student.getUserID());
+        if (answers != null && answers.size() > 0) {
+            for (Answer a : answers) {
+                if (a.getQuestionID().equals(questionAndAnswer.getQuestion().getQuestion().getQuestionID()) && a.getTestID().equals(test.getTestID())) {
+                    answerRepo.delete(a.getAnswerID());
+                }
+            }
+        }
+    }
+
+    private void autoMarkMultipleChoice(QuestionAndAnswer questionAndAnswer) {
         Question question = questionRepo.selectByQuestionID(questionAndAnswer.getAnswer().getQuestionID());
         List<Option> options = findOptions(questionAndAnswer.getAnswer().getQuestionID());
         options.sort(Collections.reverseOrder(Comparator.comparingDouble(Option::getWorthMarks)));
-
-        questionAndAnswer.getAnswer().setScore(0);
-        questionAndAnswer.getAnswer().setFeedback("");
+        prepareAnswerForAutoMarking(questionAndAnswer);
         if (options.size() > 0) {
             for (Option o : options) {
-
                 for (OptionEntries oe : questionAndAnswer.getOptionEntries()) {
                     if (o.getOptionID().equals(oe.getOptionID())) {
-                        oe.setAnswerID(questionAndAnswer.getAnswer().getAnswerID());
-                        optionEntriesRepo.insert(oe);
-                        questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + o.getWorthMarks());
-                        questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + o.getFeedback());
-                        questionAndAnswer.getAnswer().setMarkerApproved(1);
+                        addMarkAndFeedbackForCorrectOption(o, questionAndAnswer, oe);
                     }
                 }
-
             }
             validateScore(questionAndAnswer.getAnswer(), question);
         }
     }
 
-    public void autoMarkCorrectPoints(QuestionAndAnswer questionAndAnswer) {
+    private void addMarkAndFeedbackForCorrectOption(Option o, QuestionAndAnswer questionAndAnswer, OptionEntries oe) {
+        oe.setAnswerID(questionAndAnswer.getAnswer().getAnswerID());
+        optionEntriesRepo.insert(oe);
+        questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + o.getWorthMarks());
+        questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + o.getFeedback() + "\n");
+        questionAndAnswer.getAnswer().setMarkerApproved(1);
+    }
 
+    void autoMarkCorrectPoints(QuestionAndAnswer questionAndAnswer) {
         Question question = questionRepo.selectByQuestionID(questionAndAnswer.getAnswer().getQuestionID());
         List<CorrectPoint> correctPoints = findCorrectPoints(questionAndAnswer.getAnswer().getQuestionID());
         correctPoints.sort(Collections.reverseOrder(Comparator.comparingDouble(CorrectPoint::getMarksWorth)));
+        prepareAnswerForAutoMarking(questionAndAnswer);
+        if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD) || question.getQuestionType().equals(QuestionType.TEXT_MATH)) {
+            insertInputs(questionAndAnswer);
+            for (CorrectPoint c : correctPoints) {
+                for (Inputs i : questionAndAnswer.getInputs()) {
+                    if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD)) {
+                        autoMarkCorrectPointsForInsertTheWord(questionAndAnswer, c, i);
+                    } else {
+                        if (autoMarkCorrectPointsForTextMath(questionAndAnswer, c, i)) break;
+                    }
+                }
+            }
+        } else {
+            autoMarkCorrectPointsForTextBased(questionAndAnswer, correctPoints);
+        }
+        validateScore(questionAndAnswer.getAnswer(), question);
+    }
 
+    private void prepareAnswerForAutoMarking(QuestionAndAnswer questionAndAnswer) {
         questionAndAnswer.getAnswer().setScore(0);
         questionAndAnswer.getAnswer().setFeedback("");
         if (questionAndAnswer.getAnswer().getContent() != null) {
             questionAndAnswer.getAnswer().setContent(questionAndAnswer.getAnswer().getContent().trim());
         }
+    }
 
-        if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD) || question.getQuestionType().equals(QuestionType.TEXT_MATH)) {
-
-            for (Inputs i : questionAndAnswer.getInputs()) {
-                i.setAnswerID(questionAndAnswer.getAnswer().getAnswerID());
-                i = inputsRepo.insert(i);
-            }
-            for (CorrectPoint c : correctPoints) {
-                for (Inputs i : questionAndAnswer.getInputs()) {
-                    if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD)) {
-                        if (i.getInputValue().equalsIgnoreCase(c.getPhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
-                            questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
-                            questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
-                            questionAndAnswer.getAnswer().setMarkerApproved(1);
-                        } else {
-                            for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
-                                if (i.getInputValue().equalsIgnoreCase(alt.getAlternativePhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
-                                    questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
-                                    questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
-                        if (i.getInputValue().trim().equalsIgnoreCase(c.getPhrase())) {
-                            questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
-                            questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
-                            break;
-                        } else {
-                            boolean altBroken = false;
-                            for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
-                                if (i.getInputValue().contains(alt.getAlternativePhrase())) {
-                                    questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + c.getMarksWorth().intValue());
-                                    questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + c.getFeedback());
-                                    altBroken = true;
-                                    break;
-                                }
-                            }
-                            if (altBroken) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            for (CorrectPoint cp : correctPoints) {
-                if (questionAndAnswer.getAnswer().getContent().toLowerCase().contains(cp.getPhrase().toLowerCase())) {
-                    questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + cp.getMarksWorth().intValue());
-                    questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + cp.getFeedback());
-                } else {
-                    for (Alternative alt : alternativeRepo.selectByCorrectPointID(cp.getCorrectPointID())) {
-                        if (questionAndAnswer.getAnswer().getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
-                            questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + cp.getMarksWorth().intValue());
-                            questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + "\n" + cp.getFeedback());
-                            break;
-                        }
+    private void autoMarkCorrectPointsForTextBased(QuestionAndAnswer questionAndAnswer, List<CorrectPoint> correctPoints) {
+        for (CorrectPoint cp : correctPoints) {
+            if (questionAndAnswer.getAnswer().getContent().toLowerCase().contains(cp.getPhrase().toLowerCase())) {
+                setScoreAndFeedbackForCorrectPoint(questionAndAnswer, cp.getMarksWorth(), cp.getFeedback());
+            } else {
+                for (Alternative alt : alternativeRepo.selectByCorrectPointID(cp.getCorrectPointID())) {
+                    if (questionAndAnswer.getAnswer().getContent().toLowerCase().contains(alt.getAlternativePhrase().toLowerCase())) {
+                        setScoreAndFeedbackForCorrectPoint(questionAndAnswer, cp.getMarksWorth(), cp.getFeedback());
+                        break;
                     }
                 }
             }
         }
-        validateScore(questionAndAnswer.getAnswer(), question);
+    }
+
+    private boolean autoMarkCorrectPointsForTextMath(QuestionAndAnswer questionAndAnswer, CorrectPoint c, Inputs i) {
+        if (i.getInputValue().trim().equalsIgnoreCase(c.getPhrase())) {
+            setScoreAndFeedbackForCorrectPoint(questionAndAnswer, c.getMarksWorth(), c.getFeedback());
+            return true;
+        } else {
+            boolean altBroken = false;
+            for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
+                if (i.getInputValue().contains(alt.getAlternativePhrase())) {
+                    setScoreAndFeedbackForCorrectPoint(questionAndAnswer, c.getMarksWorth(), c.getFeedback());
+                    altBroken = true;
+                    break;
+                }
+            }
+            return altBroken;
+        }
+    }
+
+    private void autoMarkCorrectPointsForInsertTheWord(QuestionAndAnswer questionAndAnswer, CorrectPoint c, Inputs i) {
+        if (i.getInputValue().equalsIgnoreCase(c.getPhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
+            setScoreAndFeedbackForCorrectPoint(questionAndAnswer, c.getMarksWorth(), c.getFeedback());
+        } else {
+            for (Alternative alt : alternativeRepo.selectByCorrectPointID(c.getCorrectPointID())) {
+                if (i.getInputValue().equalsIgnoreCase(alt.getAlternativePhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
+                    setScoreAndFeedbackForCorrectPoint(questionAndAnswer, c.getMarksWorth(), c.getFeedback());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void setScoreAndFeedbackForCorrectPoint(QuestionAndAnswer questionAndAnswer, Double marksWorth, String feedback) {
+        questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + marksWorth.intValue());
+        questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + feedback + "\n");
+        questionAndAnswer.getAnswer().setMarkerApproved(1);
+    }
+
+    private void insertInputs(QuestionAndAnswer questionAndAnswer) {
+        for (Inputs i : questionAndAnswer.getInputs()) {
+            i.setAnswerID(questionAndAnswer.getAnswer().getAnswerID());
+            inputsRepo.insert(i);
+        }
     }
 
     void validateScore(Answer answer, Question question) {
@@ -274,79 +290,105 @@ public class TestService {
         Tests test = testRepo.selectByTestID(testID);
         User user = userRepo.selectByUsername(username);
         if (test.getPublishGrades() == PUBLISH_TRUE) {
-            int questionTotal = 0;
-            double classAverage = 0.0;
-
-            for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
-                Question question = questionRepo.selectByQuestionID(tq.getQuestionID());
-                questionTotal += question.getMaxScore();
-            }
-            TestAndResult tar = new TestAndResult();
-            List<TestResult> testResults = trRepo.selectByTestID(test.getTestID());
-            for (TestResult testResult : testResults) {
-                if (testResult.getStudentID().equals(user.getUserID())) {
-                    tar = new TestAndResult(test, testResult, modServ.addQuestionsToList(test, user.getUserID()), user);
-                }
-                classAverage += testResult.getTestScore();
-            }
-            for (QuestionAndAnswer qa : tar.getQuestions()) {
-                qa.getAnswer().setScore(0);
-                qa.setCorrectPoints(new ArrayList<>());
-                for (Option o : qa.getQuestion().getOptions()) {
-                    o.setFeedback(null);
-                    o.setWorthMarks(null);
-                }
-                if (qa.getQuestion().getQuestion().getQuestionType() == QuestionType.INSERT_THE_WORD) {
-                    List<Object> insertions = prepareInsertTheWordForStudent(qa.getQuestion().getQuestion());
-                    qa.getQuestion().getQuestion().setQuestionContent((String) insertions.get(0));
-                }
-            }
-            String grade = modServ.checkGrade((double) tar.getTestResult().getTestScore() * 100 / tar.getPercentageScore());
-            switch (grade) {
-                case "A*":
-                    tar.getTestResult().setTestScore(90);
-                    break;
-                case "A":
-                    tar.getTestResult().setTestScore(80);
-                    break;
-                case "B":
-                    tar.getTestResult().setTestScore(70);
-                    break;
-                case "C":
-                    tar.getTestResult().setTestScore(60);
-                    break;
-                case "D":
-                    tar.getTestResult().setTestScore(50);
-                    break;
-                default:
-                    tar.getTestResult().setTestScore(40);
-                    break;
-            }
-            classAverage = ((classAverage * 100) / questionTotal) / testResults.size();
-            String avg = modServ.checkGrade(classAverage);
-            switch (avg) {
-                case "A*":
-                    classAverage = 90;
-                    break;
-                case "A":
-                    classAverage = 80;
-                    break;
-                case "B":
-                    classAverage = 70;
-                    break;
-                case "C":
-                    classAverage = 60;
-                    break;
-                case "D":
-                    classAverage = 50;
-                    break;
-                default:
-                    classAverage = 40;
-                    break;
-            }
-            return new Performance(tar, classAverage);
+            return populatePerformanceForGrade(test, user);
         }
         throw new IllegalArgumentException("This test is not publishing results or grades yet.");
+    }
+
+    private Performance populatePerformanceForGrade(Tests test, User user) throws SQLException {
+        double classAverage = 0.0;
+        int questionTotal = getQuestionTotal(test, 0);
+        TestAndResult tar = new TestAndResult();
+        List<TestResult> testResults = trRepo.selectByTestID(test.getTestID());
+        for (TestResult testResult : testResults) {
+            tar = getTestAndResult(test, user, tar, testResult);
+            classAverage += testResult.getTestScore();
+        }
+        prepareMultipleChoiceAnInsertForView(tar);
+        String grade = modServ.checkGrade((double) tar.getTestResult().getTestScore() * 100 / tar.getPercentageScore());
+        alignTestScoreWithGrade(tar, grade);
+        classAverage = ((classAverage * 100) / questionTotal) / testResults.size();
+        String avg = modServ.checkGrade(classAverage);
+        classAverage = alignClassAverageWithGrade(avg);
+        return new Performance(tar, classAverage);
+    }
+
+    private TestAndResult getTestAndResult(Tests test, User user, TestAndResult tar, TestResult testResult) throws SQLException {
+        if (testResult.getStudentID().equals(user.getUserID())) {
+            tar = new TestAndResult(test, testResult, modServ.addQuestionsToList(test, user.getUserID()), user);
+        }
+        return tar;
+    }
+
+    private double alignClassAverageWithGrade(String avg) {
+        double classAverage;
+        switch (avg) {
+            case "A*":
+                classAverage = 90;
+                break;
+            case "A":
+                classAverage = 80;
+                break;
+            case "B":
+                classAverage = 70;
+                break;
+            case "C":
+                classAverage = 60;
+                break;
+            case "D":
+                classAverage = 50;
+                break;
+            default:
+                classAverage = 40;
+                break;
+        }
+        return classAverage;
+    }
+
+    private void alignTestScoreWithGrade(TestAndResult tar, String grade) {
+        switch (grade) {
+            case "A*":
+                tar.getTestResult().setTestScore(90);
+                break;
+            case "A":
+                tar.getTestResult().setTestScore(80);
+                break;
+            case "B":
+                tar.getTestResult().setTestScore(70);
+                break;
+            case "C":
+                tar.getTestResult().setTestScore(60);
+                break;
+            case "D":
+                tar.getTestResult().setTestScore(50);
+                break;
+            default:
+                tar.getTestResult().setTestScore(40);
+                break;
+        }
+    }
+
+    private void prepareMultipleChoiceAnInsertForView(TestAndResult tar) {
+        for (QuestionAndAnswer qa : tar.getQuestions()) {
+            qa.getAnswer().setScore(0);
+            qa.setCorrectPoints(new ArrayList<>());
+            for (Option o : qa.getQuestion().getOptions()) {
+                o.setFeedback(null);
+                o.setWorthMarks(null);
+            }
+            if (qa.getQuestion().getQuestion().getQuestionType() == QuestionType.INSERT_THE_WORD) {
+                List<Object> insertions = prepareInsertTheWordForStudent(qa.getQuestion().getQuestion());
+                qa.getQuestion().getQuestion().setQuestionContent((String) insertions.get(0));
+            }
+        }
+    }
+
+    int getQuestionTotal(Tests test, int questionTotal) {
+        for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
+            Question question = questionRepo.selectByQuestionID(tq.getQuestionID());
+            questionTotal += question.getMaxScore();
+        }
+        return questionTotal;
     }
 
     /**
@@ -358,13 +400,11 @@ public class TestService {
      */
     public Performance getPerformance(Long testID, String username) throws SQLException, IllegalArgumentException {
         logger.info("Request made for performance statistics for test with id #{} and user: {}", testID, username);
-
         Tests test = testRepo.selectByTestID(testID);
         User user = userRepo.selectByUsername(username);
         if (test.getPublishResults() == PUBLISH_TRUE) {
             int questionTotal = 0;
             double classAverage = 0.0;
-
             TestAndResult tar = new TestAndResult();
             List<TestResult> testResults = trRepo.selectByTestID(test.getTestID());
             for (TestResult testResult : testResults) {
@@ -373,13 +413,8 @@ public class TestService {
                     tar = new TestAndResult(test, testResult, modServ.addQuestionsToList(test, user.getUserID()), user);
                 }
             }
-
-            for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
-                questionTotal += questionRepo.selectByQuestionID(tq.getQuestionID()).getMaxScore();
-            }
-
+            questionTotal = getQuestionTotal(test, questionTotal);
             classAverage = ((classAverage * 100) / questionTotal) / testResults.size();
-
             return new Performance(tar, classAverage);
         }
         throw new IllegalArgumentException("This test is not publishing results or grades yet.");
@@ -398,30 +433,28 @@ public class TestService {
      */
     public Tests editTest(Tests test, String username) {
         logger.info("Request made to edit a test with id #{} to the database by {}", test.getTestID(), username);
-
         test.setTestTitle(test.getTestTitle().trim());
         User user = userRepo.selectByUsername(username);
         Module module = modRepo.selectByModuleID(test.getModuleID());
-
-        if (AssociationType.TUTOR == modServ.checkValidAssociation(username, test.getModuleID())) {
+        Long check = modServ.checkValidAssociation(username, test.getModuleID());
+        if (check != null && AssociationType.TUTOR == check) {
             if (test.getPractice() == 1) {
                 test.setPublishGrades(1);
             }
             try {
-                // Parse exceptions could be thrown here
-                test.setEndDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getEndDateTime()));
-                test.setStartDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getStartDateTime()));
-                if (test.getTestTitle().length() <= 50
-                        && test.getTestTitle().length() > 0
-                        && user != null
-                        && module != null) {
-                    return primeTestForUserView(testRepo.insert(test));
-                }
+                if (checkTestEditIsValid(test, user, module)) return primeTestForUserView(testRepo.insert(test));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
         return null;
+    }
+
+    private boolean checkTestEditIsValid(Tests test, User user, Module module) throws ParseException {
+        // Parse exceptions could be thrown here
+        test.setEndDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getEndDateTime()));
+        test.setStartDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getStartDateTime()));
+        return test.getTestTitle().length() <= 50 && test.getTestTitle().length() > 0 && user != null && module != null;
     }
 
     /**
@@ -468,16 +501,16 @@ public class TestService {
      * @param testID   - the test
      * @return the list of questions being used by this test
      */
-    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) throws Base64DecodingException, SQLException {
+    public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) throws SQLException {
         logger.info("Request made for questions and all necessary info requited by tutor for test #{} by {}", testID, username);
-
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
-        if (AssociationType.TUTOR == modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID())) {
+        if (check != null && AssociationType.TUTOR == check) {
             List<TutorQuestionPojo> tutorQuestions = new LinkedList<>();
             for (TestQuestion tq : tqs) {
                 Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
                 if (q != null) {
-                    tutorQuestions = populateTutorQuestionList(testID, tutorQuestions, q);
+                    populateTutorQuestionList(testID, tutorQuestions, q);
                 }
             }
             return tutorQuestions;
@@ -485,62 +518,85 @@ public class TestService {
         return null;
     }
 
-    public List<QuestionAndAnswer> getQuestionsStudent(String username, Long testID) throws Base64DecodingException, SQLException {
+    public List<QuestionAndAnswer> getQuestionsStudent(String username, Long testID) throws SQLException {
         logger.info("Request made for questions for test #{} by {}", testID, username);
-
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
         if (modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()) != null) {
             List<QuestionAndAnswer> questions = new LinkedList<>();
-            for (TestQuestion tq : tqs) {
-                Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
-                if (q != null) {
-                    List<Inputs> inputs = new LinkedList<>();
-                    if (q.getQuestionType() == QuestionType.INSERT_THE_WORD) {
-                        List<Object> insertions = prepareInsertTheWordForStudent(q);
-                        q.setQuestionContent((String) insertions.get(0));
-                        for (int loop = 0; loop < (Integer) insertions.get(1); loop++) {
-                            inputs.add(new Inputs("", loop, null, 0));
-                        }
-                    }
-                    List<OptionEntries> optionEntries = new LinkedList<>();
-                    List<Option> options = new LinkedList<>();
-                    if (q.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
-                        options = optionRepo.selectByQuestionID(q.getQuestionID());
-                        for (Option o : options) {
-                            o.setFeedback("");
-                            o.setWorthMarks(0);
-                        }
-                        if (q.getAllThatApply() == 0) {
-                            optionEntries.add(new OptionEntries(null, null));
-                        } else {
-                            for (int loop = 0; loop < options.size(); loop++) {
-                                optionEntries.add(new OptionEntries(null, null));
-                            }
-                        }
-                    }
-                    QuestionAndAnswer qToAdd = new QuestionAndAnswer(new QuestionAndBase64(prepareFigure(q), options, findMathLines(q.getQuestionID()), q), new Answer(), inputs, optionEntries, null);
-                    qToAdd.getQuestion().getQuestion().setQuestionFigure(null);
-                    questions.add(qToAdd);
-                }
-            }
+            populateQuestionsForStudent(tqs, questions);
             return questions;
         }
         return null;
     }
 
-    public List<Object> prepareInsertTheWordForStudent(Question q) {
+    private void populateQuestionsForStudent(List<TestQuestion> tqs, List<QuestionAndAnswer> questions) throws SQLException {
+        for (TestQuestion tq : tqs) {
+            Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
+            if (q != null) {
+                List<Inputs> inputs = populateInputsForStudent(q);
+                List<OptionEntries> optionEntries = new LinkedList<>();
+                List<Option> options = new LinkedList<>();
+                if (q.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
+                    options = populateOptionsForStudent(q);
+                    populateOptionEntriesForStudent(q, optionEntries, options);
+                }
+                QuestionAndAnswer qToAdd = new QuestionAndAnswer(new QuestionAndBase64(prepareFigure(q), options, findMathLines(q.getQuestionID()), q), new Answer(), inputs, optionEntries, null);
+                qToAdd.getQuestion().getQuestion().setQuestionFigure(null);
+                questions.add(qToAdd);
+            }
+        }
+    }
+
+    private void populateOptionEntriesForStudent(Question q, List<OptionEntries> optionEntries, List<Option> options) {
+        if (q.getAllThatApply() == 0) {
+            optionEntries.add(new OptionEntries(null, null));
+        } else {
+            for (int loop = 0; loop < options.size(); loop++) {
+                optionEntries.add(new OptionEntries(null, null));
+            }
+        }
+    }
+
+    private List<Option> populateOptionsForStudent(Question q) {
+        List<Option> options;
+        options = optionRepo.selectByQuestionID(q.getQuestionID());
+        for (Option o : options) {
+            o.setFeedback("");
+            o.setWorthMarks(0);
+        }
+        return options;
+    }
+
+    private List<Inputs> populateInputsForStudent(Question q) {
+        List<Inputs> inputs = new LinkedList<>();
+        if (q.getQuestionType() == QuestionType.INSERT_THE_WORD) {
+            List<Object> insertions = prepareInsertTheWordForStudent(q);
+            q.setQuestionContent((String) insertions.get(0));
+            for (int loop = 0; loop < (Integer) insertions.get(1); loop++) {
+                inputs.add(new Inputs("", loop, null, 0));
+            }
+        }
+        return inputs;
+    }
+
+    private List<Object> prepareInsertTheWordForStudent(Question q) {
         List<CorrectPoint> correctPoints = cpRepo.selectByQuestionID(q.getQuestionID());
         int inputs = 0;
         List<Object> insertions = new ArrayList<>();
+        inputs = removeCorrectPhraseFromQuestionForInsertTheWord(q, correctPoints, inputs);
+        insertions.add(q.getQuestionContent());
+        insertions.add(inputs);
+        return insertions;
+    }
+
+    private int removeCorrectPhraseFromQuestionForInsertTheWord(Question q, List<CorrectPoint> correctPoints, int inputs) {
         for (CorrectPoint cp : correctPoints) {
             if (q.getQuestionContent().contains("[[" + cp.getPhrase() + "]]")) {
                 inputs++;
                 q.setQuestionContent(q.getQuestionContent().replaceAll("\\[\\[" + cp.getPhrase() + "\\]\\]", inputs + "._____"));
             }
         }
-        insertions.add(q.getQuestionContent());
-        insertions.add(inputs);
-        return insertions;
+        return inputs;
     }
 
     /**
@@ -550,17 +606,20 @@ public class TestService {
      * @param testID   - the test
      * @return the questions not currently being used by this test
      */
-    public List<TutorQuestionPojo> getOldQuestions(String username, Long testID) throws Base64DecodingException, SQLException {
+    public List<TutorQuestionPojo> getOldQuestions(String username, Long testID) throws SQLException {
         logger.info("Request made for all old questions that aren't being used by test #{}", testID);
-
         List<TutorQuestionPojo> currents = getQuestionsByTestIDTutorView(username, testID);
         List<TutorQuestionPojo> allTutorQuestions = new LinkedList<>();
         List<TutorQuestionPojo> tutorQuestionsToRemove = new ArrayList<>();
-
         for (Question q : questionRepo.selectByCreatorID(userRepo.selectByUsername(username).getUserID())) {
-            allTutorQuestions = populateTutorQuestionList(testID, allTutorQuestions, q);
+            populateTutorQuestionList(testID, allTutorQuestions, q);
         }
+        getQuestionsToRemove(currents, allTutorQuestions, tutorQuestionsToRemove);
+        allTutorQuestions.removeAll(tutorQuestionsToRemove);
+        return allTutorQuestions;
+    }
 
+    private void getQuestionsToRemove(List<TutorQuestionPojo> currents, List<TutorQuestionPojo> allTutorQuestions, List<TutorQuestionPojo> tutorQuestionsToRemove) {
         for (TutorQuestionPojo next : allTutorQuestions) {
             for (TutorQuestionPojo c : currents) {
                 if (next.getQuestion().getQuestionID().equals(c.getQuestion().getQuestionID())) {
@@ -568,19 +627,15 @@ public class TestService {
                 }
             }
         }
-
-        allTutorQuestions.removeAll(tutorQuestionsToRemove);
-        return allTutorQuestions;
     }
 
-    private List<TutorQuestionPojo> populateTutorQuestionList(Long testID, List<TutorQuestionPojo> allTutorQuestions, Question q) throws SQLException, Base64DecodingException {
+    private void populateTutorQuestionList(Long testID, List<TutorQuestionPojo> allTutorQuestions, Question q) throws SQLException {
         TutorQuestionPojo tqToAdd = new TutorQuestionPojo(testID, prepareFigure(q), q, findOptions(q.getQuestionID()), findMathLines(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
         tqToAdd.getQuestion().setQuestionFigure(null);
         allTutorQuestions.add(tqToAdd);
-        return allTutorQuestions;
     }
 
-    private String prepareFigure(Question q) throws SQLException, Base64DecodingException {
+    private String prepareFigure(Question q) throws SQLException {
         return BlobUtil.blobToBase(q.getQuestionFigure());
     }
 
@@ -600,7 +655,7 @@ public class TestService {
      * @param questionID the questions id
      * @return the correct points for the question
      */
-    public List<CorrectPoint> findCorrectPoints(Long questionID) {
+    List<CorrectPoint> findCorrectPoints(Long questionID) {
         List<CorrectPoint> correctPoints = cpRepo.selectByQuestionID(questionID);
         for (CorrectPoint cp : correctPoints) {
             cp.setAlternatives(findAlternatives(cp.getCorrectPointID()));
@@ -610,10 +665,11 @@ public class TestService {
 
     /**
      * Returns the math lines for the question
+     *
      * @param questionID the question
      * @return the math lines
      */
-    public List<QuestionMathLine> findMathLines(Long questionID) { return questionMathLineRepo.selectByQuestionID(questionID); }
+    List<QuestionMathLine> findMathLines(Long questionID) { return questionMathLineRepo.selectByQuestionID(questionID); }
 
     /**
      * finds all the alternatives that are equivalent to given correct points
@@ -636,9 +692,7 @@ public class TestService {
             try {
                 test.setStartDateTime(StringToDateUtil.convertDateToFrontEndFormat(test.getStartDateTime()));
                 test.setEndDateTime(StringToDateUtil.convertDateToFrontEndFormat(test.getEndDateTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            } catch (ParseException e) { e.printStackTrace(); }
         }
         return test;
     }
@@ -651,41 +705,51 @@ public class TestService {
      * @return the collection of all question data available to tutor after insertion
      * @throws Exception generic
      */
-    public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username, Boolean update) throws Exception {
+    public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username, Boolean update) throws SQLException {
         logger.info("Request made to add new question in to the database by {}", username);
-        if (AssociationType.TUTOR == modServ.checkValidAssociation(username, testRepo.selectByTestID(questionData.getTestID()).getModuleID())) {
-            Question question = questionData.getQuestion();
-            if (question.getQuestionID() == null || question.getQuestionID() < 1) {
-                question.setQuestionID(-1L);
-            }
-            if (questionData.getBase64() != null) {
-                question.setQuestionFigure(BlobUtil.baseToBlob(questionData.getBase64()));
-            }
-            List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
-            User user = userRepo.selectByUsername(username);
-            question.setCreatorID(user.getUserID());
-
-            questionData.setQuestion(questionRepo.insert(question));
-            questionData.setMathLines(addMathLines(questionData.getQuestion().getQuestionID(), questionData.getMathLines()));
-            if (!update) {
-                testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
-            }
+        Long check = modServ.checkValidAssociation(username, testRepo.selectByTestID(questionData.getTestID()).getModuleID());
+        if (check != null && AssociationType.TUTOR == check) {
+            List<CorrectPoint> correctPoints = prepareQuestionGeneral(questionData, username, update);
             // Insert the word and Text-based
-            if (!questionData.getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
-                questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID(), update));
-            }
-
+            prepareNonMultipleChoice(questionData, update, correctPoints);
             // Multiple choice
-            if (questionData.getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
-                questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions(), update));
-            }
-
+            prepareMultipleChoice(questionData, update);
             questionData.setBase64(BlobUtil.blobToBase(questionData.getQuestion().getQuestionFigure()));
             questionData.getQuestion().setQuestionFigure(null);
-
             return questionData;
         }
         return null;
+    }
+
+    private void prepareMultipleChoice(TutorQuestionPojo questionData, Boolean update) {
+        if (questionData.getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
+            questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions(), update));
+        }
+    }
+
+    private void prepareNonMultipleChoice(TutorQuestionPojo questionData, Boolean update, List<CorrectPoint> correctPoints) {
+        if (!questionData.getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
+            questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID(), update));
+        }
+    }
+
+    private List<CorrectPoint> prepareQuestionGeneral(TutorQuestionPojo questionData, String username, Boolean update) throws SQLException {
+        Question question = questionData.getQuestion();
+        if (question.getQuestionID() == null || question.getQuestionID() < 1) {
+            question.setQuestionID(-1L);
+        }
+        if (questionData.getBase64() != null) {
+            question.setQuestionFigure(BlobUtil.baseToBlob(questionData.getBase64()));
+        }
+        List<CorrectPoint> correctPoints = questionData.getCorrectPoints();
+        User user = userRepo.selectByUsername(username);
+        question.setCreatorID(user.getUserID());
+        questionData.setQuestion(questionRepo.insert(question));
+        questionData.setMathLines(addMathLines(questionData.getQuestion().getQuestionID(), questionData.getMathLines()));
+        if (!update) {
+            testQuestionRepo.insert(new TestQuestion(questionData.getTestID(), questionRepo.insert(question).getQuestionID()));
+        }
+        return correctPoints;
     }
 
 
@@ -700,59 +764,70 @@ public class TestService {
      * @return the test question record
      */
     public TestQuestion addExistingQuestion(Long questionID, Long testID, String username) {
-        logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, username);
 
-        Tests test = testRepo.selectByTestID(testID);
-        Question question = questionRepo.selectByQuestionID(questionID);
-        if (AssociationType.TUTOR == modServ.checkValidAssociation(username, test.getModuleID()) && question.getCreatorID().equals(userRepo.selectByUsername(username).getUserID())) {
-            return testQuestionRepo.insert(new TestQuestion(testID, questionID));
-        }
+            logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, username);
+
+            Tests test = testRepo.selectByTestID(testID);
+            Question question = questionRepo.selectByQuestionID(questionID);
+            Long check = modServ.checkValidAssociation(username, test.getModuleID());
+            if (check != null && check == AssociationType.TUTOR && question.getCreatorID().equals(userRepo.selectByUsername(username).getUserID())) {
+                return testQuestionRepo.insert(new TestQuestion(testID, questionID));
+            }
+
         return null;
     }
 
     public Boolean duplicateQuestion(Long questionID, String username) {
         logger.info("Request made to duplicate question #{} by {}", questionID, username);
-
         Question question = questionRepo.selectByQuestionID(questionID);
         List<Option> options = optionRepo.selectByQuestionID(question.getQuestionID());
         List<CorrectPoint> cps = cpRepo.selectByQuestionID(question.getQuestionID());
-        for (CorrectPoint cp : cps) {
-            cp.setAlternatives(alternativeRepo.selectByCorrectPointID(cp.getCorrectPointID()));
-        }
-        Question newQuestion = question;
+        getAlternativesForCorrectPoints(cps);
         User user = userRepo.selectByUsername(username);
-
         if (question.getCreatorID().equals(user.getUserID())) {
-
-            newQuestion.setQuestionID(-1L);
-            newQuestion = questionRepo.insert(newQuestion);
-            addMathLines(newQuestion.getQuestionID(), questionMathLineRepo.selectByQuestionID(question.getQuestionID()));
-            if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
-                for (Option opt : options) {
-                    opt.setOptionID(-1L);
-                    opt.setQuestionID(newQuestion.getQuestionID());
-                    optionRepo.insert(opt);
-                }
-            }
-
-            if (question.getQuestionType() != QuestionType.MULTIPLE_CHOICE) {
-                for (CorrectPoint cp : cps) {
-                    cp.setCorrectPointID(-1L);
-                    cp.setQuestionID(newQuestion.getQuestionID());
-                    CorrectPoint newCorrectPoint = cpRepo.insert(cp);
-
-                    for (Alternative alt : cp.getAlternatives()) {
-                        alt.setAlternativeID(-1L);
-                        alt.setCorrectPointID(newCorrectPoint.getCorrectPointID());
-                        alternativeRepo.insert(alt);
-                    }
-                }
-            }
-
-
+            addDetailsForSpecificQuestionTypes(question, options, cps, question);
             return true;
         }
         return false;
+    }
+
+    private void addDetailsForSpecificQuestionTypes(Question question, List<Option> options, List<CorrectPoint> cps, Question newQuestion) {
+        newQuestion.setQuestionID(-1L);
+        newQuestion = questionRepo.insert(newQuestion);
+        addMathLines(newQuestion.getQuestionID(), questionMathLineRepo.selectByQuestionID(question.getQuestionID()));
+        duplicateForMultipleChoice(question, options, newQuestion);
+        duplicateForNotMultipleChoice(question, cps, newQuestion);
+    }
+
+    private void getAlternativesForCorrectPoints(List<CorrectPoint> cps) {
+        for (CorrectPoint cp : cps) {
+            cp.setAlternatives(alternativeRepo.selectByCorrectPointID(cp.getCorrectPointID()));
+        }
+    }
+
+    private void duplicateForNotMultipleChoice(Question question, List<CorrectPoint> cps, Question newQuestion) {
+        if (question.getQuestionType() != QuestionType.MULTIPLE_CHOICE) {
+            for (CorrectPoint cp : cps) {
+                cp.setCorrectPointID(-1L);
+                cp.setQuestionID(newQuestion.getQuestionID());
+                CorrectPoint newCorrectPoint = cpRepo.insert(cp);
+                for (Alternative alt : cp.getAlternatives()) {
+                    alt.setAlternativeID(-1L);
+                    alt.setCorrectPointID(newCorrectPoint.getCorrectPointID());
+                    alternativeRepo.insert(alt);
+                }
+            }
+        }
+    }
+
+    private void duplicateForMultipleChoice(Question question, List<Option> options, Question newQuestion) {
+        if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
+            for (Option opt : options) {
+                opt.setOptionID(-1L);
+                opt.setQuestionID(newQuestion.getQuestionID());
+                optionRepo.insert(opt);
+            }
+        }
     }
 
     /**
@@ -763,57 +838,40 @@ public class TestService {
      * @return the correct points
      * @throws Exception generic
      */
-    List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID, Boolean update) throws Exception {
+    List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID, Boolean update) {
         Question question = questionRepo.selectByQuestionID(questionID);
-
+        Map<Integer, CorrectPoint> correctPointTreeMap = new TreeMap<>();
         if (question.getQuestionType() == QuestionType.INSERT_THE_WORD) {
-            List<CorrectPoint> sortedCPForInsertTheWord = new LinkedList<>();
             correctPoints.addAll(cpRepo.selectByQuestionID(questionID));
-
-            for (int x = 0; x < correctPoints.size(); x++) {
-                if (x == 0) {
-                    sortedCPForInsertTheWord.add(correctPoints.get(x));
-                } else {
-                    int position = question.getQuestionContent().indexOf("[[" + correctPoints.get(x).getPhrase() + "]]");
-                    int index = sortedCPForInsertTheWord.size();
-                    int lowestSoFar = -1;
-                    for (int y = 0; y < sortedCPForInsertTheWord.size(); y++) {
-                        int thisIndex = question.getQuestionContent().indexOf("[[" + sortedCPForInsertTheWord.get(y).getPhrase() + "]]");
-                        if (position < thisIndex) {
-                            if (lowestSoFar == -1) {
-                                index = y;
-                                lowestSoFar = thisIndex;
-                            } else {
-                                if (thisIndex < lowestSoFar) {
-                                    lowestSoFar = thisIndex;
-                                    index = y;
-                                }
-                            }
-                        }
-                    }
-                    sortedCPForInsertTheWord.add(index, correctPoints.get(x));
-                }
-            }
-
-            for (int x = 0; x < sortedCPForInsertTheWord.size(); x++) {
-                sortedCPForInsertTheWord.get(x).setIndexedAt(x);
-            }
-
-            correctPoints = sortedCPForInsertTheWord;
+            sortCorrectPointsBaseOnAppearanceInQuestion(correctPoints, question, correctPointTreeMap);
         }
-
         if (correctPoints.size() > 0) {
-            for (CorrectPoint cp : correctPoints) {
-
-                cp.setQuestionID(questionID);
-                if (cp.getCorrectPointID() == null || cp.getCorrectPointID() < 1) {
-                    cp.setCorrectPointID(-1L);
-                }
-                cp = cpRepo.insert(cp);
-                cp.setAlternatives(addAlternatives(cp.getCorrectPointID(), cp.getAlternatives(), update));
-            }
+            prepareCorrectPointsForEntry(correctPoints, questionID, update);
         }
         return correctPoints;
+    }
+
+    private void prepareCorrectPointsForEntry(List<CorrectPoint> correctPoints, Long questionID, Boolean update) {
+        for (CorrectPoint cp : correctPoints) {
+            cp.setQuestionID(questionID);
+            if (cp.getCorrectPointID() == null || cp.getCorrectPointID() < 1) {
+                cp.setCorrectPointID(-1L);
+            }
+            cp = cpRepo.insert(cp);
+            cp.setAlternatives(addAlternatives(cp.getCorrectPointID(), cp.getAlternatives(), update));
+        }
+    }
+
+    private void sortCorrectPointsBaseOnAppearanceInQuestion(List<CorrectPoint> correctPoints, Question question, Map<Integer, CorrectPoint> correctPointTreeMap) {
+        for (CorrectPoint c : correctPoints) {
+            correctPointTreeMap.put(question.getQuestionContent().indexOf("[[" + c.getPhrase() + "]]"), c);
+        }
+        correctPoints.clear();
+        int loop = 0;
+        for (Map.Entry<Integer, CorrectPoint> entry : correctPointTreeMap.entrySet()) {
+            entry.getValue().setIndexedAt(loop++);
+            correctPoints.add(entry.getValue());
+        }
     }
 
     /**
@@ -824,7 +882,7 @@ public class TestService {
      * @return the list of alternatives
      * @throws Exception generic
      */
-    public List<Alternative> addAlternatives(Long correctPointID, List<Alternative> alternatives, Boolean update) throws Exception {
+    List<Alternative> addAlternatives(Long correctPointID, List<Alternative> alternatives, Boolean update) {
         if (alternatives != null && alternatives.size() > 0) {
             for (Alternative alt : alternatives) {
                 alt.setCorrectPointID(correctPointID);
@@ -838,7 +896,7 @@ public class TestService {
         return alternatives;
     }
 
-    public List<QuestionMathLine> addMathLines(Long questionID, List<QuestionMathLine> questionMathLines) {
+    private List<QuestionMathLine> addMathLines(Long questionID, List<QuestionMathLine> questionMathLines) {
         if (questionMathLines != null && questionMathLines.size() > 0) {
             for (QuestionMathLine qm : questionMathLines) {
                 qm.setQuestionID(questionID);
@@ -849,7 +907,7 @@ public class TestService {
         return null;
     }
 
-    public List<Option> addOptions(Long questionID, List<Option> options, Boolean update) throws Exception {
+    private List<Option> addOptions(Long questionID, List<Option> options, Boolean update) {
         if (options != null && options.size() > 0) {
             for (Option option : options) {
                 option.setQuestionID(questionID);
@@ -874,8 +932,8 @@ public class TestService {
      */
     public Boolean removeQuestionFromTest(Long testID, Long questionID, String username) {
         logger.info("Request made to remove question #{} from test #{} by {}", questionID, testID, username);
-
-        if (AssociationType.TUTOR == modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID())) {
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
+        if (check != null && AssociationType.TUTOR == check) {
             List<TestQuestion> testQuestions = testQuestionRepo.selectByTestID(testID);
             for (TestQuestion tq : testQuestions) {
                 if (tq.getQuestionID().equals(questionID)) {
@@ -954,8 +1012,8 @@ public class TestService {
      */
     public Boolean deleteTest(Long testID, String username) {
         logger.info("Request made to delete test #{} by {}", testID, username);
-
-        if (AssociationType.TUTOR == modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID())) {
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
+        if (check != null && AssociationType.TUTOR == check) {
             testRepo.delete(testID);
             return true;
         }
@@ -971,8 +1029,8 @@ public class TestService {
      */
     public Boolean scheduleTest(Long testID, String username) {
         logger.info("Request made to schedule test #{} by {}", testID, username);
-
-        if (AssociationType.TUTOR == modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID())) {
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
+        if (check != null && AssociationType.TUTOR == check) {
             Tests test = testRepo.selectByTestID(testID);
 
             if (test.getScheduled().equals(SCHEDULED)) {

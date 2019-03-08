@@ -79,7 +79,7 @@ public class UserController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getUsernames", method = RequestMethod.GET)
-    public boolean getUsernames(Principal principal, String username) { return userService.usernameCheck(username, principal); }
+    public boolean getUsernames(Principal principal, String username) { return userService.usernameCheck(username, principal.getName()); }
 
     @CrossOrigin
     @RequestMapping(value = "/createProfile", method = RequestMethod.POST)
@@ -87,7 +87,7 @@ public class UserController {
 
     @CrossOrigin
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public User editProfile(@RequestBody User user, Principal principal) { return userService.editProfile(user, principal); }
+    public User editProfile(@RequestBody User user, Principal principal) { return userService.editProfile(user, principal.getName()); }
 
     /**
      * Finds all users in the system

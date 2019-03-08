@@ -79,13 +79,13 @@ public class ModuleController {
 
     @CrossOrigin
     @RequestMapping(value = "/addModule", method = RequestMethod.POST)
-    public void addModule(@RequestBody ModulePojo modulePojo, Principal principal) throws IllegalArgumentException, AddressException {
+    public void addModule(@RequestBody ModulePojo modulePojo, Principal principal) throws IllegalArgumentException {
         modService.addModule(modulePojo, principal.getName());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/addAssociations", method = RequestMethod.POST)
-    public void addModule(Long moduleID, @RequestBody List<Associate> associationPojos, Principal principal) throws IllegalArgumentException {
+    public void addAssociations(Long moduleID, @RequestBody List<Associate> associationPojos, Principal principal) throws IllegalArgumentException {
         modService.addAssociations(moduleID, associationPojos, principal.getName());
     }
 
@@ -207,31 +207,31 @@ public class ModuleController {
 
     @CrossOrigin
     @RequestMapping(value = "/getModuleRequests", method = RequestMethod.GET)
-    public List<ModuleRequestPojo> getModuleRequests() {
-        return modService.getModuleRequests();
+    public List<ModuleRequestPojo> getModuleRequests(Principal principal) {
+        return modService.getModuleRequests(principal.getName());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/approveModuleRequest", method = RequestMethod.GET)
-    public void approveModuleRequest(Long moduleID) {
-        modService.approveModuleRequest(moduleID);
+    public void approveModuleRequest(Long moduleID, Principal principal) {
+        modService.approveModuleRequest(moduleID, principal.getName());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/rejectModuleRequest", method = RequestMethod.GET)
-    public void rejectModuleRequest(Long moduleID) {
-        modService.rejectModuleRequest(moduleID);
+    public void rejectModuleRequest(Long moduleID, Principal principal) {
+        modService.rejectModuleRequest(moduleID, principal.getName());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/getAssociates", method = RequestMethod.GET)
     public List<Associate> getAssociates(Long moduleID, Principal principal) {
-        return modService.getAssociates(moduleID, principal);
+        return modService.getAssociates(moduleID, principal.getName());
     }
 
     @CrossOrigin
     @RequestMapping(value = "/removeAssociate", method = RequestMethod.GET)
     public void removeAssociate(String username, Long moduleID, Principal principal) {
-        modService.removeAssociate(username, moduleID, principal);
+        modService.removeAssociate(username, moduleID, principal.getName());
     }
 }

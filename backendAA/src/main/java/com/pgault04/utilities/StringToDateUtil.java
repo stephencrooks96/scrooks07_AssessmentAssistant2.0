@@ -30,8 +30,7 @@ public class StringToDateUtil {
         return formatter.parse(dateTime);
     }
 
-    public static String dateCorrectFormat(Date date) throws ParseException {
-
+    public static String dateCorrectFormat(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formatter.format(date);
     }

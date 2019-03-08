@@ -12,8 +12,8 @@ public class ModuleRequestPojo {
     }
 
     public ModuleRequestPojo(User tutor, Module module) {
-        this.tutor = tutor;
-        this.module = module;
+        this.setTutor(tutor);
+        this.setModule(module);
     }
 
     public User getTutor() {

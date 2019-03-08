@@ -18,7 +18,7 @@ import com.pgault04.entities.User;
 import com.pgault04.entities.UserRole;
 import com.pgault04.repositories.UserRepo;
 import com.pgault04.repositories.UserRoleRepo;
-import com.pgault04.utilities.PasswordEncrypt;
+import com.pgault04.utilities.PasswordUtil;
 
 import javax.transaction.Transactional;
 
@@ -74,7 +74,7 @@ public class TestUserDetailsSerivceImplementation {
 	@Test
 	public void testLoadUserByUsernameValid() {
 		UserDetails userDetails = userDetailServ.loadUserByUsername(validUserName);
-		assertThat(userDetails.getPassword().matches(PasswordEncrypt.encrypt(password)));
+		assertThat(userDetails.getPassword().matches(PasswordUtil.encrypt(password)));
 		assertEquals(validUserName, userDetails.getUsername());
 		assertEquals("[" + userRole.getRole() + "]", userDetails.getAuthorities().toString());
 	}

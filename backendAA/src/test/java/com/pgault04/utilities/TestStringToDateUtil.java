@@ -39,9 +39,20 @@ public class TestStringToDateUtil {
 		assertThat(StringToDateUtil.stringToDate("0000-00-00 00:00:00"), instanceOf(Date.class));
 	}
 
+	@Test
+	public void testDateCorrectFormat() {
+		Date date = new Date(1569285049284L);
+		assertEquals("2019-09-24 01:30:49", StringToDateUtil.dateCorrectFormat(date));
+	}
+
 	@Test(expected = ParseException.class)
 	public void testStringToDateInvalid() throws ParseException {
 		StringToDateUtil.stringToDate("x");
+	}
+
+	@Test
+	public void testDateFrontendFormat() throws ParseException {
+		assertEquals("2018-12-10T12:00:00", StringToDateUtil.convertDateToFrontEndFormat("2018-12-10 12:00"));
 	}
 
 	@Test

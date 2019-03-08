@@ -1,7 +1,7 @@
 package com.pgault04.repositories;
 
 import com.pgault04.entities.User;
-import com.pgault04.utilities.PasswordEncrypt;
+import com.pgault04.utilities.PasswordUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

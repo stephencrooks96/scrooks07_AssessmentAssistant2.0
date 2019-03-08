@@ -342,61 +342,77 @@ values ('ROLE_ADMIN');
 insert into UserRole (role)
 values ('ROLE_USER');
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID)
-values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'paul', 'gault', 1, 1);
- 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID)
-values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'richard', 'gault', 1, 2);
- 
-insert into Modules (moduleName, moduleDescription, tutorUserID, year) values ('Foundation Physics', 'Physics for beginners', 2, 2018);
-insert into Modules (moduleName, moduleDescription, tutorUserID, year) values ('Ad Physics', 'Advanced Physics', 2, 2018);
+insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
+values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Paul', 'Gault', 1, 1, 0);
+insert into PasswordReset (userID, resetString) values (1, 'reset');
+insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
+values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Richard', 'Gault',
+        1, 2, 1);
 
-insert into AssociationType (associationType) values ('tutor');
-insert into AssociationType (associationType) values ('student');
-insert into AssociationType (associationType) values ('teaching assistant');
+insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved)
+values ('Foundation Physics', 'Physics for beginners', 2, '2018-09-01', '2019-09-01', 1);
+insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved)
+values ('Ad Physics', 'Advanced Physics', 2, '2018-09-01', '2019-09-01', 1);
+
+insert into AssociationType (associationType)
+values ('tutor');
+insert into AssociationType (associationType)
+values ('student');
+insert into AssociationType (associationType)
+values ('teaching assistant');
 
 insert into ModuleAssociation (moduleID, userID, associationType) values (1, 1, 2);
 insert into ModuleAssociation (moduleID, userID, associationType) values (2, 1, 2);
 insert into ModuleAssociation (moduleID, userID, associationType) values (1, 2, 1);
 insert into ModuleAssociation (moduleID, userID, associationType) values (2, 2, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
 
-insert into QuestionType (questionType) values ('questionType1');
+insert into QuestionType (questionType)
+values ('Text-based');
+insert into QuestionType (questionType)
+values ('Multiple-Choice');
+insert into QuestionType (questionType)
+values ('Insert the word');
+insert into QuestionType (questionType)
+values ('Math/Text');
+insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
+values (1, 'content', null, 3, 0, 2, 0);
 
-insert into Question (questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'content', 'figure', 100, 2);
+insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
+values (1, 'content', null, 3, 0, 2, 0);
 
-insert into CorrectPoint (questionID, phrase, marksWorth, feedback) values (1, 'phrase', 5.0, 'feedback');
+insert into OptionTbl(questionID, optionContent, worthMarks, feedback) values (1, 'content', 3, 'feedback');
 
-insert into Question (questionType, questionContent, questionFigure, maxScore, creatorID) values (1, 'content', 'figure', 100, 2);
+insert into CorrectPoint (questionID, phrase, marksWorth, feedback, indexedAt, math) values (1, 'phrase', 5.0, 'feedback', 0, 0);
 
-insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 1, 2, 2, 'content', 100);
+insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 2, 2, 'content', 100, 'feedback', 0, 0);
 
-insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 1, 1, 2, 'content', 100);
+insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 1, 2, 'content', 100, 'feedback', 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1, 0, 0);
 
 insert into testresult (testID, studentID, testScore) values (2, 1, 100);
 
 insert into testquestion (testID, questionID) values (2, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 1, 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 0, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 0, 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0, 0);
 
 insert into testquestion (testID, questionID) values (5, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0, 0);
 
 insert into testquestion (testID, questionID) values (6, 1);
 
-insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 1, 1, 2, 'content', null);
+insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 1, 2, 'content', null, 'feedback', 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades) values (1, 'TestActive', '2018-11-11 00:00:00', '2018-11-11 00:00:00', 1, 1, 0);
+insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2018-11-11 00:00:00', 1, 1, 0, 0);
 
 insert into testquestion (testID, questionID) values (7, 1);
 
-insert into answer (questionID, testID, answererID, markerID, content, score) values (1, 7, 2, 1, 'content', null);
+insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 7, 2, 1, 'content', null, 'feedback', 0, 0);
 

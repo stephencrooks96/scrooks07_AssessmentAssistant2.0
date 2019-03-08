@@ -1,6 +1,5 @@
 package com.pgault04.repositories;
 
-import com.pgault04.entities.User;
 import com.pgault04.entities.UserSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,14 +12,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class UserSessionsRepo {
-
-    private static final long INSERT_CHECKER_CONSTANT = 0L;
 
     private static final Logger log = LogManager.getLogger(UserRepo.class);
 
@@ -33,8 +28,7 @@ public class UserSessionsRepo {
     @Autowired
     NamedParameterJdbcTemplate namedparamTmpl;
 
-    private String tableName = "Users";
-    private String deleteSQL = "DELETE FROM Users WHERE userID=?";
+    private String tableName = "UserSessions";
 
     /**
      * @return the number of records in the table
