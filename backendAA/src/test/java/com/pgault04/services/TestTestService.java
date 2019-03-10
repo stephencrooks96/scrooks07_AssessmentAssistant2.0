@@ -36,10 +36,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class TestTestService {
 
-    private static final int HOUR_IN_MILLISECONDS = 3600000;
     private static final String USERNAME_IN_DB = "pgault04@qub.ac.uk";
     private static final String OTHER_USERNAME_IN_DB = "richard.gault@qub.ac.uk";
-    private static final long QUESTION_IN_DB = 1L;
     private static final long USER_IN_DB = 1L;
     private static final long OTHER_IN_DB = 2L;
 
@@ -71,26 +69,23 @@ public class TestTestService {
     ModuleAssociationRepo moduleAssociationRepo;
     @Autowired
     UserRepo userRepo;
-    Question question;
-    List<Option> options;
-    Option option;
-    List<Alternative> alternatives;
-    Alternative alternative;
-    List<CorrectPoint> correctPoints;
-    CorrectPoint correctPoint;
-    private Tests testObj, init;
-    private List<Tests> tests;
+    private Question question;
+    private List<Option> options;
+    private Option option;
+    private List<Alternative> alternatives;
+    private Alternative alternative;
+    private List<CorrectPoint> correctPoints;
+    private CorrectPoint correctPoint;
+    private Tests testObj;
     private Module module;
-    private ModuleAssociation modAssoc;
     private QuestionMathLine questionMathLine;
     private List<QuestionMathLine> questionMathLines;
-    private String commencementDate, endDate;
 
     @Before
     @Transactional
     public void setUp() throws Exception {
-        this.commencementDate = "2018-09-01";
-        this.endDate = "2018-09-01";
+        String commencementDate = "2018-09-01";
+        String endDate = "2018-09-01";
         question = new Question(1L, "questionContent", null, 10, 0, USER_IN_DB, 0);
         options = new ArrayList<>();
         option = new Option(null, "optionContent", 1, "feedback");
@@ -108,9 +103,8 @@ public class TestTestService {
 
         module = new Module("module", "description", 1L, commencementDate, endDate, 1);
         module = moduleRepo.insert(module);
-        tests = new ArrayList<>();
         testObj = new Tests(module.getModuleID(), "Test Title", "2018-01-01T10:00:00", "2018-01-01T11:00:00", 0, 0, 0, 0);
-        modAssoc = moduleAssociationRepo.insert(new ModuleAssociation(module.getModuleID(), userRepo.selectByUsername(USERNAME_IN_DB).getUserID(), 1L));
+        ModuleAssociation modAssoc = moduleAssociationRepo.insert(new ModuleAssociation(module.getModuleID(), userRepo.selectByUsername(USERNAME_IN_DB).getUserID(), 1L));
     }
 
     @Test
@@ -442,6 +436,12 @@ public class TestTestService {
         testController.submitTest(principalOther, scriptsOther);
         Answer deletionChecker = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(answerOtherUserIns.getQuestionID(), answerOtherUserIns.getAnswererID(), testObj.getTestID());
         assertNotEquals(deletionChecker.getAnswerID(), returnedAnswer.getAnswerID());
+        assertEquals(10.0, (double) testResultRepo.selectByTestIDAndStudentID(testObj.getTestID(), OTHER_IN_DB).getTestScore(), 0);
+
+        scriptsOther.get(0).getAnswer().setAnswerID(-1L);
+        scriptsOther.get(0).getInputs().get(0).setInputValue("none");
+        testController.submitTest(principalOther, scriptsOther);
+        assertEquals(0.0, (double) testResultRepo.selectByTestIDAndStudentID(testObj.getTestID(), OTHER_IN_DB).getTestScore(), 0);
     }
 
     @Test
