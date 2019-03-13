@@ -43,7 +43,7 @@ const routes: Routes = [
   {path: 'editProfile', component: EditProfileComponent, canActivate: [BasicPermission]},
   {path: 'adminList', component: AdminListComponent, canActivate: [BasicPermission]},
   {path: 'reviewMarking/:testID', component: ReviewMarkingComponent, canActivate: [BasicPermission]},
-  {path: '**', redirectTo: '/myModules'}
+  {path: '**', redirectTo: 'myModules'}
 ];
 
 @NgModule({

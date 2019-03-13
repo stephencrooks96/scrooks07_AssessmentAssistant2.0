@@ -323,9 +323,11 @@ public class TestUserService {
     @Transactional
     @Test(expected = IllegalArgumentException.class)
     public void testEditProfileInvalid() {
+        Principal principal = Mockito.mock(Principal.class);
+        when(principal.getName()).thenReturn("username");
         User user = new User("username", "password", "firstName", "lastName", 0, UserRole.ROLE_USER, 0);
         user = userService.createProfile(user);
         user.setUsername((USERNAME_IN_DB));
-        userService.editProfile(user, "username");
+        userService.editProfile(user, principal);
     }
 }

@@ -36,8 +36,8 @@ export class BecomeTutorComponent implements OnInit {
   getTutorRequest() {
     this.userService.getTutorRequest().subscribe(
       request => {
-        this.request = request;
         if (request != null && request.approved == 1) {
+          this.request = request;
           this.router.navigate(['/myModules']);
         } else {
           this.request.tutorRequestID = -1;

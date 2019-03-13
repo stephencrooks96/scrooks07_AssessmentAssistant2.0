@@ -123,7 +123,7 @@ public class UserService {
                 User user = userRepo.selectByUsername(u.getUsername());
                 if (user == null) {
                     String password = PasswordUtil.generateRandomString();
-                    user = userRepo.insert(new User(u.getUsername(), PasswordUtil.encrypt(password), u.getFirstName(), u.getLastName(), 0, UserRole.ROLE_USER, u.getTutor()));
+                    user = userRepo.insert(new User(u.getUsername(), PasswordUtil.encrypt(password), u.getFirstName(), u.getLastName(), 0, UserRole.ROLE_USER, 0));
                     passwordResetRepo.insert(new PasswordReset(user.getUserID(), PasswordUtil.generateRandomString()));
                     userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + password).getBytes())), new Timestamp(System.currentTimeMillis())));
                     emailSender.sendNewAccountMessageFromSystemToUser(user, password, username);
@@ -253,11 +253,11 @@ public class UserService {
      * @param username the username to check
      * @return whether the username is used or not
      */
-    public boolean usernameCheck(String username, String principal) {
+    public boolean usernameCheck(String username, Principal principal) {
         List<User> users = userRepo.selectAll();
         for (User u : users) {
             if (u.getUsername().equals(username)) {
-                if (principal == null || !principal.equals(username)) {
+                if (principal == null || !principal.getName().equals(username)) {
                     return true;
                 }
             }
@@ -275,11 +275,14 @@ public class UserService {
         if (!usernameCheck(user.getUsername(), null)) {
             user.setUserID(-1L);
             user.setEnabled(0);
+            user.setTutor(0);
             String passwordUnencrypted = user.getPassword();
             user.setPassword(PasswordUtil.encrypt(passwordUnencrypted));
             user.setUserRoleID(UserRole.ROLE_USER);
             user = userRepo.insert(user);
             userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + passwordUnencrypted).getBytes())), new Timestamp(System.currentTimeMillis())));
+            PasswordReset passwordReset = new PasswordReset(user.getUserID(), PasswordUtil.generateRandomString());
+            passwordResetRepo.insert(passwordReset);
             return user;
         }
         throw new IllegalArgumentException("Username already in use.");
@@ -292,8 +295,8 @@ public class UserService {
      * @return the user
      * @throws IllegalArgumentException if the user name is in use
      */
-    public User editProfile(User user, String principal) throws IllegalArgumentException {
-        User principalUser = userRepo.selectByUsername(principal);
+    public User editProfile(User user, Principal principal) throws IllegalArgumentException {
+        User principalUser = userRepo.selectByUsername(principal.getName());
         if (!usernameCheck(user.getUsername(), principal)) {
             UserSession userSession = userSessionRepo.selectByUsername(principalUser.getUsername());
             String userSessionBefore = new String(Base64.getDecoder().decode((userSession.getToken())));

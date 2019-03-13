@@ -16,12 +16,13 @@ export class MyModulesComponent implements OnInit {
 
   ngOnInit() {
     this.getMyModulesWithTutors();
-
   }
 
   getMyModulesWithTutors() {
     return this.modServ.getMyModulesWithTutors()
-      .subscribe(modules => this.modulesWithTutors = modules);
+      .subscribe(modules => {this.modulesWithTutors = modules}, error => {
+        location.reload();
+      });
   }
 
 }

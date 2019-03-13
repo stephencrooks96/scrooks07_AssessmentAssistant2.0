@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {HttpHeaders} from "@angular/common/http";
 import {User} from "./modelObjs/objects.model";
+import {environment} from '../environments/environment';
 
 
 
@@ -20,17 +21,13 @@ export class AppComponent {
 
   title = 'Assessment Assistant';
 
-  public url = "http://localhost:8080";
+  public url = environment.url;
 
   authenticated() {
     /*
    If logged in
     */
-    if (localStorage.getItem('principalUser')) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!localStorage.getItem('principalUser');
   }
 
 }

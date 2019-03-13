@@ -68,7 +68,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
     protected void configure(HttpSecurity https) throws Exception {
 
         https.cors().and()
-                .authorizeRequests().antMatchers("/", "/main/login", "/user/getUsernames", "/user/createProfile", "/user/requestResetPassword", "/user/resetPassword", "/images/**", "/js/**", "/css/**").permitAll()
+                .authorizeRequests().antMatchers("/", "/main/login", "/user/getUsernames", "/user/createProfile", "/user/requestResetPassword", "/user/resetPassword", "/images/**", "/js/**", "/css/**", "/static/**").permitAll()
                 .anyRequest().fullyAuthenticated()
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/main/login")
                 .and().httpBasic().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

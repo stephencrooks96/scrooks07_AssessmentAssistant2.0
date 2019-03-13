@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS Question
   questionType    int(11) NOT NULL,
   questionID      int(11) NOT NULL AUTO_INCREMENT,
   questionContent text    NOT NULL,
-  questionFigure  BLOB,
+  questionFigure  MEDIUMBLOB,
   maxScore        int(11) NOT NULL,
   minScore        int(11) NOT NULL,
   creatorID       int(11) NOT NULL,
@@ -164,8 +164,8 @@ CREATE TABLE IF NOT EXISTS Tests
   testID         int(11)     NOT NULL AUTO_INCREMENT,
   moduleID       int(11)     NOT NULL,
   testTitle      varchar(50) NOT NULL,
-  startDateTime  timestamp   NOT NULL,
-  endDateTime    timestamp   NOT NULL,
+  startDateTime  timestamp 	 NOT NULL DEFAULT '1970-01-01 00:00:01',
+  endDateTime    timestamp   NOT NULL DEFAULT '1970-01-01 00:00:01',
   publishResults tinyint(1)  NOT NULL,
   scheduled      tinyint(1)  NOT NULL,
   publishGrades  tinyint(1)  NOT NULL,
@@ -334,7 +334,7 @@ ALTER TABLE TutorRequests
   ADD FOREIGN KEY (userID) REFERENCES Users (userID) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE Users
-  ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID) ON UPDATE CASCADE;
+  ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID) ON UPDATE CASCADE ON DELETE CASCADE;
 
 insert into UserRole (role)
 values ('ROLE_ADMIN');
@@ -354,49 +354,49 @@ values ('Math/Text');
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Paul', 'Gault', 1, 1, 0);
 insert into UserSessions (username, token, lastActive)
-values ('pgault04@qub.ac.uk', 'cGdhdWx0MDRAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
+values ('pgault04@qub.ac.uk', 'cGdhdWx0MDRAcXViLmFjLnVrOjEyMw==', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Richard', 'Gault',
         1, 2, 1);
 insert into UserSessions (username, token, lastActive)
-values ('richard.gault@qub.ac.uk', 'cmljaGFyZC5nYXVsdEBxdWIuYWMudWs6MTIz', '0000-01-01 00:00:00');
+values ('richard.gault@qub.ac.uk', 'cmljaGFyZC5nYXVsdEBxdWIuYWMudWs6MTIz', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('bart.simpson@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bart', 'Simpson', 1,
         2, 0);
 insert into UserSessions (username, token, lastActive)
-values ('bart.simpson@qub.ac.uk', 'YmFydC5zaW1wc29uQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
+values ('bart.simpson@qub.ac.uk', 'YmFydC5zaW1wc29uQHF1Yi5hYy51azoxMjM=', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('clark.kent@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Clark', 'Kent', 1, 2,
         0);
 insert into UserSessions (username, token, lastActive)
-values ('clark.kent@qub.ac.uk', 'Y2xhcmsua2VudEBxdWIuYWMudWs6MTIz', '0000-01-01 00:00:00');
+values ('clark.kent@qub.ac.uk', 'Y2xhcmsua2VudEBxdWIuYWMudWs6MTIz', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('bruce.wayne@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bruce', 'Wayne', 1, 2,
         0);
 insert into UserSessions (username, token, lastActive)
-values ('bruce.wayne@qub.ac.uk', 'YnJ1Y2Uud2F5bmVAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
+values ('bruce.wayne@qub.ac.uk', 'YnJ1Y2Uud2F5bmVAcXViLmFjLnVrOjEyMw==', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('peter.parker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Peter', 'Parker', 1,
         2, 0);
 insert into UserSessions (username, token, lastActive)
-values ('peter.parker@qub.ac.uk', 'cGV0ZXIucGFya2VyQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
+values ('peter.parker@qub.ac.uk', 'cGV0ZXIucGFya2VyQHF1Yi5hYy51azoxMjM=', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('luke.skywalker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Luke', 'Skywalker',
         1, 2, 0);
 insert into UserSessions (username, token, lastActive)
-values ('luke.skywalker@qub.ac.uk', 'bHVrZS5za3l3YWxrZXJAcXViLmFjLnVrOjEyMw==', '0000-01-01 00:00:00');
+values ('luke.skywalker@qub.ac.uk', 'bHVrZS5za3l3YWxrZXJAcXViLmFjLnVrOjEyMw==', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('harry.potter@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Harry', 'Potter', 1,
         2, 0);
 insert into UserSessions (username, token, lastActive)
-values ('harry.potter@qub.ac.uk', 'aGFycnkucG90dGVyQHF1Yi5hYy51azoxMjM=', '0000-01-01 00:00:00');
+values ('harry.potter@qub.ac.uk', 'aGFycnkucG90dGVyQHF1Yi5hYy51azoxMjM=', '1970-01-01 00:00:01');
 
 insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved)
 values ('Foundation Physics', 'Physics for beginners', 2, '2018-09-01', '2019-09-01', 1);
@@ -434,36 +434,36 @@ values (1, 7, 2);
 insert into ModuleAssociation (moduleID, userID, associationType)
 values (1, 8, 2);
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Quantum Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Medical Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Astrophysics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Quantum Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Medical Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Astrophysics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
 
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Quantum Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Medical Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Astrophysics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Quantum Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Medical Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Astrophysics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
 
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Quantum Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Medical Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Astrophysics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Quantum Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Medical Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Astrophysics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0, 0);
 
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Quantum Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Medical Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades)
-values (1, 'Astrophysics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Quantum Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Medical Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
+values (1, 'Astrophysics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0, 0);
 
 insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
 values (1, 'What is the name of the negatively charged particles in an atom?', null, 3, 0, 2, 0);

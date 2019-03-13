@@ -71,7 +71,7 @@ public class MarkingService {
     public MarkerWithChart getMarkersData(Long testID, String username) {
         Tests test = testsRepo.selectByTestID(testID);
         List<Marker> markers = new ArrayList<>();
-        Long check =  modService.checkValidAssociation(username, test.getModuleID());
+        Long check = modService.checkValidAssociation(username, test.getModuleID());
         if (check != null && AssociationType.TUTOR == check) {
             List<ModuleAssociation> moduleAssociations = moduleAssociationRepo.selectByModuleID(test.getModuleID());
             for (ModuleAssociation m : moduleAssociations) {
@@ -442,7 +442,7 @@ public class MarkingService {
 
     public List<AnswerData> getScriptsTutor(Long testID, String username) throws IllegalAccessException, SQLException {
         Tests test = testsRepo.selectByTestID(testID);
-        Long check =  modService.checkValidAssociation(username, test.getModuleID());
+        Long check = modService.checkValidAssociation(username, test.getModuleID());
         if (check != null && check == AssociationType.TUTOR) {
             List<Answer> answers = answerRepo.selectByTestID(testID);
             return getScripts(testID, answers);
@@ -736,9 +736,11 @@ public class MarkingService {
             double totalMarks;
             long classAverage = 0L;
             totalMarks = getTotalMarks(testQuestions);
-            for (Answer a : answers) {
-                users.add(a.getAnswererID());
-                classAverage += a.getScore();
+            if (answers.size() > 0) {
+                for (Answer a : answers) {
+                    users.add(a.getAnswererID());
+                    classAverage += a.getScore();
+                }
             }
             resultChartPojo.setClassAverage((int) (((classAverage / totalMarks) * 100) / users.size()));
             double standardDev = (calculateStandardDeviation(answers) / totalMarks) * 100;
@@ -811,13 +813,15 @@ public class MarkingService {
             resultChartPojo1.getScores().add(question.getMaxScore());
             int totalScore = 0;
             int userCounter = 0;
-            for (Answer a : answers) {
-                if (q.equals(a.getQuestionID())) {
-                    totalScore += a.getScore();
-                    userCounter++;
+            if (answers.size() > 0) {
+                for (Answer a : answers) {
+                    if (q.equals(a.getQuestionID())) {
+                        totalScore += a.getScore();
+                        userCounter++;
+                    }
                 }
+                resultChartPojo2.getScores().add(totalScore / userCounter);
             }
-            resultChartPojo2.getScores().add(totalScore / userCounter);
         }
     }
 

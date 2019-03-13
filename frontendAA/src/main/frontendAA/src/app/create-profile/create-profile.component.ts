@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {User} from "../modelObjs/objects.model";
 import {UserService} from "../services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NgForm} from "@angular/forms";
-import {TestService} from "../services/test.service";
 
 @Component({
   selector: 'app-create-profile',
@@ -13,8 +12,8 @@ import {TestService} from "../services/test.service";
 export class CreateProfileComponent implements OnInit {
 
   user = new User();
-  repeatPassword : string;
-  usernameError : boolean;
+  repeatPassword: string;
+  usernameError: boolean;
   usernameErrorMessage: string;
   firstnameErrorMessage: string;
   firstnameError: boolean;
@@ -23,7 +22,8 @@ export class CreateProfileComponent implements OnInit {
   passwordErrorMessage: string;
   passwordError: boolean;
 
-  constructor(private userService : UserService, private route : ActivatedRoute, private router: Router) { }
+  constructor(private userService: UserService, private route: ActivatedRoute, private router: Router) {
+  }
 
   ngOnInit() {
     this.repeatPassword = "";
@@ -42,7 +42,7 @@ export class CreateProfileComponent implements OnInit {
     return this.userService.getUsernames(username)
       .subscribe(usernameCheck => {
         this.usernameError = usernameCheck;
-      this.usernameErrorMessage = "This email is already associated with an account on this site.";
+        this.usernameErrorMessage = "This email is already associated with an account on this site.";
       });
   }
 
@@ -51,7 +51,6 @@ export class CreateProfileComponent implements OnInit {
     if (this.usernameError) {
       return;
     }
-
     if (!this.user.username && this.user.username.length < 1) {
       this.usernameErrorMessage = "You must enter an email address.";
       this.usernameError = true;

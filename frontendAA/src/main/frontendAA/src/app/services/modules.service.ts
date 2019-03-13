@@ -2,13 +2,15 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {
-  AddModulePojo, Associate,
-  ModuleFE, ModuleRequestPojo,
+  AddModulePojo,
+  Associate,
+  ModuleFE,
+  ModuleRequestPojo,
   ModuleWithTutorFE,
   Performance,
   TestAndGrade,
   TestMarking,
-  Tests, TutorRequestPojo
+  Tests
 } from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
 import {AppComponent} from "../app.component";
@@ -20,24 +22,24 @@ import {AuthorizationService} from "./authorization.service";
 })
 export class ModulesService {
 
-  constructor(private http: HttpClient, private app: AppComponent, private autorization : AuthorizationService) {
+  constructor(private http: HttpClient, private app: AppComponent, private autorization: AuthorizationService) {
   }
 
-  getPendingApproval() : Observable<ModuleFE[]> {
+  getPendingApproval(): Observable<ModuleFE[]> {
     return this.http.get<ModuleFE[]>(this.app.url + "/modules/getModulesPendingApproval", {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Modules returned.'))
       );
   }
 
-  addModule(modulePojo) : Observable<AddModulePojo> {
+  addModule(modulePojo): Observable<AddModulePojo> {
     return this.http.post<AddModulePojo>(this.app.url + "/modules/addModule", modulePojo, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Module added.'))
       );
   }
 
-  addAssociations(moduleID, associations) : Observable<any> {
+  addAssociations(moduleID, associations): Observable<any> {
     return this.http.post<any>(this.app.url + "/modules/addAssociations?moduleID=" + moduleID, associations, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Module added.'))
@@ -97,7 +99,7 @@ export class ModulesService {
 
   getModuleAndTutor(moduleID): Observable<ModuleWithTutorFE> {
 
-    return this.http.get<ModuleWithTutorFE>(this.app.url +  "/modules/getModuleAndTutor?moduleID=" + moduleID, {headers: this.app.headers})
+    return this.http.get<ModuleWithTutorFE>(this.app.url + "/modules/getModuleAndTutor?moduleID=" + moduleID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Modules fetched from server.'))
       );
@@ -105,7 +107,7 @@ export class ModulesService {
 
   getModuleAssociation(moduleID): Observable<number> {
 
-    return this.http.get<number>(this.app.url +  "/modules/getModuleAssociation?moduleID=" + moduleID, {headers: this.app.headers})
+    return this.http.get<number>(this.app.url + "/modules/getModuleAssociation?moduleID=" + moduleID, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Module association fetched from server.'))
       );

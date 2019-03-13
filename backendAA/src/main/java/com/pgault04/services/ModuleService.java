@@ -294,7 +294,8 @@ public class ModuleService {
     private User newUserFromCsv(String username, Associate a) {
         User user;
         String password = PasswordUtil.generateRandomString();
-        user = userRepo.insert(new User(a.getUsername(), PasswordUtil.encrypt(password), a.getFirstName(), a.getLastName(), 0, UserRole.ROLE_USER, 0));
+        int tutor = 0;
+        user = userRepo.insert(new User(a.getUsername(), PasswordUtil.encrypt(password), a.getFirstName(), a.getLastName(), 0, UserRole.ROLE_USER, tutor));
         userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + password).getBytes())), new Timestamp(System.currentTimeMillis())));
         passwordResetRepo.insert(new PasswordReset(user.getUserID(), PasswordUtil.generateRandomString()));
         emailSender.sendNewAccountMessageFromSystemToUser(user, password, username);

@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {tap} from "rxjs/operators";
-import {Performance, TokenPojo, User} from "../modelObjs/objects.model";
-import {stringify} from "querystring";
+import {TokenPojo, User} from "../modelObjs/objects.model";
 import {Observable} from "rxjs";
 import {AppComponent} from "../app.component";
-import {ActivatedRoute, Router, RouterStateSnapshot} from "@angular/router";
+import {Router} from "@angular/router";
 
 
 @Injectable({
@@ -14,14 +13,10 @@ import {ActivatedRoute, Router, RouterStateSnapshot} from "@angular/router";
 export class AuthorizationService {
 
 
-  private _base64Credential: string;
-  constructor(public _http: HttpClient, private app: AppComponent, private router : Router) {
+  constructor(public _http: HttpClient, private app: AppComponent, private router: Router) {
   }
 
-
-  get base64Credential(): string {
-    return this._base64Credential;
-  }
+  public _base64Credential: string;
 
   /**
    *
@@ -40,7 +35,7 @@ export class AuthorizationService {
         // cache user details in browser
         this.app.principalUser = userDetails;
         localStorage.setItem('principalUser', JSON.stringify(userDetails));
-        localStorage.setItem('creds', data.token);
+        localStorage.setItem('creds', this._base64Credential);
       }
     }));
   }
@@ -52,7 +47,9 @@ export class AuthorizationService {
     });
     return this._http.get<User>(this.app.url + "/main/getUser", {headers: headers})
       .pipe(
-        tap(_ => {console.log('User fetched from server.')})
+        tap(_ => {
+          console.log('User fetched from server.')
+        })
       );
   }
 

@@ -26,17 +26,17 @@ public class OptionRepo {
 
     private static final Logger log = LogManager.getLogger(OptionRepo.class);
 
-    private final String insertSQL = "INSERT INTO Optiontbl (questionID, optionContent, worthMarks, feedback) values (:questionID, :optionContent, :worthMarks, :feedback)";
-    private final String updateSQL = "UPDATE Optiontbl SET questionID=:questionID, optionContent=:optionContent, worthMarks=:worthMarks, feedback=:feedback WHERE optionID=:optionID";
-    private final String selectSQL = "SELECT * FROM Optiontbl WHERE ";
+    private final String insertSQL = "INSERT INTO OptionTbl (questionID, optionContent, worthMarks, feedback) values (:questionID, :optionContent, :worthMarks, :feedback)";
+    private final String updateSQL = "UPDATE OptionTbl SET questionID=:questionID, optionContent=:optionContent, worthMarks=:worthMarks, feedback=:feedback WHERE optionID=:optionID";
+    private final String selectSQL = "SELECT * FROM OptionTbl WHERE ";
 
     @Autowired
     JdbcTemplate tmpl;
     @Autowired
     NamedParameterJdbcTemplate namedparamTmpl;
 
-    private String tableName = "Optiontbl";
-    private String deleteSQL = "DELETE FROM Optiontbl WHERE optionID=?";
+    private String tableName = "OptionTbl";
+    private String deleteSQL = "DELETE FROM OptionTbl WHERE optionID=?";
 
     /**
      * @return the number of records in the table

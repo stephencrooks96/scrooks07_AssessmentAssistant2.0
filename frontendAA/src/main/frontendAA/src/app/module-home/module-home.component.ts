@@ -43,7 +43,7 @@ export class ModuleHomeComponent implements OnInit {
   marking: TestMarking[];
   testsForReview: TestMarking[];
   activeResults: TestAndGrade[];
-  moduleAssoc: Observable<number>;
+  moduleAssoc: number;
   activeTestCheck = true;
   activeResultCheck = false;
   addTestCheck = false;
@@ -230,7 +230,8 @@ export class ModuleHomeComponent implements OnInit {
   }
 
   getModuleAssociation(moduleID) {
-    this.moduleAssoc = this.modServ.getModuleAssociation(moduleID);
+    return this.modServ.getModuleAssociation(moduleID)
+      .subscribe(modAssoc => this.moduleAssoc = modAssoc);
   }
 
   checkValid(moduleID) {

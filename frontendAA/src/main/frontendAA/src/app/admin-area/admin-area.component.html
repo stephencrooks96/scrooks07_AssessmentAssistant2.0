@@ -64,7 +64,7 @@
         <form id="addModule" name='addModule' role="form"
               #addUserForm="ngForm" style="width: 80%; margin-left: 10%; margin-top: 2%;" (submit)="addUsers(addUserForm)" >
 
-          <a href="../../assets/Sample%20Users.csv">Sample Users.csv</a>
+          <a href="./assets/Sample%20Users.csv">Sample Users.csv</a>
           <div class="custom-file" style="margin-top: 10px; margin-bottom: 10px;">
             <input type="file" accept=".csv" class="custom-file-input" name="addUsers" id="addUsers"
                    (change)="readUsers($event)" #userInput>

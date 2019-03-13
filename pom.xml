@@ -26,8 +26,8 @@
 
 
     <modules>
-        <module>backendAA</module>
         <module>frontendAA</module>
+        <module>backendAA</module>
     </modules>
 
 

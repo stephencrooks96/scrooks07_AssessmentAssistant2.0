@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS Question
   questionType    int(11) NOT NULL,
   questionID      int(11) NOT NULL AUTO_INCREMENT,
   questionContent text    NOT NULL,
-  questionFigure  BLOB,
+  questionFigure  MEDIUMBLOB,
   maxScore        int(11) NOT NULL,
   minScore        int(11) NOT NULL,
   creatorID       int(11) NOT NULL,
@@ -164,8 +164,8 @@ CREATE TABLE IF NOT EXISTS Tests
   testID         int(11)     NOT NULL AUTO_INCREMENT,
   moduleID       int(11)     NOT NULL,
   testTitle      varchar(50) NOT NULL,
-  startDateTime  timestamp   NOT NULL,
-  endDateTime    timestamp   NOT NULL,
+  startDateTime  timestamp 	 NOT NULL DEFAULT '1970-01-01 00:00:01',
+  endDateTime    timestamp   NOT NULL DEFAULT '1970-01-01 00:00:01',
   publishResults tinyint(1)  NOT NULL,
   scheduled      tinyint(1)  NOT NULL,
   publishGrades  tinyint(1)  NOT NULL,
@@ -334,11 +334,11 @@ ALTER TABLE TutorRequests
   ADD FOREIGN KEY (userID) REFERENCES Users (userID) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE Users
-  ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID) ON UPDATE CASCADE;
+  ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID) ON UPDATE CASCADE ON DELETE CASCADE;
 
 insert into UserRole (role)
 values ('ROLE_ADMIN');
- 
+
 insert into UserRole (role)
 values ('ROLE_USER');
 
