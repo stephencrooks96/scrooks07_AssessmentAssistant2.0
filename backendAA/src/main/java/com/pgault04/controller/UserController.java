@@ -2,6 +2,7 @@ package com.pgault04.controller;
 
 import com.pgault04.entities.TutorRequests;
 import com.pgault04.entities.User;
+import com.pgault04.entities.UserSession;
 import com.pgault04.pojos.ChangePassword;
 import com.pgault04.pojos.TutorRequestPojo;
 import com.pgault04.repositories.UserRepo;
@@ -42,7 +43,7 @@ public class UserController {
      */
     @CrossOrigin
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-    public Boolean changePassword(@RequestBody ChangePassword changePassword, Principal user) {
+    public UserSession changePassword(@RequestBody ChangePassword changePassword, Principal user) {
         return userService.changePassword(changePassword, user.getName());
     }
 

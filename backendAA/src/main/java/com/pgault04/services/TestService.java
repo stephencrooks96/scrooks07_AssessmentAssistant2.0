@@ -4,6 +4,7 @@ import com.pgault04.entities.*;
 import com.pgault04.pojos.*;
 import com.pgault04.repositories.*;
 import com.pgault04.utilities.BlobUtil;
+import com.pgault04.utilities.EmailUtil;
 import com.pgault04.utilities.StringToDateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Paul Gault - 40126005
@@ -31,6 +33,9 @@ public class TestService {
     private static final Logger logger = LogManager.getLogger(TestService.class);
     @Autowired
     TestsRepo testRepo;
+
+    @Autowired
+    EmailUtil emailSender;
 
     @Autowired
     OptionEntriesRepo optionEntriesRepo;
@@ -76,6 +81,9 @@ public class TestService {
 
     @Autowired
     QuestionMathLineRepo questionMathLineRepo;
+
+    @Autowired
+    ModuleAssociationRepo moduleAssociationRepo;
 
     /**
      * Method primes input data to be entered in to the database Ensures data size
@@ -126,20 +134,64 @@ public class TestService {
         Tests test = testRepo.selectByTestID(script.get(0).getAnswer().getTestID());
         Module module = modRepo.selectByModuleID(test.getModuleID());
         User tutor = userRepo.selectByUserID(module.getTutorUserID());
+
         for (QuestionAndAnswer questionAndAnswer : script) {
             prepareAnswerForSubmission(student, tutor, questionAndAnswer);
             deletePreviousSubmissions(student, test, questionAndAnswer);
+            boolean answerMatch = false;
+            answerMatch = checkForIdenticals(questionAndAnswer, answerMatch);
             answerRepo.insert(questionAndAnswer.getAnswer());
-            if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
+            if (!answerMatch && questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
                 autoMarkMultipleChoice(questionAndAnswer);
-            }
-            if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
+            } else if (!answerMatch && (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED))) {
                 autoMarkCorrectPoints(questionAndAnswer);
             }
         }
         if (test.getPractice() == 1) {
             markingService.insertAndUpdateTestResult(test.getTestID(), username);
         }
+        return true;
+    }
+
+    private boolean checkForIdenticals(QuestionAndAnswer questionAndAnswer, boolean answerMatch) {
+        List<Answer> answers = answerRepo.selectByQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID());
+        if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
+            answerMatch = checkForTextBasedIdenticals(questionAndAnswer, false, answers);
+        } else if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH)) {
+            answerMatch = checkForInputBasedIdenticals(questionAndAnswer, false, answers);
+        }
+        return answerMatch;
+    }
+
+    private boolean checkForInputBasedIdenticals(QuestionAndAnswer questionAndAnswer, boolean answerMatch, List<Answer> answers) {
+        for (Answer a : answers) {
+            List<Inputs> inputs = inputsRepo.selectByAnswerID(a.getAnswerID());
+            String pastInput, userInput;
+            pastInput = inputs.stream().map(Inputs::getInputValue).collect(Collectors.joining());
+            userInput = questionAndAnswer.getInputs().stream().map(Inputs::getInputValue).collect(Collectors.joining());
+            if (pastInput.equals(userInput)) {
+                answerMatch = markAgainstIdenticalAnswer(questionAndAnswer, a);
+                break;
+            }
+        }
+        return answerMatch;
+    }
+
+    private boolean checkForTextBasedIdenticals(QuestionAndAnswer questionAndAnswer, boolean answerMatch, List<Answer> answers) {
+        for (Answer a : answers) {
+            if (questionAndAnswer.getAnswer().getContent().equalsIgnoreCase(a.getContent())) {
+                answerMatch = markAgainstIdenticalAnswer(questionAndAnswer, a);
+                break;
+            }
+        }
+        return answerMatch;
+    }
+
+    private boolean markAgainstIdenticalAnswer(QuestionAndAnswer questionAndAnswer, Answer a) {
+        questionAndAnswer.getAnswer().setScore(a.getScore());
+        questionAndAnswer.getAnswer().setFeedback(a.getFeedback());
+        questionAndAnswer.getAnswer().setMarkerApproved(1);
+        validateScore(questionAndAnswer.getAnswer(), questionRepo.selectByQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID()));
         return true;
     }
 
@@ -1027,7 +1079,7 @@ public class TestService {
      * @param username the user making the request
      * @return the true/false flag
      */
-    public Boolean scheduleTest(Long testID, String username) {
+    public Boolean scheduleTest(Long testID, String username) throws ParseException {
         logger.info("Request made to schedule test #{} by {}", testID, username);
         Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
         if (check != null && AssociationType.TUTOR == check) {
@@ -1037,10 +1089,21 @@ public class TestService {
                 test.setScheduled(UNSCHEDULED);
             } else {
                 test.setScheduled(SCHEDULED);
+                sendNewTestToAssociates(test);
             }
             testRepo.insert(test);
             return true;
         }
         return false;
+    }
+
+    private void sendNewTestToAssociates(Tests test) throws ParseException {
+        List<ModuleAssociation> moduleAssociations = moduleAssociationRepo.selectByModuleID(test.getModuleID());
+        for (ModuleAssociation moduleAssociation : moduleAssociations) {
+            if (moduleAssociation.getAssociationType().equals(AssociationType.STUDENT)) {
+                User user = userRepo.selectByUserID(moduleAssociation.getUserID());
+                emailSender.sendNewTestEmail(test, user);
+            }
+        }
     }
 }

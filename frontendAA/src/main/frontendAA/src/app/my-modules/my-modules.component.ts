@@ -15,14 +15,22 @@ export class MyModulesComponent implements OnInit {
   }
 
   ngOnInit() {
+    let parameters = [];
+    for (const s of window.location.search.replace("?", "").split("&")) {
+      let parameter: string[];
+      parameter = s.split("=");
+      parameters[parameter[0]] = parameter[1];
+    }
+    if (!parameters["cacheCleared"]) {
+      (window as any).location.search = '?cacheCleared=1';
+    }
+
     this.getMyModulesWithTutors();
   }
 
   getMyModulesWithTutors() {
     return this.modServ.getMyModulesWithTutors()
-      .subscribe(modules => {this.modulesWithTutors = modules}, error => {
-        location.reload();
-      });
+      .subscribe(modules => {this.modulesWithTutors = modules});
   }
 
 }

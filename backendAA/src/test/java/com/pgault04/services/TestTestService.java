@@ -152,6 +152,43 @@ public class TestTestService {
 
     @Test
     @Transactional
+    public void testSubmitTestTextIdenticalSoln() throws SQLException {
+        Principal principal = Mockito.mock(Principal.class);
+        when(principal.getName()).thenReturn(USERNAME_IN_DB);
+        Principal principalOther = Mockito.mock(Principal.class);
+        when(principalOther.getName()).thenReturn(OTHER_USERNAME_IN_DB);
+
+        testObj = testsRepo.insert(testObj);
+        // Text based question
+        Question questionTex = new Question(QuestionType.TEXT_BASED, "content", null, 10, 0, USER_IN_DB, 0);
+        questionTex = questionRepo.insert(questionTex);
+
+        Answer answerUserTex = new Answer(questionTex.getQuestionID(), USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), "answerSoln", 0, "", 0, 0);
+        Answer answerOtherUserTex = new Answer(questionTex.getQuestionID(), OTHER_IN_DB, USER_IN_DB, testObj.getTestID(), "answerSoln", 0, "", 0, 0);
+
+        QuestionAndAnswer questionAndAnswerTexUser = new QuestionAndAnswer(new QuestionAndBase64(null, null, null, questionTex), answerUserTex, null, null, new ArrayList<>());
+        QuestionAndAnswer questionAndAnswerTexOther = new QuestionAndAnswer(new QuestionAndBase64(null, null, null, questionTex), answerOtherUserTex, null, null, new ArrayList<>());
+
+        List<QuestionAndAnswer> scriptsUser = new ArrayList<>();
+        scriptsUser.add(questionAndAnswerTexUser);
+
+        List<QuestionAndAnswer> scriptsOther = new ArrayList<>();
+        scriptsOther.add(questionAndAnswerTexOther);
+
+        testController.submitTest(principal, scriptsUser);
+        Answer returnedAnswer = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(answerUserTex.getQuestionID(), answerUserTex.getAnswererID(), testObj.getTestID());
+        returnedAnswer.setFeedback("feedbackToEnsureIdenticalAnswerWorks");
+        returnedAnswer.setScore(10);
+        answerRepo.insert(returnedAnswer);
+
+        testController.submitTest(principalOther, scriptsOther);
+        returnedAnswer = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(answerOtherUserTex.getQuestionID(), answerOtherUserTex.getAnswererID(), testObj.getTestID());
+        assertEquals(10, (int) returnedAnswer.getScore());
+        assertEquals("feedbackToEnsureIdenticalAnswerWorks", returnedAnswer.getFeedback());
+    }
+
+    @Test
+    @Transactional
     public void testCheckGrades() throws SQLException {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn(USERNAME_IN_DB);
@@ -442,6 +479,47 @@ public class TestTestService {
         scriptsOther.get(0).getInputs().get(0).setInputValue("none");
         testController.submitTest(principalOther, scriptsOther);
         assertEquals(0.0, (double) testResultRepo.selectByTestIDAndStudentID(testObj.getTestID(), OTHER_IN_DB).getTestScore(), 0);
+    }
+
+    @Test
+    @Transactional
+    public void testSubmitTestInsIdenticalSolns() throws SQLException {
+        Principal principal = Mockito.mock(Principal.class);
+        when(principal.getName()).thenReturn(USERNAME_IN_DB);
+        Principal principalOther = Mockito.mock(Principal.class);
+        when(principalOther.getName()).thenReturn(OTHER_USERNAME_IN_DB);
+
+        testObj = testsRepo.insert(testObj);
+        // Text based question
+        Question questionIns = new Question(QuestionType.INSERT_THE_WORD, "content", null, 10, 0, USER_IN_DB, 0);
+        questionIns = questionRepo.insert(questionIns);
+
+        Answer answerUserIns = new Answer(questionIns.getQuestionID(), USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), null, 0, "", 0, 0);
+        List<Inputs> inputsUserIns = new ArrayList<>();
+        inputsUserIns.add(new Inputs("answer", 0, -1L, 0));
+        Answer answerOtherUserIns = new Answer(questionIns.getQuestionID(), OTHER_IN_DB, USER_IN_DB, testObj.getTestID(), null, 0, "", 0, 0);
+        List<Inputs> inputsOtherIns = new ArrayList<>();
+        inputsOtherIns.add(new Inputs("answer", 0, -1L, 0));
+
+        QuestionAndAnswer questionAndAnswerInsUser = new QuestionAndAnswer(new QuestionAndBase64(null, null, null, questionIns), answerUserIns, inputsUserIns, null, new ArrayList<>());
+        QuestionAndAnswer questionAndAnswerInsOther = new QuestionAndAnswer(new QuestionAndBase64(null, null, null, questionIns), answerOtherUserIns, inputsOtherIns, null, new ArrayList<>());
+
+        List<QuestionAndAnswer> scriptsUser = new ArrayList<>();
+        scriptsUser.add(questionAndAnswerInsUser);
+
+        List<QuestionAndAnswer> scriptsOther = new ArrayList<>();
+        scriptsOther.add(questionAndAnswerInsOther);
+
+        testController.submitTest(principal, scriptsUser);
+        Answer returnedAnswer = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(answerUserIns.getQuestionID(), answerUserIns.getAnswererID(), testObj.getTestID());
+        returnedAnswer.setScore(10);
+        returnedAnswer.setFeedback("feedbackToShowIdenticalSolnWorks");
+        answerRepo.insert(returnedAnswer);
+
+        testController.submitTest(principalOther, scriptsOther);
+        returnedAnswer = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(answerOtherUserIns.getQuestionID(), answerOtherUserIns.getAnswererID(), testObj.getTestID());
+        assertEquals(10, (int) returnedAnswer.getScore());
+        assertEquals("feedbackToShowIdenticalSolnWorks", returnedAnswer.getFeedback());
     }
 
     @Test

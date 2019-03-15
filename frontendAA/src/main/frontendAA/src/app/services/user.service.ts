@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {AuthorizationService} from "./authorization.service";
 import {Observable} from "rxjs";
-import {ChangePassword, TutorRequest, TutorRequestPojo, User} from "../modelObjs/objects.model";
+import {ChangePassword, TutorRequest, TutorRequestPojo, User, UserSession} from "../modelObjs/objects.model";
 import {tap} from "rxjs/operators";
 import {AppComponent} from "../app.component";
 
@@ -22,8 +22,8 @@ export class UserService {
       );
   }
 
-  changePassword(changePassword): Observable<ChangePassword> {
-    return this.http.post<ChangePassword>(this.app.url + "/user/changePassword", changePassword, {headers: this.app.headers})
+  changePassword(changePassword): Observable<UserSession> {
+    return this.http.post<UserSession>(this.app.url + "/user/changePassword", changePassword, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('Password changed.'))
       );

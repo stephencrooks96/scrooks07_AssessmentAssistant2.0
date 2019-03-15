@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
@@ -248,7 +249,7 @@ public class TestController {
      */
     @CrossOrigin
     @RequestMapping(value = "/scheduleTest", method = RequestMethod.GET)
-    public Boolean scheduleTest(Long testID, Principal principal) {
+    public Boolean scheduleTest(Long testID, Principal principal) throws ParseException {
         return testService.scheduleTest(testID, principal.getName());
     }
 }

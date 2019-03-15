@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ChangePassword} from "../modelObjs/objects.model";
 import {UserService} from "../services/user.service";
 import {Router} from "@angular/router";
+import {HttpHeaders} from "@angular/common/http";
+import {AppComponent} from "../app.component";
 
 @Component({
   selector: 'app-change-password',
@@ -14,7 +16,7 @@ export class ChangePasswordComponent implements OnInit {
   errorMessage: string;
   error = false;
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(private userService: UserService, private router: Router, private app: AppComponent) {
   }
 
   ngOnInit() {
@@ -51,7 +53,10 @@ export class ChangePasswordComponent implements OnInit {
     this.userService.changePassword(this.changePasswordObj)
       .subscribe(test => {
         this.error = true;
-        this.errorMessage = "Password changed successfully."
+        this.errorMessage = "Password changed successfully.";
+        localStorage.removeItem('creds');
+        localStorage.setItem('creds', test.token);
+        location.reload();
       }, error => {
         this.error = true;
         this.errorMessage = "Current password incorrect."

@@ -10,6 +10,10 @@ export class TokenPojo {
   token : string;
 }
 
+export class UserSession {
+  token : string;
+}
+
 export class ChangePassword {
   password : string;
   newPassword : string;

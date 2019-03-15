@@ -170,14 +170,14 @@ public class UserService {
         throw new IllegalArgumentException("No principal user.");
     }
 
-    public Boolean changePassword(ChangePassword changePassword, String username) {
+    public UserSession changePassword(ChangePassword changePassword, String username) {
         User user = userRepo.selectByUsername(username);
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
         if (bcrypt.matches(changePassword.getPassword(), user.getPassword())) {
             user.setPassword(PasswordUtil.encrypt(changePassword.getNewPassword()));
-            userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + changePassword.getNewPassword()).getBytes())), new Timestamp(System.currentTimeMillis())));
+            UserSession userSession = userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + changePassword.getNewPassword()).getBytes())), new Timestamp(System.currentTimeMillis())));
             userRepo.insert(user);
-            return true;
+            return userSession;
         } else {
             throw new IllegalArgumentException("Password does not match what is stored in database.");
         }
