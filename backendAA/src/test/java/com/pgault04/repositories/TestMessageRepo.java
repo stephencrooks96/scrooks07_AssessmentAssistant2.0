@@ -38,7 +38,7 @@ public class TestMessageRepo {
     @Before
     public void setUp() throws Exception {
         this.content = "content";
-        this.messageTimestamp = "1000-10-10 10:10:10.111";
+        this.messageTimestamp = "2018-10-10 10:10:10";
         this.newMessage = 0;
         message = new Message(content, RECIPIENT_ID_IN_DB, SENDER_ID_IN_DB, messageTimestamp, newMessage);
     }

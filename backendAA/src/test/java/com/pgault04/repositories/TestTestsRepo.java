@@ -40,8 +40,8 @@ public class TestTestsRepo {
 	@Before
 	public void setUp() throws Exception {
 		this.testTitle = "testTitle";
-		this.startDateTime = "2000-01-01 00:00:00.000";
-		this.endDateTime = "2000-01-01 00:00:00.000";
+		this.startDateTime = "2000-01-01 00:00:00";
+		this.endDateTime = "2000-01-01 00:00:00";
 		this.publishResults = 1;
 		this.scheduled = 1;
 		this.publishGrades = 1;
@@ -64,11 +64,11 @@ public class TestTestsRepo {
 		Tests tests = testRepo.selectByTestID(returnedTest.getTestID());
 		assertNotNull(tests);
 		// Updates the test in the table
-		returnedTest.setStartDateTime("2000-01-01 00:00:00.001");
+		returnedTest.setStartDateTime("2000-01-01 00:00:00");
 		// Inserts one test to table
 		testRepo.insert(returnedTest);
 		tests = testRepo.selectByTestID(returnedTest.getTestID());
-		assertEquals("2000-01-01 00:00:00.001", tests.getStartDateTime());
+		assertEquals("2000-01-01 00:00:00", tests.getStartDateTime());
 	}
 
 	@Test

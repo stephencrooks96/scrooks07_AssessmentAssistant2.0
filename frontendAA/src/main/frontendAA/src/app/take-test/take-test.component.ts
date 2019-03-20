@@ -77,17 +77,6 @@ export class TakeTestComponent implements OnInit {
   async ngOnInit() {
     this.getByTestID(this.testID);
     await this.getQuestions(this.testID);
-
-    this.sub = interval(1000).subscribe(() => {
-      let date = new Date(this.test.endDateTime);
-      this.timeDifference = Math.floor((date.getTime() - new Date().getTime()) / millisecondsToSeconds);
-      if (this.timeDifference <= 0) {
-        this.sub.unsubscribe();
-        this.backHome();
-      }
-
-      this.countdown = TakeTestComponent.convertToCountdown(this.timeDifference);
-    });
   }
 
   getAnsweredTests() {
@@ -134,6 +123,17 @@ export class TakeTestComponent implements OnInit {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
           this.test = test;
+
+          this.sub = interval(1000).subscribe(() => {
+            let date = new Date(this.test.endDateTime);
+            this.timeDifference = Math.floor((date.getTime() - new Date().getTime()) / millisecondsToSeconds);
+            if (this.timeDifference <= 0) {
+              this.sub.unsubscribe();
+              this.backHome();
+            }
+
+            this.countdown = TakeTestComponent.convertToCountdown(this.timeDifference);
+          });
           if (test.practice != 1) {
             this.getAnsweredTests();
           }

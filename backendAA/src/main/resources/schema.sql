@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Answer
   testID         int(11) NOT NUll,
   answererID     int(11) NOT NULL,
   markerID       int(11) NOT NULL,
-  content        text    NOT NULL,
+  content        text,
   score          int(11),
   feedback       text,
   markerApproved tinyint(1),
@@ -353,12 +353,14 @@ values ('Math/Text');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Paul', 'Gault', 1, 1, 0);
+insert into PasswordReset (userID, resetString) values (1, 'reset');
 insert into UserSessions (username, token, lastActive)
 values ('pgault04@qub.ac.uk', 'cGdhdWx0MDRAcXViLmFjLnVrOjEyMw==', '1970-01-01 00:00:01');
 
 insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
 values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Richard', 'Gault',
         1, 2, 1);
+insert into PasswordReset (userID, resetString) values (2, 'reset');
 insert into UserSessions (username, token, lastActive)
 values ('richard.gault@qub.ac.uk', 'cmljaGFyZC5nYXVsdEBxdWIuYWMudWs6MTIz', '1970-01-01 00:00:01');
 

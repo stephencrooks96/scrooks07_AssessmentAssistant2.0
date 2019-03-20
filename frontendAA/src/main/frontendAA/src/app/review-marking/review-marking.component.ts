@@ -417,6 +417,13 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
         this.alternativePhraseError = true;
         this.generalError = true;
       }
+      if (this.correctPointToInsert.alternatives[j].math != 1) {
+        this.correctPointToInsert.alternatives[j].math = 0;
+      }
+    }
+
+    if (this.correctPointToInsert.math != 1) {
+      this.correctPointToInsert.math = 0;
     }
 
     if (this.generalError) {

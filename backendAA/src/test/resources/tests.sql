@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Answer
   testID         int(11) NOT NUll,
   answererID     int(11) NOT NULL,
   markerID       int(11) NOT NULL,
-  content        text    NOT NULL,
+  content        text,
   score          int(11),
   feedback       text,
   markerApproved tinyint(1),
@@ -386,33 +386,32 @@ insert into OptionTbl(questionID, optionContent, worthMarks, feedback) values (1
 
 insert into CorrectPoint (questionID, phrase, marksWorth, feedback, indexedAt, math) values (1, 'phrase', 5.0, 'feedback', 0, 0);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 2, 2, 'content', 100, 'feedback', 0, 0);
+insert into Answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 2, 2, 'content', 100, 'feedback', 0, 0);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 1, 2, 'content', 100, 'feedback', 0, 0);
+insert into Answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 1, 2, 'content', 100, 'feedback', 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1, 0, 0);
 
-insert into testresult (testID, studentID, testScore) values (2, 1, 100);
+insert into TestResult (testID, studentID, testScore) values (2, 1, 100);
 
-insert into testquestion (testID, questionID) values (2, 1);
+insert into TestQuestion (testID, questionID) values (2, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 0, 0, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1, 0, 0);
 
-insert into testquestion (testID, questionID) values (5, 1);
+insert into TestQuestion (testID, questionID) values (5, 1);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '3018-11-11 00:00:00', '3019-11-11 00:00:00', 1, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 1, 1, 0, 0);
 
-insert into testquestion (testID, questionID) values (6, 1);
+insert into TestQuestion (testID, questionID) values (6, 1);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 1, 2, 'content', null, 'feedback', 0, 0);
+insert into Answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 1, 1, 2, 'content', null, 'feedback', 0, 0);
 
-insert into tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2018-11-11 00:00:00', 1, 1, 0, 0);
+insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) values (1, 'TestActive', '2018-11-11 00:00:00', '2018-11-11 00:00:00', 1, 1, 0, 0);
 
-insert into testquestion (testID, questionID) values (7, 1);
+insert into TestQuestion (testID, questionID) values (7, 1);
 
-insert into answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 7, 2, 1, 'content', null, 'feedback', 0, 0);
-
+insert into Answer (questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) values (1, 7, 2, 1, 'content', null, 'feedback', 0, 0);

@@ -88,7 +88,7 @@
   </div>
 
   <div [hidden]="!resultChartCheck" style="display: block; width: 95%; height: 70vh; max-height: 70vh; position: absolute; background-color: #dbdbdb;" [ngStyle]="{'z-index' : chartToShow ? '1' : '2'}">
-    <div style="width: 80%; margin-left: 10%;">
+    <div style="width: 70%; margin-left: 15%;">
     <canvas id="byQuestion">{{questionChart}}
     </canvas>
     </div>
@@ -98,7 +98,6 @@
   <div *ngIf="review"
        style="background-color: #dbdbdb; z-index: 3; position: absolute; width: 95%; max-height: 70vh; height: 70vh; background-color: #dbdbdb;">
     <div class="row">
-
       <div *ngIf="filter == 1" class="col-sm-2">
         <select style="margin-bottom: 5px" #cpType="ngModel" [(ngModel)]="filter" class="form-control"
                 id="filtered1"
@@ -125,19 +124,19 @@
         </div>
       </div>
 
-      <div *ngIf="filter == 1" class="col-sm-2" style="padding-left: 30px;">
+      <div *ngIf="filter == 1" class="col-sm-2">
         <h3>{{studentDetail.firstName + " " + studentDetail.lastName}}</h3>
-        <div class="panel panel-default default-pre-scrollable">
+        <div class="panel panel-default">
           <table class="table-striped">
             <tbody>
-            <span *ngFor="let script of scripts">
+            <span *ngFor="let script of scripts" style="margin-right: 10px;">
                     <tr style="border-radius: 10px;"
                         [ngStyle]="{'background-color' : approvalFeedback[script.questionAndAnswer.answer.tutorApproved]}"
                         *ngIf="script.questionAndAnswer.answer.answererID == studentDetail.userID">
                         <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore}}</td>
                       <td style="padding-left: 10px;" (click)="answerDetail = script;">
               <span
-                *ngIf="script.questionAndAnswer.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{script.questionAndAnswer.question.question.questionContent}}
+                *ngIf="script.questionAndAnswer.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore + " - " + script.questionAndAnswer.question.question.questionContent}}
             </td>
             <td style="border-radius: 0 10px 10px 0;" (click)="answerDetail = script;">
               <button type="button" style="background: none; border: none;"><i
@@ -172,17 +171,16 @@
         </div>
       </div>
 
-      <div *ngIf="filter == 0" class="col-sm-2" style="padding-left: 30px;">
-        <h3>{{questionDetail.questionContent}}</h3>
-        <div class="panel panel-default default-pre-scrollable">
+      <div *ngIf="filter == 0" class="col-sm-2">
+        <h6>{{questionDetail.questionContent}}</h6>
+        <div class="panel panel-default">
           <table class="table-striped">
             <tbody>
             <span *ngFor="let script of scripts">
                     <tr style="border-radius: 10px;"
                         [ngStyle]="{'background-color' : approvalFeedback[script.questionAndAnswer.answer.tutorApproved]}"
                         *ngIf="script.questionAndAnswer.question.question.questionID == questionDetail.questionID">
-                        <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore}}</td>
-                      <td style="padding-left: 10px; " (click)="answerDetail = script;">{{script.student.firstName + " " + script.student.lastName}}
+                      <td style="padding-left: 10px; " (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore + " - " + script.student.firstName + " " + script.student.lastName}}
             </td>
             <td style="border-radius: 0 10px 10px 0;" (click)="answerDetail = script;">
               <button type="button" style="background: none; border: none;"><i
@@ -195,7 +193,7 @@
         </div>
       </div>
 
-      <div class="col-sm-5" style="height: 500px;">
+      <div class="col-sm-5">
 
         <div class="pre-scrollable">
           <div class="panel panel-default default">
@@ -265,9 +263,7 @@
         </div>
       </div>
 
-      <div class="col-sm-3" style="height: 500px;">
-
-
+      <div class="col-sm-3">
         <div class="pre-scrollable">
           <div class="panel panel-default default">
             <div class="panel-body">

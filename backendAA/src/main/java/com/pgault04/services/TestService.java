@@ -105,6 +105,8 @@ public class TestService {
         test.setPublishResults(0);
         if (test.getPractice() == 1) {
             test.setPublishGrades(1);
+        } else {
+            test.setPublishGrades(0);
         }
         test.setTestTitle(test.getTestTitle().trim());
         User user = userRepo.selectByUsername(username);
@@ -140,6 +142,9 @@ public class TestService {
             deletePreviousSubmissions(student, test, questionAndAnswer);
             boolean answerMatch = false;
             answerMatch = checkForIdenticals(questionAndAnswer, answerMatch);
+            if (questionAndAnswer.getAnswer().getContent() == null) {
+                questionAndAnswer.getAnswer().setContent("");
+            }
             answerRepo.insert(questionAndAnswer.getAnswer());
             if (!answerMatch && questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
                 autoMarkMultipleChoice(questionAndAnswer);
@@ -171,6 +176,7 @@ public class TestService {
             userInput = questionAndAnswer.getInputs().stream().map(Inputs::getInputValue).collect(Collectors.joining());
             if (pastInput.equals(userInput)) {
                 answerMatch = markAgainstIdenticalAnswer(questionAndAnswer, a);
+                insertInputs(questionAndAnswer);
                 break;
             }
         }
@@ -1099,10 +1105,11 @@ public class TestService {
 
     private void sendNewTestToAssociates(Tests test) throws ParseException {
         List<ModuleAssociation> moduleAssociations = moduleAssociationRepo.selectByModuleID(test.getModuleID());
+        Module module = modRepo.selectByModuleID(test.getModuleID());
         for (ModuleAssociation moduleAssociation : moduleAssociations) {
             if (moduleAssociation.getAssociationType().equals(AssociationType.STUDENT)) {
                 User user = userRepo.selectByUserID(moduleAssociation.getUserID());
-                emailSender.sendNewTestEmail(test, user);
+                emailSender.sendNewTestEmail(test, user, module);
             }
         }
     }

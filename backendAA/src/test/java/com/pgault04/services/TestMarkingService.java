@@ -144,10 +144,10 @@ public class TestMarkingService {
         // Math
         Question questionMat = new Question(QuestionType.TEXT_MATH, "content", null, 10, 0, USER_IN_DB, 0);
         questionMat = questionRepo.insert(questionMat);
-        Answer answerUserMat = new Answer(questionMat.getQuestionID(), USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), null, 10, "correct", 0, 0);
+        Answer answerUserMat = new Answer(questionMat.getQuestionID(), USER_IN_DB, OTHER_IN_DB, testObj.getTestID(), "", 10, "correct", 0, 0);
         answerUserMat = answerRepo.insert(answerUserMat);
         inputsRepo.insert(new Inputs("correct", 0, answerUserMat.getAnswerID(), 1));
-        Answer answerOtherUserMat = new Answer(questionMat.getQuestionID(), OTHER_IN_DB, USER_IN_DB, testObj.getTestID(), null, 0, "", 0, 0);
+        Answer answerOtherUserMat = new Answer(questionMat.getQuestionID(), OTHER_IN_DB, USER_IN_DB, testObj.getTestID(), "", 0, "", 0, 0);
         answerOtherUserMat = answerRepo.insert(answerOtherUserMat);
         inputsRepo.insert(new Inputs("correct", 0, answerOtherUserMat.getAnswerID(), 1));
         markingController.editFeedback(principal, answerUserMat);
