@@ -4,6 +4,7 @@ import com.pgault04.entities.Tests;
 
 /**
  * Class for accumulating information on test and grade info before outputting it to front end
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -19,7 +20,8 @@ public class TestAndGrade {
 
     /**
      * The constructor with args
-     * @param test the test
+     *
+     * @param test   the test
      * @param grades the grades
      */
     public TestAndGrade(Tests test, String grades) {
@@ -55,8 +57,8 @@ public class TestAndGrade {
         this.grade = grade;
     }
 
-    /**
-     * @return the object as string
+    /*
+     * the object as string
      */
     @Override
     public String toString() {

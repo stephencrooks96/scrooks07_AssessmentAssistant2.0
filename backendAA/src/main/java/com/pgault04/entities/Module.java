@@ -3,7 +3,7 @@ package com.pgault04.entities;
 /**
  * @author Paul Gault 40126005
  * @since November 2018
- *
+ * Class represents the module table
  */
 public class Module {
 
@@ -29,20 +29,19 @@ public class Module {
     /**
      * Default Constructor
      */
-    public Module() {
-    }
+    public Module() {}
 
     /**
      * Constructor with args
-     * @param moduleName modules name
+     *
+     * @param moduleName        modules name
      * @param moduleDescription the description of the module
-     * @param tutorUserID the tutor
-     * @param commencementDate the start date
-     * @param endDate the end date
-     * @param approved whether the module has been approved yet or not
+     * @param tutorUserID       the tutor
+     * @param commencementDate  the start date
+     * @param endDate           the end date
+     * @param approved          whether the module has been approved yet or not
      */
     public Module(String moduleName, String moduleDescription, Long tutorUserID, String commencementDate, String endDate, Integer approved) {
-
         this.setModuleName(moduleName);
         this.setModuleDescription(moduleDescription);
         this.setTutorUserID(tutorUserID);
@@ -51,8 +50,14 @@ public class Module {
         this.setApproved(approved);
     }
 
+    /**
+     * @return whether the module is approve or not
+     */
     public Integer getApproved() { return approved; }
 
+    /**
+     * @param approved sets whether the module is approved or not
+     */
     public void setApproved(Integer approved) { this.approved = approved; }
 
     /**
@@ -63,8 +68,7 @@ public class Module {
     }
 
     /**
-     * @param moduleID
-     *            the moduleID to set
+     * @param moduleID the moduleID to set
      */
     public void setModuleID(Long moduleID) {
         this.moduleID = moduleID;
@@ -78,8 +82,7 @@ public class Module {
     }
 
     /**
-     * @param moduleName
-     *            the moduleName to set
+     * @param moduleName the moduleName to set
      */
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
@@ -93,8 +96,7 @@ public class Module {
     }
 
     /**
-     * @param moduleDescription
-     *            the moduleDescription to set
+     * @param moduleDescription the moduleDescription to set
      */
     public void setModuleDescription(String moduleDescription) {
         this.moduleDescription = moduleDescription;
@@ -145,7 +147,6 @@ public class Module {
     /*
      * the object as a string
      */
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Module{");

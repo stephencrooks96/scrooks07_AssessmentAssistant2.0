@@ -8,7 +8,6 @@ import {NgForm} from "@angular/forms";
 const errorColour: string = "#dc3545";
 const normalColour: string = "#202529";
 
-
 @Component({
   selector: 'app-edit-test',
   templateUrl: './edit-test.component.html',
@@ -35,27 +34,37 @@ export class EditTestComponent implements OnInit {
   startDateError = false;
   generalError;
   editTestShow = false;
-  dateAsString : string="";
 
   constructor(private router: Router, private route: ActivatedRoute, private testServ: TestService, private modalService: NgbModal) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
     this.getByTestID(this.testID);
     this.getQuestions(this.testID);
     this.nextYear.setFullYear(this.nextYear.getFullYear() + 1);
   }
 
+  /**
+   * Gets the test information by the test id
+   * @param testID
+   */
   getByTestID(testID) {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
-        this.test = test;
-        this.testInsert = test;
-      }
-  );
+          this.test = test;
+          this.testInsert = test;
+        }
+      );
   }
 
+  /**
+   * Gets the questions belonging to the test
+   * @param testID
+   */
   getQuestions(testID) {
     return this.testServ.getQuestions(testID).subscribe(questions => this.questions = questions);
   }
@@ -68,6 +77,10 @@ export class EditTestComponent implements OnInit {
     this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'});
   }
 
+  /**
+   * Deletes the test
+   * @param testID
+   */
   deleteTest(testID) {
     this.testServ.deleteTest(testID).subscribe(
       success => {
@@ -78,6 +91,10 @@ export class EditTestComponent implements OnInit {
     );
   }
 
+  /**
+   * Schedules the test for release
+   * @param testID
+   */
   scheduleTest(testID) {
     this.testServ.scheduleTest(testID).subscribe(
       success => {
@@ -88,6 +105,11 @@ export class EditTestComponent implements OnInit {
     );
   }
 
+  /**
+   * Edits test data such as name, dates etc
+   * Performs validation and outputs necessary error messages
+   * @param form
+   */
   editTest(form: NgForm) {
     this.testInsert.testTitle = this.testInsert.testTitle.trim();
     this.generalError = false;
@@ -125,5 +147,4 @@ export class EditTestComponent implements OnInit {
         return;
       });
   }
-
 }

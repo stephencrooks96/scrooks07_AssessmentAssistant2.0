@@ -60,6 +60,9 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
     this.approvalFeedback = [];
     this.approvalFeedback.push("");
@@ -68,13 +71,24 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     this.getScriptsByTestID(this.testID);
   }
 
+  /**
+   * Called after initialization of component
+   */
   ngAfterViewInit() {
   }
 
+  /**
+   * Converts image from base64 to actual image output
+   * @param base64
+   */
   readyImage(base64): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + base64);
   }
 
+  /**
+   * Gets the test data
+   * @param testID
+   */
   getByTestID(testID) {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
@@ -84,16 +98,28 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       );
   }
 
+  /**
+   * Gets the users association to the module
+   * @param moduleID
+   */
   getModuleAssociation(moduleID) {
     return this.modServ.getModuleAssociation(moduleID)
       .subscribe(moduleAssoc => this.moduleAssoc = moduleAssoc);
   }
 
+  /**
+   * Gets the correct points for a given question
+   * @param questionID
+   */
   getCorrectPoints(questionID) {
     return this.markServ.getCorrectPoints(questionID, this.testID)
       .subscribe(correctPoints => this.answerDetail.questionAndAnswer.correctPoints = correctPoints);
   }
 
+  /**
+   * Approves an answer to a question
+   * @param answerID
+   */
   approve(answerID) {
     return this.markServ.approve(answerID)
       .subscribe(ans => {
@@ -101,6 +127,10 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       });
   }
 
+  /**
+   * Removes an alternative from a correct point
+   * @param altID
+   */
   removeAlt(altID) {
     this.markServ.removeAlternative(altID, this.testID)
       .subscribe(success => {
@@ -109,6 +139,10 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       });
   }
 
+  /**
+   * Removes a correct point from a question
+   * @param correctPointID
+   */
   removeCorrectPoint(correctPointID) {
     this.markServ.removeCorrectPoint(correctPointID, this.testID)
       .subscribe(success => {
@@ -117,16 +151,23 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       });
   }
 
+  /**
+   * Sends user back home if unauthorized to be here
+   */
   backHome() {
     this.router.navigate(['/moduleHome', this.test.moduleID]);
   }
 
+  /**
+   * Gets the scripts that are to be marked by the user from the database
+   * @param testID
+   */
   getScriptsByTestID(testID) {
     return this.markServ.getScriptsByTestIDMarker(testID)
       .subscribe(scripts => {
-        if (!scripts || scripts.length < 1) {
-          this.backHome();
-        }
+          if (!scripts || scripts.length < 1) {
+            this.backHome();
+          }
           this.scripts = scripts;
           this.studentSet = [];
           this.chosenOptions = [];
@@ -154,11 +195,15 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
             }
           }
         }, error => {
-            this.backHome();
+          this.backHome();
         }
       );
   }
 
+  /**
+   * Chooses a new answer to show in detail
+   * @param studentID
+   */
   newAnswerDetail(studentID) {
     for (let x = 0; x < this.scripts.length; x++) {
       if (this.scripts[x].student.userID == studentID) {
@@ -176,6 +221,10 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'});
   }
 
+  /**
+   * Allows user to manually enter the score for a question
+   * @param form
+   */
   editScore(form: NgForm) {
     if (this.answerDetail.questionAndAnswer.answer.score > this.answerDetail.questionAndAnswer.question.question.maxScore || this.answerDetail.questionAndAnswer.answer.score < -1 * this.answerDetail.questionAndAnswer.question.question.maxScore) {
       this.checkScore = errorColour;
@@ -192,6 +241,9 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       });
   }
 
+  /**
+   * Initializes a new correct point to be added to a question
+   */
   initCorrectPoint() {
     const correctPoint = new CorrectPoint();
     correctPoint.alternatives = [];
@@ -204,6 +256,9 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     return false;
   }
 
+  /**
+   * Initialises a new text based alternative to be added to a correct point
+   */
   initTextAlternative() {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -214,6 +269,9 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     return false;
   }
 
+  /**
+   * Initialises a new math based alternative to be added to a correct point
+   */
   initMathAlternative() {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -224,11 +282,19 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
     return false;
   }
 
+  /**
+   * Removes an alternative from a correct point
+   * @param j
+   */
   removeAlternative(j) {
     this.correctPointToInsert.alternatives.splice(j, 1);
     return false;
   }
 
+  /**
+   * Adds a new correct point to a question
+   * @param form
+   */
   addCorrectPoint(form: NgForm) {
     this.generalError = false;
     this.correctPointToInsert.questionID = this.answerDetail.questionAndAnswer.question.question.questionID;
@@ -282,6 +348,11 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       });
   }
 
+  /**
+   * Adds a new alternative to a correct point
+   * @param form
+   * @param correctPointID
+   */
   addAlternative(form: NgForm, correctPointID) {
     this.alternativeToInsert.correctPointID = correctPointID;
     if (this.alternativeToInsert.alternativePhrase.length > 56535 || this.alternativeToInsert.alternativePhrase.length < 0) {
@@ -302,6 +373,10 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       });
   }
 
+  /**
+   * Manually enter feedback for a given answer
+   * @param form
+   */
   editFeedback(form: NgForm) {
     if (this.answerDetail.questionAndAnswer.answer.feedback.length > 56535 || this.answerDetail.questionAndAnswer.answer.feedback.length < 0) {
       this.checkFeedback = errorColour;

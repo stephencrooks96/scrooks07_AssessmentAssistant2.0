@@ -2,6 +2,11 @@ package com.pgault04.pojos;
 
 import java.util.List;
 
+/**
+ * @author Paul Gault - 40126005
+ * @since Jan 2019
+ * Pojo to allow collection of marker with chart info to be sent to/from front end
+ */
 public class MarkerWithChart {
 
     private List<Marker> markers;
@@ -9,8 +14,19 @@ public class MarkerWithChart {
     private List<Integer> data;
     private List<String> colours;
 
+    /**
+     * Default constructor
+     */
     public MarkerWithChart() {}
 
+    /**
+     * Constructor with arguments
+     *
+     * @param markers - the list of markers
+     * @param labels  - the list of labels for the charts data points
+     * @param data    - the data for the chart
+     * @param colours - the colors of each section of the chart
+     */
     public MarkerWithChart(List<Marker> markers, List<String> labels, List<Integer> data, List<String> colours) {
         this.setMarkers(markers);
         this.setData(data);
@@ -18,38 +34,49 @@ public class MarkerWithChart {
         this.setColours(colours);
     }
 
-    public List<String> getColours() {
-        return colours;
-    }
+    /**
+     * @return gets the list of colors for the data points
+     */
+    public List<String> getColours() { return colours; }
 
-    public void setColours(List<String> colours) {
-        this.colours = colours;
-    }
+    /**
+     * @param colours sets the list of colors for the data points
+     */
+    public void setColours(List<String> colours) { this.colours = colours; }
 
-    public List<Marker> getMarkers() {
-        return markers;
-    }
+    /**
+     * @return gets the list of markers
+     */
+    public List<Marker> getMarkers() { return markers; }
 
-    public void setMarkers(List<Marker> markers) {
-        this.markers = markers;
-    }
+    /**
+     * @param markers sets the list of markers
+     */
+    public void setMarkers(List<Marker> markers) { this.markers = markers; }
 
-    public List<String> getLabels() {
-        return labels;
-    }
+    /**
+     * @return gets the labels for the data points
+     */
+    public List<String> getLabels() { return labels; }
 
-    public void setLabels(List<String> labels) {
-        this.labels = labels;
-    }
+    /**
+     * @param labels sets the list of labels for the data points
+     */
+    public void setLabels(List<String> labels) { this.labels = labels; }
 
-    public List<Integer> getData() {
-        return data;
-    }
+    /**
+     * @return gets the chart data
+     */
+    public List<Integer> getData() { return data; }
 
-    public void setData(List<Integer> data) {
-        this.data = data;
-    }
+    /**
+     * @param data sets the chart data
+     */
+    public void setData(List<Integer> data) { this.data = data; }
 
+    /*
+     * the object as string
+     */
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("MarkerWithChart{");

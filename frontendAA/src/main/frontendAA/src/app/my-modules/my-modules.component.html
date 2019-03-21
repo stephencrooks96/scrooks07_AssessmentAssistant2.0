@@ -18,7 +18,9 @@
             </h2>
             <h5 class="card-subtitle mb-2 text-muted">
               Tutor: {{moduleTutor.tutor.firstName + " " + moduleTutor.tutor.lastName}}</h5>
-            <h5 class="card-subtitle mb-2 text-muted">Email now: <a href="mailto:{{moduleTutor.tutor.username}}?Subject={{moduleTutor.module.moduleName}}" target="_top">{{moduleTutor.tutor.username}}</a></h5>
+            <h5 class="card-subtitle mb-2 text-muted">Email now: <a
+              href="mailto:{{moduleTutor.tutor.username}}?Subject={{moduleTutor.module.moduleName}}"
+              target="_top">{{moduleTutor.tutor.username}}</a></h5>
             <h5 class="card-text">{{moduleTutor.module.moduleDescription}}</h5>
             <h6><a [routerLink]="['/moduleHome', moduleTutor.module.moduleID]" class="card-link">Go
               to {{moduleTutor.module.moduleName}}</a></h6>

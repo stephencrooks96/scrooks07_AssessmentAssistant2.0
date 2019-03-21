@@ -30,8 +30,7 @@ public class TutorQuestionPojo {
     /**
      * Default constructor
      */
-    public TutorQuestionPojo() {
-    }
+    public TutorQuestionPojo() {}
 
     /**
      * Constructor with args
@@ -51,13 +50,15 @@ public class TutorQuestionPojo {
         this.setCorrectPoints(correctPoints);
     }
 
-    public String getBase64() {
-        return base64;
-    }
+    /**
+     * @return the base64 encoded string for the question
+     */
+    public String getBase64() { return base64; }
 
-    public void setBase64(String base64) {
-        this.base64 = base64;
-    }
+    /**
+     * @param base64 sets the base64 encoded string for the question image
+     */
+    public void setBase64(String base64) { this.base64 = base64; }
 
     /**
      * @return the options
@@ -128,7 +129,6 @@ public class TutorQuestionPojo {
     /*
      * the object as string
      */
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("TutorQuestionPojo{");

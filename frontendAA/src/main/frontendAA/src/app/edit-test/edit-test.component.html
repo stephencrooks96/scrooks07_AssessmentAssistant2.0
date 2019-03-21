@@ -81,7 +81,9 @@
         <div class="form-group">
           <div class="row">
             <label for="startDate">Type:</label>
-            <select placement="right" ngbTooltip="Practice tests give instant feedback and are always editable." style="border-color: #202529" #cpType="ngModel" [(ngModel)]="testInsert.practice" class="form-control"
+            <select placement="right" ngbTooltip="Practice tests give instant feedback and are always editable."
+                    style="border-color: #202529" #cpType="ngModel" [(ngModel)]="testInsert.practice"
+                    class="form-control"
                     id="practice"
                     name="practice">
               <option [value]="0">Official</option>
@@ -93,7 +95,8 @@
         <div class="form-group">
           <div class="row">
             <label for="startDate">Start</label>
-            <span style="font-size: x-small; margin-bottom: 1px;" *ngIf="dateError">Start date must be before end date.</span>
+            <span style="font-size: x-small; margin-bottom: 1px;"
+                  *ngIf="dateError">Start date must be before end date.</span>
             <span style="font-size: x-small; margin-bottom: 2px;" *ngIf="startDateError">Valid date range 365 days from
               today.</span>
             <input #startDate="ngModel" [(ngModel)]="testInsert.startDateTime" aria-describedby="startDateHelp"
@@ -118,7 +121,8 @@
         </div>
         <div aria-label="Basic example" class="btn-group" role="group" style="margin-bottom: 5px;">
           <button class="btn btn-success btn-sm" type="submit">Save</button>
-          <button class="btn btn-danger btn-sm" type="button" (click)="editTestShow = false; changeTestForm.reset(); getByTestID(test.testID)">
+          <button class="btn btn-danger btn-sm" type="button"
+                  (click)="editTestShow = false; changeTestForm.reset(); getByTestID(test.testID)">
             Cancel
           </button>
         </div>

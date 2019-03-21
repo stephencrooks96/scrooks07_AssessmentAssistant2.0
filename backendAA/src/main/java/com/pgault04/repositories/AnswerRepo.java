@@ -15,6 +15,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the Answer table table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class AnswerRepo {
 
@@ -68,7 +75,6 @@ public class AnswerRepo {
         }
         log.info("AnswerRepo returning answer: {}", answer.toString());
         return answer;
-
     }
 
     /**
@@ -109,6 +115,7 @@ public class AnswerRepo {
         }
         return null;
     }
+
     /**
      * Method to select answers by their question id
      *
@@ -120,7 +127,6 @@ public class AnswerRepo {
         String selectByQuestionIDSQL = selectSQL + "questionID=?";
         List<Answer> answers = tmpl.query(selectByQuestionIDSQL, new BeanPropertyRowMapper<>(Answer.class),
                 questionID);
-
         log.debug("Query for question: #{}, number of items: {}", questionID, answers.size());
         return answers;
     }

@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the Message table table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -24,6 +27,9 @@ public class MessageRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(MessageRepo.class);
 
     private final String insertSQL = "INSERT INTO Message (content, recipientID, senderID, messageTimestamp, newMessage) values (:content, :recipientID, :senderID, :messageTimestamp, :newMessage)";
@@ -89,7 +95,6 @@ public class MessageRepo {
         }
         return null;
     }
-
 
     /**
      * Selects a list of message based on who received them

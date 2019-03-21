@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {UserService} from "../services/user.service";
 import {ActivatedRoute} from "@angular/router";
@@ -10,24 +10,31 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class ResetPasswordComponent implements OnInit {
 
-  email : string;
-  newPassword : string;
-  repeatPassword : string;
-  success : boolean = false;
-  successMessage : string = "";
-  error : boolean = false;
-  errorMessage : string = "";
+  email: string;
+  newPassword: string;
+  repeatPassword: string;
+  success: boolean = false;
+  successMessage: string = "";
+  error: boolean = false;
+  errorMessage: string = "";
   resetString: string;
 
-  constructor(private userService : UserService, private route : ActivatedRoute) {
+  constructor(private userService: UserService, private route: ActivatedRoute) {
     this.resetString = this.route.snapshot.paramMap.get('resetString');
   }
 
+  /**
+   * Called on initialisation of method
+   */
   ngOnInit() {
   }
 
+  /**
+   * Resets the users password, providing criteria is met
+   * If criteria is not met error messages will be output
+   * @param form
+   */
   resetPassword(form: NgForm) {
-
     if (!this.email && this.email.length < 1) {
       this.errorMessage = "You must enter an email address.";
       this.error = true;
@@ -71,5 +78,4 @@ export class ResetPasswordComponent implements OnInit {
         this.errorMessage = "Reset string does not match what is stored in database for this user."
       });
   }
-
 }

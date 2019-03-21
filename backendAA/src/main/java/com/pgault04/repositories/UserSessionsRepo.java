@@ -14,6 +14,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the UserSessions table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Repository
 public class UserSessionsRepo {
 

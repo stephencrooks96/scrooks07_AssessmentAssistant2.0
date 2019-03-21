@@ -3,7 +3,6 @@ import {Tests} from "../modelObjs/objects.model";
 import {ModuleHomeComponent} from "../module-home/module-home.component";
 import {TestService} from "../services/test.service";
 import {Router} from "@angular/router";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 const errorColour: string = "#dc3545";
 const normalColour: string = "#202529";
@@ -15,11 +14,9 @@ const normalColour: string = "#202529";
 })
 export class AddTestComponent implements OnInit {
 
-
   testInsert = new Tests();
   today = new Date();
   nextYear = new Date();
-  addTestForm;
   checkTitle: string = normalColour;
   checkStartDate: string = normalColour;
   checkEndDate: string = normalColour;
@@ -32,14 +29,22 @@ export class AddTestComponent implements OnInit {
   constructor(private modHome: ModuleHomeComponent, private testService: TestService, private router: Router) {
   }
 
+  /*
+  * Called on initialization of component
+   */
   ngOnInit() {
     this.nextYear.setFullYear(this.nextYear.getFullYear() + 1);
   }
 
+  /**
+   * Adds a test to the database based on form data entered
+   * Outputs error messages based on validation performed in method
+   */
   addTest() {
     this.testInsert.testTitle = this.testInsert.testTitle.trim();
     this.testInsert.moduleID = this.modHome.moduleID;
     this.generalError = false;
+
     if (!this.testInsert.testTitle || this.testInsert.testTitle.length < 1 || this.testInsert.testTitle.length > 50) {
       this.checkTitle = errorColour;
       this.titleError = true;
@@ -70,5 +75,4 @@ export class AddTestComponent implements OnInit {
         return;
       });
   }
-
 }

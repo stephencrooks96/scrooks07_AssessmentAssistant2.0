@@ -20,6 +20,7 @@ import java.util.Set;
 /**
  * @author Paul Gault
  * @since December 2018
+ * Rest controller for test functions
  */
 @RestController
 @RequestMapping("/tests")
@@ -27,7 +28,6 @@ public class TestController {
 
     @Autowired
     TestService testService;
-
     @Autowired
     QuestionTypeRepo questionTypeRepo;
 
@@ -49,6 +49,14 @@ public class TestController {
         return testService.addTest(test, principal.getName());
     }
 
+    /**
+     * Rest endpoint to allow a user to submit a test
+     *
+     * @param principal - the logged in user
+     * @param script    - the test script being inserted
+     * @return success / failure
+     * @throws SQLException - if the blob used for image is invalid
+     */
     @CrossOrigin
     @RequestMapping(value = "/submitTest", method = RequestMethod.POST)
     public boolean submitTest(Principal principal, @RequestBody List<QuestionAndAnswer> script) throws SQLException {
@@ -81,24 +89,56 @@ public class TestController {
         return testService.getByTestID(principal.getName(), testID);
     }
 
+    /**
+     * Gets questions in a form that students are allowed to see
+     *
+     * @param principal - the logged in user
+     * @param testID    - the test
+     * @return the questions and blank answer canvas
+     * @throws SQLException - if the blob used for image is invalid
+     */
     @CrossOrigin
     @RequestMapping(value = "/getQuestionsStudent", method = RequestMethod.GET)
     public List<QuestionAndAnswer> getQuestionsStudent(Principal principal, Long testID) throws SQLException {
         return testService.getQuestionsStudent(principal.getName(), testID);
     }
 
+    /**
+     * Gets performance data - how the student performed in a test
+     *
+     * @param principal - the logged in user
+     * @param testID    - the test
+     * @return the performance data
+     * @throws SQLException             - if the blob used for image is invalid
+     * @throws IllegalArgumentException - if user is not related to the module
+     */
     @CrossOrigin
     @RequestMapping(value = "/getPerformance", method = RequestMethod.GET)
     public Performance getPerformance(Principal principal, Long testID) throws SQLException, IllegalArgumentException {
         return testService.getPerformance(testID, principal.getName());
     }
 
+    /**
+     * Gets feedback data - how the student performed in a test without exact result
+     *
+     * @param principal - the logged in user
+     * @param testID    - the test
+     * @return the performance data
+     * @throws SQLException             - if the blob used for image is invalid
+     * @throws IllegalArgumentException - if the user is not related to the module
+     */
     @CrossOrigin
     @RequestMapping(value = "/getFeedback", method = RequestMethod.GET)
     public Performance getFeedback(Principal principal, Long testID) throws SQLException, IllegalArgumentException {
         return testService.getGrades(testID, principal.getName());
     }
 
+    /**
+     * Gets tests that the student has answered so as to not provide them with the take test link again
+     *
+     * @param principal - the logged in user
+     * @return - the list of answered tests
+     */
     @CrossOrigin
     @RequestMapping(value = "/getAnsweredTests", method = RequestMethod.GET)
     public Set<Integer> getAnsweredTests(Principal principal) {
@@ -183,6 +223,13 @@ public class TestController {
         return testService.addExistingQuestion(questionID, testID, principal.getName());
     }
 
+    /**
+     * Duplicates a question for use on another test without interfering with past marks
+     *
+     * @param questionID - the question to duplicate
+     * @param principal  - the logged in user
+     * @return the duplicated question
+     */
     @CrossOrigin
     @RequestMapping(value = "/duplicateQuestion", method = RequestMethod.GET)
     public Boolean duplicateQuestion(Long questionID, Principal principal) {
@@ -203,24 +250,52 @@ public class TestController {
         return testService.removeQuestionFromTest(testID, questionID, principal.getName());
     }
 
+    /**
+     * Removes a correct point during the question creation / editing phase
+     *
+     * @param correctPointID - the correct point to remove
+     * @param principal      - the logged in user
+     * @return success / failure
+     */
     @CrossOrigin
     @RequestMapping(value = "/removeCorrectPoint", method = RequestMethod.DELETE)
     public Boolean removeCorrectPoint(Long correctPointID, Principal principal) {
         return testService.removeCorrectPoint(correctPointID, principal.getName());
     }
 
+    /**
+     * Removes a question math line during the question creation / editing phase
+     *
+     * @param questionMathLineID - the question math line to remove
+     * @param principal          - the logged in user
+     * @return success / failure
+     */
     @CrossOrigin
     @RequestMapping(value = "/removeQuestionMathLine", method = RequestMethod.DELETE)
     public Boolean removeQuestionMathLine(Long questionMathLineID, Principal principal) {
         return testService.removeQuestionMathLine(questionMathLineID, principal.getName());
     }
 
+    /**
+     * Removes an option during the question creation / editing phase
+     *
+     * @param optionID  - the option to remove
+     * @param principal - the logged in user
+     * @return success / failure
+     */
     @CrossOrigin
     @RequestMapping(value = "/removeOption", method = RequestMethod.DELETE)
     public Boolean removeOption(Long optionID, Principal principal) {
         return testService.removeOption(optionID, principal.getName());
     }
 
+    /**
+     * Removes an alternative during the question creation / editing phase
+     *
+     * @param alternativeID - the alternative to remove
+     * @param principal     - the logged in user
+     * @return success / failure
+     */
     @CrossOrigin
     @RequestMapping(value = "/removeAlternative", method = RequestMethod.DELETE)
     public Boolean removeAlternative(Long alternativeID, Principal principal) {

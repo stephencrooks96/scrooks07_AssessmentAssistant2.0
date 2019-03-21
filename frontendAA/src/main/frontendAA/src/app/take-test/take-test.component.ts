@@ -26,9 +26,6 @@ export class TakeTestComponent implements OnInit {
   test = new Tests();
   questions: QuestionAndAnswer[];
   questionDetail: number = 1;
-  timeUp = false;
-  timing = false;
-  opened = false;
   submitted = false;
   originalLongMessage = "The following questions are indicated to exceed the size limit, pressing next may cause your answers to be truncated. Question(s): ";
   originalShortMessage = "The following questions are indicated to not have been answered - are you sure you want to proceed? Question(s): ";
@@ -40,8 +37,6 @@ export class TakeTestComponent implements OnInit {
   sub: Subscription;
   countdown: string;
 
-  endSub: Subscription;
-
   tooLong: string = this.originalLongMessage;
   tooShort: string = this.originalShortMessage;
 
@@ -49,6 +44,10 @@ export class TakeTestComponent implements OnInit {
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Performs calculations to out put the countdown to expiry in to a readable format on page
+   * @param timeDifference
+   */
   static convertToCountdown(timeDifference) {
     let originalTimeDifference = timeDifference;
     let days, hours, minutes, seconds;
@@ -73,12 +72,18 @@ export class TakeTestComponent implements OnInit {
     }
   }
 
-
+  /**
+   * Called on initialisation of component
+   */
   async ngOnInit() {
     this.getByTestID(this.testID);
     await this.getQuestions(this.testID);
   }
 
+  /**
+   * Gets tests that have been answered
+   * If this test is included the user is redirected
+   */
   getAnsweredTests() {
     return this.testServ.getAnsweredTests()
       .subscribe(answeredSet => {
@@ -88,10 +93,17 @@ export class TakeTestComponent implements OnInit {
       });
   }
 
+  /**
+   * Sends the user home
+   */
   backHome() {
     this.router.navigate(['/moduleHome', this.test.moduleID]);
   }
 
+  /**
+   * Adds a new input to math-text questions
+   * @param i
+   */
   addTextInput(i) {
     const input = new Inputs();
     input.inputValue = '';
@@ -101,6 +113,10 @@ export class TakeTestComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Adds a new math input to math-text questions
+   * @param i
+   */
   addMathInput(i) {
     const input = new Inputs();
     input.inputValue = '';
@@ -110,20 +126,31 @@ export class TakeTestComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Removes an input from a math-text question
+   * @param i
+   */
   removeInput(i) {
     this.questions[i].inputs.splice(i, 1);
     return false;
   }
 
+  /**
+   * Converts an image from base64 to be viewed
+   * @param base64
+   */
   readyImage(base64): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + base64);
   }
 
+  /**
+   * Gets the test information
+   * @param testID
+   */
   getByTestID(testID) {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
           this.test = test;
-
           this.sub = interval(1000).subscribe(() => {
             let date = new Date(this.test.endDateTime);
             this.timeDifference = Math.floor((date.getTime() - new Date().getTime()) / millisecondsToSeconds);
@@ -131,7 +158,6 @@ export class TakeTestComponent implements OnInit {
               this.sub.unsubscribe();
               this.backHome();
             }
-
             this.countdown = TakeTestComponent.convertToCountdown(this.timeDifference);
           });
           if (test.practice != 1) {
@@ -141,6 +167,10 @@ export class TakeTestComponent implements OnInit {
       );
   }
 
+  /**
+   * Gets the questions for the test
+   * @param testID
+   */
   getQuestions(testID) {
     return this.testServ.getQuestionsStudent(testID).subscribe(questions => {
       this.questions = questions;
@@ -155,6 +185,9 @@ export class TakeTestComponent implements OnInit {
     this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'});
   }
 
+  /**
+   * Validates the users submission to the test
+   */
   validateTest() {
     for (let q = 0; q < this.questions.length; q++) {
       this.questions[q].answer.questionID = this.questions[q].question.question.questionID;
@@ -180,7 +213,6 @@ export class TakeTestComponent implements OnInit {
 
       }
 
-
       if (this.questions[q].question.question.questionType == 1) {
         if (this.questions[q].answer.content.length > 65535) {
           this.tooLong += (q + 1);
@@ -203,9 +235,11 @@ export class TakeTestComponent implements OnInit {
     }
   }
 
+  /**
+   * Submits the answers to the test
+   * @param form
+   */
   async submitTest(form: NgForm) {
-
-
     for (let q = 0; q < this.questions.length; q++) {
       this.questions[q].answer.testID = this.testID;
     }
@@ -220,5 +254,4 @@ export class TakeTestComponent implements OnInit {
         return;
       });
   }
-
 }

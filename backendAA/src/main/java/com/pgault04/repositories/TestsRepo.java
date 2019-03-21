@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the Tests table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */

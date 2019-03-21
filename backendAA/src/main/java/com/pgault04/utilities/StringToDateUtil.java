@@ -30,6 +30,12 @@ public class StringToDateUtil {
         return formatter.parse(dateTime);
     }
 
+    /**
+     * Ensures a date is in correct format for entry to database
+     *
+     * @param date - the date to convert
+     * @return the date in correct format as string
+     */
     public static String dateCorrectFormat(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formatter.format(date);

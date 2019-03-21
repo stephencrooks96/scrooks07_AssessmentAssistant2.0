@@ -3,9 +3,13 @@ package com.pgault04.entities;
 /**
  * @author Paul Gault
  * @since Jan 19
+ * Class represents the Inputs table
  */
 public class Inputs {
 
+    /**
+     * Used as a checker for insertions and updates
+     */
     private static final long ENTRY_CONST = -1L;
     private Long inputID = ENTRY_CONST;
     private String inputValue;
@@ -13,6 +17,9 @@ public class Inputs {
     private Long answerID;
     private Integer math;
 
+    /**
+     * Default constructor
+     */
     public Inputs() {}
 
     /**
@@ -102,6 +109,9 @@ public class Inputs {
      */
     public void setMath(Integer math) { this.math = math; }
 
+    /*
+     * the object as string
+     */
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Inputs{");

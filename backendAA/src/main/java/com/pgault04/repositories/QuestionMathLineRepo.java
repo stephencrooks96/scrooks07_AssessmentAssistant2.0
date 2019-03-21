@@ -15,11 +15,21 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the QuestionMathLine table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class QuestionMathLineRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(QuestionMathLineRepo.class);
 
     private final String insertSQL = "INSERT INTO QuestionMathLines (questionID, content, indexedAt) values (:questionID, :content, :indexedAt)";
@@ -109,9 +119,7 @@ public class QuestionMathLineRepo {
      */
     public void delete(Long questionMathLineID) {
         log.debug("QuestionMathLineRepo delete #{}", questionMathLineID);
-
         tmpl.update(deleteSQL, questionMathLineID);
         log.debug("QuestionMathLine deleted from database #{}", questionMathLineID);
-
     }
 }

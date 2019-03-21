@@ -1,10 +1,6 @@
-/**
- *
- */
 package com.pgault04.repositories;
 
 import com.pgault04.entities.Module;
-import com.pgault04.entities.TutorRequests;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the Module table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -28,6 +27,9 @@ public class ModuleRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(ModuleRepo.class);
 
     private final String insertSQL = "INSERT INTO Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved) values (:moduleName, :moduleDescription, :tutorUserID, :commencementDate, :endDate, :approved)";
@@ -51,6 +53,7 @@ public class ModuleRepo {
 
     /**
      * Inserts or updates records in to the module table
+     *
      * @param module the module
      * @return the module after insertion/update
      */
@@ -76,6 +79,7 @@ public class ModuleRepo {
 
     /**
      * Selects a module from the database based on its id
+     *
      * @param moduleID the module's id
      * @return the module
      */
@@ -97,12 +101,12 @@ public class ModuleRepo {
         List<Module> modules = tmpl.query(selectByApprovedSQL, new BeanPropertyRowMapper<>(Module.class), approved);
 
         log.debug("Query for module by approval status: {}, number of items: {}", approved, modules.size());
-
         return modules;
     }
 
     /**
      * Selects a list of modules based on a name
+     *
      * @param moduleName the modules name
      * @return the list of modules
      */
@@ -117,6 +121,7 @@ public class ModuleRepo {
 
     /**
      * Selects a list of modules based on the tutor
+     *
      * @param tutorID the tutor's id
      * @return the list of modules
      */
@@ -131,6 +136,7 @@ public class ModuleRepo {
 
     /**
      * Deletes a record from the module table
+     *
      * @param moduleID the module id
      */
     public void delete(Long moduleID) {
@@ -141,4 +147,3 @@ public class ModuleRepo {
 
     }
 }
-

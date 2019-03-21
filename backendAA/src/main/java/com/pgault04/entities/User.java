@@ -5,182 +5,182 @@ import org.springframework.stereotype.Component;
 /**
  * @author Paul Gault 40126005
  * @since November 2018
+ * Represents the User table
  */
 @Component
 public class User {
 
-	/**
-	 * Used as a checker for insertions and updates
-	 */
-	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
+    /**
+     * Used as a checker for insertions and updates
+     */
+    private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
-	private Long userID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
+    private Long userID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
 
-	private String username;
-	
-	private String password;
+    private String username;
 
-	private String firstName;
+    private String password;
 
-	private String lastName;
+    private String firstName;
 
-	private Integer enabled;
+    private String lastName;
 
-	private Long userRoleID;
+    private Integer enabled;
 
-	private Integer tutor;
+    private Long userRoleID;
 
-	/**
-	 * Default constructor
-	 */
-	public User() {}
+    private Integer tutor;
 
-	/**
-	 * Constructor with args
-	 * @param username the users username
-	 * @param password the users password
-	 * @param firstName the users first name
-	 * @param lastName the users last name
-	 * @param enabled whether the user is enabled or not
-	 * @param userRoleID the users user role
-	 */
-	public User(String username, String password, String firstName, String lastName, Integer enabled, Long userRoleID, Integer tutor) {
-		this.setUsername(username);
-		this.setPassword(password);
-		this.setFirstName(firstName);
-		this.setLastName(lastName);
-		this.setEnabled(enabled);
-		this.setUserRoleID(userRoleID);
-		this.setTutor(tutor);
-	}
+    /**
+     * Default constructor
+     */
+    public User() {}
 
-	/**
-	 * @return the userID
-	 */
-	public Long getUserID() {
-		return userID;
-	}
+    /**
+     * Constructor with args
+     *
+     * @param username   the users username
+     * @param password   the users password
+     * @param firstName  the users first name
+     * @param lastName   the users last name
+     * @param enabled    whether the user is enabled or not
+     * @param userRoleID the users user role
+     */
+    public User(String username, String password, String firstName, String lastName, Integer enabled, Long userRoleID, Integer tutor) {
+        this.setUsername(username);
+        this.setPassword(password);
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
+        this.setEnabled(enabled);
+        this.setUserRoleID(userRoleID);
+        this.setTutor(tutor);
+    }
 
-	/**
-	 * @param userID
-	 *            the userID to set
-	 */
-	public void setUserID(Long userID) {
-		this.userID = userID;
-	}
+    /**
+     * @return the userID
+     */
+    public Long getUserID() {
+        return userID;
+    }
 
-	/**
-	 * @return the username
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /**
+     * @param userID the userID to set
+     */
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
 
-	/**
-	 * @param username
-	 *            the username to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
 
-	/**
-	 * @return the firstName
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	/**
-	 * @param firstName
-	 *            the firstName to set
-	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    /**
+     * @return the firstName
+     */
+    public String getFirstName() {
+        return firstName;
+    }
 
-	/**
-	 * @return the lastName
-	 */
-	public String getLastName() {
-		return lastName;
-	}
+    /**
+     * @param firstName the firstName to set
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	/**
-	 * @param lastName
-	 *            the lastName to set
-	 */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    /**
+     * @return the lastName
+     */
+    public String getLastName() {
+        return lastName;
+    }
 
-	/**
-	 * @return the enabled
-	 */
-	public Integer getEnabled() {
-		return enabled;
-	}
+    /**
+     * @param lastName the lastName to set
+     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	/**
-	 * @param enabled
-	 *            the enabled to set
-	 */
-	public void setEnabled(Integer enabled) {
-		this.enabled = enabled;
-	}
+    /**
+     * @return the enabled
+     */
+    public Integer getEnabled() {
+        return enabled;
+    }
 
-	/**
-	 * @return the userRoleID
-	 */
-	public Long getUserRoleID() {
-		return userRoleID;
-	}
+    /**
+     * @param enabled the enabled to set
+     */
+    public void setEnabled(Integer enabled) {
+        this.enabled = enabled;
+    }
 
-	/**
-	 * @param userRoleID
-	 *            the userRoleID to set
-	 */
-	public void setUserRoleID(Long userRoleID) {
-		this.userRoleID = userRoleID;
-	}
+    /**
+     * @return the userRoleID
+     */
+    public Long getUserRoleID() {
+        return userRoleID;
+    }
 
-	public Integer getTutor() {
-		return tutor;
-	}
+    /**
+     * @param userRoleID the userRoleID to set
+     */
+    public void setUserRoleID(Long userRoleID) {
+        this.userRoleID = userRoleID;
+    }
 
-	public void setTutor(Integer tutor) {
-		this.tutor = tutor;
-	}
+    /**
+     * @return gets whether the user is a tutor or not
+     */
+    public Integer getTutor() {
+        return tutor;
+    }
 
-	/*
-	 * the object as string
-	 */
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("User{");
-		sb.append("userID=").append(userID);
-		sb.append(", username='").append(username).append('\'');
-		sb.append(", password='").append(password).append('\'');
-		sb.append(", firstName='").append(firstName).append('\'');
-		sb.append(", lastName='").append(lastName).append('\'');
-		sb.append(", enabled=").append(enabled);
-		sb.append(", userRoleID=").append(userRoleID);
-		sb.append(", tutor=").append(tutor);
-		sb.append('}');
-		return sb.toString();
-	}
+    /**
+     * @param tutor sets whether the user is a tutor or not
+     */
+    public void setTutor(Integer tutor) { this.tutor = tutor; }
+
+    /*
+     * the object as string
+     */
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("User{");
+        sb.append("userID=").append(userID);
+        sb.append(", username='").append(username).append('\'');
+        sb.append(", password='").append(password).append('\'');
+        sb.append(", firstName='").append(firstName).append('\'');
+        sb.append(", lastName='").append(lastName).append('\'');
+        sb.append(", enabled=").append(enabled);
+        sb.append(", userRoleID=").append(userRoleID);
+        sb.append(", tutor=").append(tutor);
+        sb.append('}');
+        return sb.toString();
+    }
 }

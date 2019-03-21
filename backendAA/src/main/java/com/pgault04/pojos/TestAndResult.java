@@ -1,6 +1,5 @@
 package com.pgault04.pojos;
 
-import com.pgault04.entities.CorrectPoint;
 import com.pgault04.entities.TestResult;
 import com.pgault04.entities.Tests;
 import com.pgault04.entities.User;
@@ -47,10 +46,16 @@ public class TestAndResult {
         this.setPercentageScore(percentageScore);
     }
 
+    /**
+     * @return gets the user whose result it is
+     */
     public User getUser() {
         return user;
     }
 
+    /**
+     * @param user sets the user whose result it is
+     */
     public void setUser(User user) {
         this.user = user;
     }
@@ -111,12 +116,11 @@ public class TestAndResult {
         this.questions = questions;
     }
 
-    /**
-     * @return the object as string
+    /*
+     * the object as string
      */
     @Override
     public String toString() {
-
         final StringBuilder sb = new StringBuilder("TestAndResult{");
         sb.append("test=").append(test);
         sb.append(", testResult=").append(testResult);

@@ -23,17 +23,17 @@
       <div class="pre-scrollable">
         <h2>Tutor Requests</h2>
         <div *ngIf="tutorRequests && tutorRequests.length > 0">
-        <div *ngFor="let tutorRequest of tutorRequests;" style="margin-bottom: 10px;">
-          <h4>{{tutorRequest.tutor.firstName + " " + tutorRequest.tutor.lastName}}</h4>
-          <p>{{tutorRequest.request.reason}}</p>
-          <button style="margin-top: 1px; margin-right: 3px;"
-                  (click)="approveTutorRequest(tutorRequest.tutor.userID)"
-                  class="btn btn-dark btn-sm">Approve
-          </button>
-          <button style="margin-top: 1px;" class="btn btn-dark btn-sm"
-                  (click)="rejectTutorRequest(tutorRequest.tutor.userID)">Reject
-          </button>
-        </div>
+          <div *ngFor="let tutorRequest of tutorRequests;" style="margin-bottom: 10px;">
+            <h4>{{tutorRequest.tutor.firstName + " " + tutorRequest.tutor.lastName}}</h4>
+            <p>{{tutorRequest.request.reason}}</p>
+            <button style="margin-top: 1px; margin-right: 3px;"
+                    (click)="approveTutorRequest(tutorRequest.tutor.userID)"
+                    class="btn btn-dark btn-sm">Approve
+            </button>
+            <button style="margin-top: 1px;" class="btn btn-dark btn-sm"
+                    (click)="rejectTutorRequest(tutorRequest.tutor.userID)">Reject
+            </button>
+          </div>
         </div>
         <div *ngIf="!tutorRequests || tutorRequests.length == 0">No tutor requests to show.</div>
       </div>
@@ -62,7 +62,8 @@
       <div class="pre-scrollable">
         <h2>Add Users</h2>
         <form id="addModule" name='addModule' role="form"
-              #addUserForm="ngForm" style="width: 80%; margin-left: 10%; margin-top: 2%;" (submit)="addUsers(addUserForm)" >
+              #addUserForm="ngForm" style="width: 80%; margin-left: 10%; margin-top: 2%;"
+              (submit)="addUsers(addUserForm)">
 
           <a href="./assets/Sample%20Users.csv">Sample Users.csv</a>
           <div class="custom-file" style="margin-top: 10px; margin-bottom: 10px;">
@@ -79,17 +80,35 @@
         </form>
         <h2>All Users</h2>
         <div *ngIf="users && users.length > 0">
-            <table class="table-striped">
-              <tr *ngFor="let user of users;">
-                <td>{{user.userID}}. </td>
-                <td>{{user.username}}</td>
-                <td  *ngIf="user.userRoleID != 1" style="padding-left: 10px;"><button style="width: 100%;" (click)="makeAdmin(user.userID)" class="btn btn-success btn-sm">Admin</button></td>
-                <td  *ngIf="user.userRoleID == 1" style="padding-left: 10px;"><button style="width: 100%;" (click)="makeAdmin(user.userID)" class="btn btn-warning btn-sm">Remove admin</button></td>
-                <td  *ngIf="user.tutor != 1" style="padding-left: 10px;"><button style="width: 100%;" class="btn btn-success btn-sm" (click)="makeTutor(user.userID)">Tutor</button></td>
-                <td  *ngIf="user.tutor == 1" style="padding-left: 10px;"><button style="width: 100%;" class="btn btn-warning btn-sm" (click)="makeTutor(user.userID)">Remove tutor</button></td>
-                <td  style="padding-left: 10px;"><button style="width: 100%;" class="btn btn-danger btn-sm" (click)="userToRemove = user.userID; open(AreYouSureDeleteUser)">Remove</button></td>
-              </tr>
-            </table>
+          <table class="table-striped">
+            <tr *ngFor="let user of users;">
+              <td>{{user.userID}}.</td>
+              <td>{{user.username}}</td>
+              <td *ngIf="user.userRoleID != 1" style="padding-left: 10px;">
+                <button style="width: 100%;" (click)="makeAdmin(user.userID)" class="btn btn-success btn-sm">Admin
+                </button>
+              </td>
+              <td *ngIf="user.userRoleID == 1" style="padding-left: 10px;">
+                <button style="width: 100%;" (click)="makeAdmin(user.userID)" class="btn btn-warning btn-sm">Remove
+                  admin
+                </button>
+              </td>
+              <td *ngIf="user.tutor != 1" style="padding-left: 10px;">
+                <button style="width: 100%;" class="btn btn-success btn-sm" (click)="makeTutor(user.userID)">Tutor
+                </button>
+              </td>
+              <td *ngIf="user.tutor == 1" style="padding-left: 10px;">
+                <button style="width: 100%;" class="btn btn-warning btn-sm" (click)="makeTutor(user.userID)">Remove
+                  tutor
+                </button>
+              </td>
+              <td style="padding-left: 10px;">
+                <button style="width: 100%;" class="btn btn-danger btn-sm"
+                        (click)="userToRemove = user.userID; open(AreYouSureDeleteUser)">Remove
+                </button>
+              </td>
+            </tr>
+          </table>
         </div>
         <div *ngIf="!users || users.length == 0">No users to show.</div>
       </div>

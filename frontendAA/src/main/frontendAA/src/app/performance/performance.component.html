@@ -63,12 +63,14 @@
                         </span>
                       </span>
               <small style="float: right;">({{answerDetail.question.question.maxScore}} marks)
-              </small></h4>
+              </small>
+            </h4>
 
             <h5>Answer:</h5>
 
             <div class="answerArea">
-              <div *ngIf="answerDetail.question.question.questionType == 3 || answerDetail.question.question.questionType == 4">
+              <div
+                *ngIf="answerDetail.question.question.questionType == 3 || answerDetail.question.question.questionType == 4">
                 <h4>Inputs</h4>
                 <ol>
                   <div *ngFor="let input of answerDetail.inputs; let i = index;">
@@ -140,7 +142,7 @@
                                title="{{correctPoint.phrase}}" style="text-decoration: none;">
                       <ng-template ngbPanelContent class="rounded dark">
 
-                        <div class="row" >
+                        <div class="row">
 
                           <div class="col-sm-12">
                             <ng-katex *ngIf="correctPoint.math == 1" [equation]="correctPoint.phrase"

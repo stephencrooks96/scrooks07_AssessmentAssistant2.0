@@ -15,11 +15,21 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the Question table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class QuestionRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(QuestionRepo.class);
 
     private final String insertSQL = "INSERT INTO Question (questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) values (:questionType, :questionContent, :questionFigure, :maxScore, :minScore, :creatorID, :allThatApply)";
@@ -109,9 +119,7 @@ public class QuestionRepo {
      */
     public void delete(Long questionID) {
         log.debug("QuestionRepo deletes #{}", questionID);
-
         tmpl.update(deleteSQL, questionID);
         log.debug("Question deleted from database #{}", questionID);
-
     }
 }

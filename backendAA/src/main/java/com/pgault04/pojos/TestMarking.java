@@ -126,8 +126,8 @@ public class TestMarking {
         this.marked = marked;
     }
 
-    /**
-     * @return the object as string
+    /*
+     * the object as string
      */
     @Override
     public String toString() {

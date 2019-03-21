@@ -73,7 +73,6 @@ public class AlternativeRepo {
         }
         log.info("AlternativeRepo returning alternative: {}", alternative);
         return alternative;
-
     }
 
     /**
@@ -123,4 +122,3 @@ public class AlternativeRepo {
         log.debug("Alternative #{} deleted from database.", alternativeID);
     }
 }
-

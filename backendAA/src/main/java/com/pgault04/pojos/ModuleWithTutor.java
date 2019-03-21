@@ -5,6 +5,7 @@ import com.pgault04.entities.User;
 
 /**
  * Class to accumulate module data with tutor data for output on the front end
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */

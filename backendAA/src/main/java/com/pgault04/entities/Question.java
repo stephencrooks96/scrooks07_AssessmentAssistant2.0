@@ -5,182 +5,178 @@ import java.sql.Blob;
 /**
  * @author Paul Gault 40126005
  * @since November 2018
+ * Represents the question table in database
  */
 public class Question {
 
-	/**
-	 * Used as a checker for insertions and updates
-	 */
-	private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
+    /**
+     * Used as a checker for insertions and updates
+     */
+    private static final long AUTO_INCREMENT_INITIALIZER_CONSTANT = -1L;
 
-	private Long questionType;
+    private Long questionType;
 
-	private Long questionID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
+    private Long questionID = AUTO_INCREMENT_INITIALIZER_CONSTANT;
 
-	private String questionContent;
+    private String questionContent;
 
-	private Blob questionFigure;
+    private Blob questionFigure;
 
-	private Integer maxScore;
+    private Integer maxScore;
 
-	private Integer minScore;
-	
-	private Long creatorID;
+    private Integer minScore;
 
-	private Integer allThatApply;
+    private Long creatorID;
 
-	/**
-	 * Default constructor
-	 */
-	public Question() {}
+    private Integer allThatApply;
 
-	/**
-	 * The constructor with args
-	 * @param questionType the questions type
-	 * @param questionContent the content of the question
-	 * @param questionFigure an image to accompany the question
-	 * @param maxScore the marks for this question
-	 */
-	public Question(Long questionType, String questionContent, Blob questionFigure, Integer maxScore, Integer minScore,
-			Long creatorID, Integer allthatApply) {
-		this.setQuestionType(questionType);
-		this.setQuestionContent(questionContent);
-		this.setQuestionFigure(questionFigure);
-		this.setMaxScore(maxScore);
-		this.setMinScore(minScore);
-		this.setCreatorID(creatorID);
-		this.setAllThatApply(allthatApply);
-	}
+    /**
+     * Default constructor
+     */
+    public Question() {}
 
-	/**
-	 * @return the questionType
-	 */
-	public Long getQuestionType() {
-		return questionType;
-	}
+    /**
+     * The constructor with args
+     *
+     * @param questionType    the questions type
+     * @param questionContent the content of the question
+     * @param questionFigure  an image to accompany the question
+     * @param maxScore        the marks for this question
+     */
+    public Question(Long questionType, String questionContent, Blob questionFigure, Integer maxScore, Integer minScore,
+                    Long creatorID, Integer allthatApply) {
+        this.setQuestionType(questionType);
+        this.setQuestionContent(questionContent);
+        this.setQuestionFigure(questionFigure);
+        this.setMaxScore(maxScore);
+        this.setMinScore(minScore);
+        this.setCreatorID(creatorID);
+        this.setAllThatApply(allthatApply);
+    }
 
-	/**
-	 * @param questionType
-	 *            the questionType to set
-	 */
-	public void setQuestionType(Long questionType) {
-		this.questionType = questionType;
-	}
+    /**
+     * @return the questionType
+     */
+    public Long getQuestionType() {
+        return questionType;
+    }
 
-	/**
-	 * @return the questionID
-	 */
-	public Long getQuestionID() {
-		return questionID;
-	}
+    /**
+     * @param questionType the questionType to set
+     */
+    public void setQuestionType(Long questionType) {
+        this.questionType = questionType;
+    }
 
-	/**
-	 * @param questionID
-	 *            the questionID to set
-	 */
-	public void setQuestionID(Long questionID) {
-		this.questionID = questionID;
-	}
+    /**
+     * @return the questionID
+     */
+    public Long getQuestionID() {
+        return questionID;
+    }
 
-	/**
-	 * @return the questionContent
-	 */
-	public String getQuestionContent() {
-		return questionContent;
-	}
+    /**
+     * @param questionID the questionID to set
+     */
+    public void setQuestionID(Long questionID) {
+        this.questionID = questionID;
+    }
 
-	/**
-	 * @param questionContent
-	 *            the questionContent to set
-	 */
-	public void setQuestionContent(String questionContent) {
-		this.questionContent = questionContent;
-	}
+    /**
+     * @return the questionContent
+     */
+    public String getQuestionContent() {
+        return questionContent;
+    }
 
-	/**
-	 * @return the questionFigure
-	 */
-	public Blob getQuestionFigure() {
-		return questionFigure;
-	}
+    /**
+     * @param questionContent the questionContent to set
+     */
+    public void setQuestionContent(String questionContent) {
+        this.questionContent = questionContent;
+    }
 
-	/**
-	 * @param questionFigure
-	 *            the questionFigure to set
-	 */
-	public void setQuestionFigure(Blob questionFigure) {
-		this.questionFigure = questionFigure;
-	}
+    /**
+     * @return the questionFigure
+     */
+    public Blob getQuestionFigure() {
+        return questionFigure;
+    }
 
-	/**
-	 * @return the maxScore
-	 */
-	public Integer getMaxScore() {
-		return maxScore;
-	}
+    /**
+     * @param questionFigure the questionFigure to set
+     */
+    public void setQuestionFigure(Blob questionFigure) {
+        this.questionFigure = questionFigure;
+    }
 
-	/**
-	 * @param maxScore
-	 *            the maxScore to set
-	 */
-	public void setMaxScore(Integer maxScore) {
-		this.maxScore = maxScore;
-	}
+    /**
+     * @return the maxScore
+     */
+    public Integer getMaxScore() {
+        return maxScore;
+    }
 
-	/**
-	 * @return the minScore
-	 */
-	public Integer getMinScore() {
-		return minScore;
-	}
+    /**
+     * @param maxScore the maxScore to set
+     */
+    public void setMaxScore(Integer maxScore) {
+        this.maxScore = maxScore;
+    }
 
-	/**
-	 * @param minScore
-	 *            the minScore to set
-	 */
-	public void setMinScore(Integer minScore) {
-		this.minScore = minScore;
-	}
+    /**
+     * @return the minScore
+     */
+    public Integer getMinScore() {
+        return minScore;
+    }
 
-	/**
-	 * @return the creatorID
-	 */
-	public Long getCreatorID() {
-		return creatorID;
-	}
+    /**
+     * @param minScore the minScore to set
+     */
+    public void setMinScore(Integer minScore) {
+        this.minScore = minScore;
+    }
 
-	/**
-	 * @param creatorID the creatorID to set
-	 */
-	public void setCreatorID(Long creatorID) {
-		this.creatorID = creatorID;
-	}
+    /**
+     * @return the creatorID
+     */
+    public Long getCreatorID() {
+        return creatorID;
+    }
 
-	/**
-	 * @return the allowed options
-	 */
-	public Integer getAllThatApply() { return allThatApply; }
+    /**
+     * @param creatorID the creatorID to set
+     */
+    public void setCreatorID(Long creatorID) {
+        this.creatorID = creatorID;
+    }
 
-	/**
-	 * @param allThatApply the number of allowed options
-	 */
-	public void setAllThatApply(Integer allThatApply) { this.allThatApply = allThatApply; }
+    /**
+     * @return the allowed options
+     */
+    public Integer getAllThatApply() { return allThatApply; }
 
-	/*
-	 * the object as a string
-	 */
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("Question{");
-		sb.append("questionType=").append(questionType);
-		sb.append(", questionID=").append(questionID);
-		sb.append(", questionContent='").append(questionContent).append('\'');
-		sb.append(", questionFigure=").append(questionFigure);
-		sb.append(", maxScore=").append(maxScore);
-		sb.append(", minScore=").append(minScore);
-		sb.append(", creatorID=").append(creatorID);
-		sb.append(", allThatApply=").append(allThatApply);
-		sb.append('}');
-		return sb.toString();
-	}
+    /**
+     * @param allThatApply the number of allowed options
+     */
+    public void setAllThatApply(Integer allThatApply) { this.allThatApply = allThatApply; }
+
+    /*
+     * the object as a string
+     */
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Question{");
+        sb.append("questionType=").append(questionType);
+        sb.append(", questionID=").append(questionID);
+        sb.append(", questionContent='").append(questionContent).append('\'');
+        sb.append(", questionFigure=").append(questionFigure);
+        sb.append(", maxScore=").append(maxScore);
+        sb.append(", minScore=").append(minScore);
+        sb.append(", creatorID=").append(creatorID);
+        sb.append(", allThatApply=").append(allThatApply);
+        sb.append('}');
+        return sb.toString();
+    }
 }

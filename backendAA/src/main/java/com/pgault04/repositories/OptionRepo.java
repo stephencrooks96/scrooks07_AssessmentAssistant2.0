@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the Option table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -24,6 +27,9 @@ public class OptionRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(OptionRepo.class);
 
     private final String insertSQL = "INSERT INTO OptionTbl (questionID, optionContent, worthMarks, feedback) values (:questionID, :optionContent, :worthMarks, :feedback)";
@@ -47,6 +53,7 @@ public class OptionRepo {
 
     /**
      * Inserts and updates records in to the Options table
+     *
      * @param option the option
      * @return the option after insertion
      */
@@ -72,6 +79,7 @@ public class OptionRepo {
 
     /**
      * Selects an option from the database based on its id
+     *
      * @param optionID the option's id
      * @return the option
      */
@@ -90,6 +98,7 @@ public class OptionRepo {
 
     /**
      * Selects the option's based on a question id
+     *
      * @param questionID the questions id
      * @return the list of options
      */
@@ -98,20 +107,18 @@ public class OptionRepo {
         String selectByQuestionIDSQL = selectSQL + "questionID=?";
         List<Option> options = tmpl.query(selectByQuestionIDSQL,
                 new BeanPropertyRowMapper<>(Option.class), questionID);
-
         log.debug("Query for alternatives, number of items: {}", options.size());
         return options;
     }
 
     /**
      * Deletes an option from the database
+     *
      * @param optionID the options id
      */
     public void delete(Long optionID) {
         log.debug("OptionRepo delete #{}", optionID);
-
         tmpl.update(deleteSQL, optionID);
         log.debug("Option deleted from database #{}", optionID);
     }
 }
-

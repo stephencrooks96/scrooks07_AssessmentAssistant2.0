@@ -1,7 +1,5 @@
 <app-header></app-header>
-
 <div class="container" style="width: 95%; max-width: 95%;">
-
   <nav aria-label="breadcrumb" class="breadcrumbs">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a [routerLink]="'/myModules'">Modules</a></li>
@@ -81,16 +79,20 @@
       </button>
     </div>
   </ng-template>
-      <!--  z-index: 2; position: absolute; -->
-  <div [hidden]="!chartCheck" style=" display: block; width: 95%; max-height: 70vh; position: absolute; background-color: #dbdbdb" [ngStyle]="{'z-index' : chartToShow ? '2' : '1'}">
+  <!--  z-index: 2; position: absolute; -->
+  <div [hidden]="!chartCheck"
+       style=" display: block; width: 95%; max-height: 70vh; position: absolute; background-color: #dbdbdb"
+       [ngStyle]="{'z-index' : chartToShow ? '2' : '1'}">
     <canvas id="main">{{chart}}
     </canvas>
   </div>
 
-  <div [hidden]="!resultChartCheck" style="display: block; width: 95%; height: 70vh; max-height: 70vh; position: absolute; background-color: #dbdbdb;" [ngStyle]="{'z-index' : chartToShow ? '1' : '2'}">
+  <div [hidden]="!resultChartCheck"
+       style="display: block; width: 95%; height: 70vh; max-height: 70vh; position: absolute; background-color: #dbdbdb;"
+       [ngStyle]="{'z-index' : chartToShow ? '1' : '2'}">
     <div style="width: 70%; margin-left: 15%;">
-    <canvas id="byQuestion">{{questionChart}}
-    </canvas>
+      <canvas id="byQuestion">{{questionChart}}
+      </canvas>
     </div>
   </div>
 
@@ -133,8 +135,7 @@
                     <tr style="border-radius: 10px;"
                         [ngStyle]="{'background-color' : approvalFeedback[script.questionAndAnswer.answer.tutorApproved]}"
                         *ngIf="script.questionAndAnswer.answer.answererID == studentDetail.userID">
-                        <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore}}</td>
-                      <td style="padding-left: 10px;" (click)="answerDetail = script;">
+                        <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="answerDetail = script;">
               <span
                 *ngIf="script.questionAndAnswer.question.question.questionType == 3">Insert the missing word(s):<br/></span>{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore + " - " + script.questionAndAnswer.question.question.questionContent}}
             </td>
@@ -159,8 +160,11 @@
         <div class="panel panel-default default-pre-scrollable">
           <table class="table-striped" style="width: 100%;">
             <tr *ngFor="let question of questionSet; let i = index" style="border-radius: 10px;">
-              <td style="padding-left: 10px; border-radius: 10px 0 0 10px;" (click)="showStudent = true; showQuestions = false; questionDetail = question; newAnswerDetailQuestion(question.questionID)">{{i + 1}}. {{question.questionContent}}</td>
-              <td style="border-radius: 0 10px 10px 0;" (click)="showStudent = true; showQuestions = false; questionDetail = question; newAnswerDetailQuestion(question.questionID)">
+              <td style="padding-left: 10px; border-radius: 10px 0 0 10px;"
+                  (click)="showStudent = true; showQuestions = false; questionDetail = question; newAnswerDetailQuestion(question.questionID)">{{i + 1}}
+                . {{question.questionContent}}</td>
+              <td style="border-radius: 0 10px 10px 0;"
+                  (click)="showStudent = true; showQuestions = false; questionDetail = question; newAnswerDetailQuestion(question.questionID)">
                 <button type="button" style="background: none; border: none;">
                   <i
                     class="fas fa-long-arrow-alt-right"></i>
@@ -180,7 +184,8 @@
                     <tr style="border-radius: 10px;"
                         [ngStyle]="{'background-color' : approvalFeedback[script.questionAndAnswer.answer.tutorApproved]}"
                         *ngIf="script.questionAndAnswer.question.question.questionID == questionDetail.questionID">
-                      <td style="padding-left: 10px; " (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore + " - " + script.student.firstName + " " + script.student.lastName}}
+                      <td style="padding-left: 10px; border-radius: 10px 0 0 10px;"
+                          (click)="answerDetail = script;">{{script.questionAndAnswer.answer.score + "/" + script.questionAndAnswer.question.question.maxScore + " - " + script.student.firstName + " " + script.student.lastName}}
             </td>
             <td style="border-radius: 0 10px 10px 0;" (click)="answerDetail = script;">
               <button type="button" style="background: none; border: none;"><i
@@ -221,7 +226,6 @@
               </div>
 
               <h5>Answer:</h5>
-
               <div class="answerArea">
                 <div
                   *ngIf="answerDetail.questionAndAnswer.question.question.questionType == 3 || answerDetail.questionAndAnswer.question.question.questionType == 4">
@@ -321,7 +325,6 @@
                   </form>
                 </div>
               </div>
-
 
               <!-- Template from ngBootstrap -->
               <ng-template #ConfirmApprove let-modal>
@@ -433,12 +436,11 @@
               </button>
 
               <div
-                *ngIf="moduleAssoc == TUTOR && answerDetail.questionAndAnswer.question.question.questionType == 1 || answerDetail.questionAndAnswer.question.question.questionType == 4">
+                *ngIf="moduleAssoc == TUTOR && (answerDetail.questionAndAnswer.question.question.questionType == 1 || answerDetail.questionAndAnswer.question.question.questionType == 4)">
                 <button style="margin-top: 15px; margin-bottom: 15px;" class="btn btn-dark btn-sm" type="button"
                         (click)="open(ConfirmCP)">Add
                   another mark allocation
                 </button>
-
 
                 <form *ngIf="addCorrectPointEdit" #addCorrectPointForm="ngForm"
                       (submit)="addCorrectPoint(addCorrectPointForm)"
@@ -618,9 +620,7 @@
                             </form>
                           </div>
                         </div>
-
                       </div>
-
                     </ng-template>
                   </ngb-panel>
                 </ngb-accordion>
@@ -649,7 +649,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>

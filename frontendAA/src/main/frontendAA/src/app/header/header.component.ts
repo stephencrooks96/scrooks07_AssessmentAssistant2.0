@@ -10,23 +10,29 @@ import {User} from "../modelObjs/objects.model";
 })
 export class HeaderComponent implements OnInit {
 
-  currentUser: User;
   user = new User();
 
   constructor(public auth: AuthorizationService, public router: Router) {
   }
 
-
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
     this.getUser();
   }
 
+  /**
+   * Gets logged in user to show they are logged in
+   */
   getUser() {
     return this.auth.getUser()
       .subscribe(user => this.user = user);
   }
 
-// login out from the app
+  /**
+   * Logs user out of system
+   */
   logout() {
     this.auth.logoutServ()
       .subscribe(
@@ -34,9 +40,6 @@ export class HeaderComponent implements OnInit {
           this.router.navigate(['/login']);
         },
         error => {
-
         });
   }
-
-
 }

@@ -3,18 +3,26 @@ package com.pgault04.entities;
 /**
  * @author Paul Gault
  * @since Jan 19
+ * Class represents the option entries table in the database
  */
 public class OptionEntries {
 
+    /**
+     * Constant for new option entries
+     */
     private static final long ENTRY_CONST = -1L;
     private Long optionEntryID = ENTRY_CONST;
     private Long optionID;
     private Long answerID;
 
+    /**
+     * Default constructor
+     */
     public OptionEntries() {}
 
     /**
      * The constructor with args
+     *
      * @param optionID the option id
      * @param answerID the answer id
      */
@@ -53,15 +61,16 @@ public class OptionEntries {
      */
     public void setAnswerID(Long answerID) { this.answerID = answerID; }
 
-    /**
-     * @return the object as a string
+    /*
+     * the object as a string
      */
     @Override
     public String toString() {
-        return new StringBuilder("OptionEntries{")
-                .append("optionEntryID=").append(optionEntryID)
-                .append(", optionID=").append(optionID)
-                .append(", answerID=").append(answerID)
-                .append('}').toString();
+        final StringBuilder sb = new StringBuilder("OptionEntries{");
+        sb.append("optionEntryID=").append(optionEntryID);
+        sb.append(", optionID=").append(optionID);
+        sb.append(", answerID=").append(answerID);
+        sb.append('}');
+        return sb.toString();
     }
 }

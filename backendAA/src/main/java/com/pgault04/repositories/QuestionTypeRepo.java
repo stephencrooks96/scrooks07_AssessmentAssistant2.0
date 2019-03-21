@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the QuestionType table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -24,6 +27,9 @@ public class QuestionTypeRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(QuestionTypeRepo.class);
 
     private final String insertSQL = "INSERT INTO QuestionType (questionType) values (:questionType)";
@@ -126,9 +132,7 @@ public class QuestionTypeRepo {
      */
     public void delete(Long questionTypeID) {
         log.debug("QuestionTypeRepo delete #{}", questionTypeID);
-
         tmpl.update(deleteSQL, questionTypeID);
         log.debug("QuestionType deleted from database #{}", questionTypeID);
-
     }
 }

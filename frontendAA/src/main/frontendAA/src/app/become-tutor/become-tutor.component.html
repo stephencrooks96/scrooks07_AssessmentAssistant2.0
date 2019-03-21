@@ -1,19 +1,15 @@
 <app-header></app-header>
 <form class="shadow mainForm" id="tutorRequestForm" name='tutorRequestForm' role="form"
       #tutorRequestForm="ngForm" (submit)="submitRequest(tutorRequestForm)">
-
   <h3>Become a Tutor:</h3>
   <p *ngIf="request.tutorRequestID == -1">Becoming a tutor allows you to create modules and associate other users with
     your modules. To become a tutor, please provide a reason for an admin to review.</p>
   <p *ngIf="request.tutorRequestID != -1">You have already submitted a request to become a tutor - you can update your
     reason here and re-submit.</p>
-
   <div class="form-group">
     <label for="reason">Reason (required):</label>
     <textarea rows="15" type="text" class="form-control" id="reason" name="reason"
               [(ngModel)]="request.reason" required></textarea>
   </div>
-
   <button id="submitRequest" type="submit" class="shadow btn btn-primary">Submit Request</button>
 </form>
-

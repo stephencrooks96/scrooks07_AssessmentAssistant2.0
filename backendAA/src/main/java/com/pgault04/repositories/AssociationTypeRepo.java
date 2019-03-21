@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.pgault04.repositories;
 
 import com.pgault04.entities.AssociationType;
@@ -19,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the AssociationType table table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -27,6 +27,9 @@ public class AssociationTypeRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(AssociationTypeRepo.class);
 
     private final String insertSQL = "INSERT INTO AssociationType (associationType) values (:associationType)";
@@ -50,6 +53,7 @@ public class AssociationTypeRepo {
 
     /**
      * Method to insert and update an association type in the database
+     *
      * @param associationType the association type
      * @return the returned association type after insertion
      */
@@ -71,11 +75,11 @@ public class AssociationTypeRepo {
         }
         log.info("AssociationTypeRepo returning associationType: {}", associationType);
         return associationType;
-
     }
 
     /**
      * Selects all association types from the database
+     *
      * @return the list of association types
      */
     public List<AssociationType> selectAll() {
@@ -88,6 +92,7 @@ public class AssociationTypeRepo {
 
     /**
      * Selects an association type by it's id
+     *
      * @param associationTypeID the association type id
      * @return the association type
      */
@@ -107,6 +112,7 @@ public class AssociationTypeRepo {
 
     /**
      * Selects an association type by its string value
+     *
      * @param associationType the string value of the association type
      * @return list of association types with this name
      */
@@ -122,6 +128,7 @@ public class AssociationTypeRepo {
 
     /**
      * Method to delete an association type from the database
+     *
      * @param associationTypeID the id of the item to be deleted
      */
     public void delete(Long associationTypeID) {

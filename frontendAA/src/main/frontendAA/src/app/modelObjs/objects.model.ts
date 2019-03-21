@@ -1,23 +1,27 @@
+/*
+ * This class contains all the class for objects that are used in this application
+ */
+
 export class ResultChartPojo {
-  labels : string[];
-  scores : number[];
-  classAverage : number;
-  colors : string[];
+  labels: string[];
+  scores: number[];
+  classAverage: number;
+  colors: string[];
 }
 
 export class TokenPojo {
   user = new User();
-  token : string;
+  token: string;
 }
 
 export class UserSession {
-  token : string;
+  token: string;
 }
 
 export class ChangePassword {
-  password : string;
-  newPassword : string;
-  repeatPassword : string;
+  password: string;
+  newPassword: string;
+  repeatPassword: string;
 }
 
 export class User {
@@ -26,9 +30,9 @@ export class User {
   password: string = "";
   firstName: string = "";
   lastName: string = "";
-  enabled : number;
-  userRoleID : number;
-  tutor : number;
+  enabled: number;
+  userRoleID: number;
+  tutor: number;
 }
 
 export class TutorRequestPojo {
@@ -42,9 +46,9 @@ export class ModuleRequestPojo {
 }
 
 export class TutorRequest {
-  tutorRequestID : number;
-  reason : string;
-  approved : number;
+  tutorRequestID: number;
+  reason: string;
+  approved: number;
 }
 
 export class ModuleFE {
@@ -68,12 +72,12 @@ export class ModuleWithTutorFE {
 export class Tests {
 
   testID: number;
-  testTitle: string ="";
+  testTitle: string = "";
   startDateTime = new Date();
   endDateTime = new Date();
-  moduleID: number=0;
-  publishGrades : number;
-  publishResults : number;
+  moduleID: number = 0;
+  publishGrades: number;
+  publishResults: number;
   practice: number = 0;
 }
 
@@ -90,7 +94,7 @@ export class TestAndResultFE {
 export class TestAndGrade {
 
   test = new Tests();
-  grade: string="";
+  grade: string = "";
 
 }
 
@@ -105,10 +109,10 @@ export class TestResult {
 }
 
 export class Associate {
-  associateType : string;
-  username : string;
-  firstName : string;
-  lastName : string;
+  associateType: string;
+  username: string;
+  firstName: string;
+  lastName: string;
 }
 
 export class Question {
@@ -116,67 +120,67 @@ export class Question {
   questionType: number;
   questionID: number;
   questionContent: string = "";
-  questionFigure : Blob;
+  questionFigure: Blob;
   maxScore: number;
   minScore: number;
   creatorID: number;
-  allThatApply : number;
+  allThatApply: number;
 
 }
 
 export class MarkerAndReassigned {
 
-  markerID : number;
-  previousMarkerID : number;
-  specifyQuestion : number;
-  numberToReassign : number;
+  markerID: number;
+  previousMarkerID: number;
+  specifyQuestion: number;
+  numberToReassign: number;
 }
 
 export class Answer {
 
-  answerID : number;
-  questionID : number;
-  answererID : number;
-  markerID : number;
-  testID : number;
-  content : string="";
-  score : number;
-  feedback : string="";
-  markerApproved : number;
-  tutorApproved : number;
+  answerID: number;
+  questionID: number;
+  answererID: number;
+  markerID: number;
+  testID: number;
+  content: string = "";
+  score: number;
+  feedback: string = "";
+  markerApproved: number;
+  tutorApproved: number;
 
 }
 
 export class Inputs {
-  inputValue : string="";
-  inputIndex : number;
-  answerID : number;
-  math : number;
+  inputValue: string = "";
+  inputIndex: number;
+  answerID: number;
+  math: number;
 }
 
 export class OptionEntries {
-  optionEntryID : number;
-  optionID : number;
-  answerID : number;
+  optionEntryID: number;
+  optionID: number;
+  answerID: number;
 }
 
 export class QuestionAndAnswer {
   question = new QuestionAndBase64();
   answer = new Answer();
-  inputs : Inputs[];
-  optionEntries : OptionEntries[];
-  correctPoints : CorrectPoint[];
+  inputs: Inputs[];
+  optionEntries: OptionEntries[];
+  correctPoints: CorrectPoint[];
 }
 
 export class QuestionAndBase64 {
   question = new Question();
-  options : Option[];
+  options: Option[];
   mathLines: QuestionMathLine[] = [];
-  base64 : string="";
+  base64: string = "";
 }
 
 export class Input {
-  value : string="";
+  value: string = "";
 }
 
 export class AnswerData {
@@ -187,11 +191,11 @@ export class AnswerData {
 export class TestMarking {
 
   test = new Tests();
-  toBeMarkedByYou: number=0;
-  toBeMarkedByTAs: number=0;
-  marked: number=0;
-  totalForYou: number=0;
-  totalForTAs: number=0;
+  toBeMarkedByYou: number = 0;
+  toBeMarkedByTAs: number = 0;
+  marked: number = 0;
+  totalForYou: number = 0;
+  totalForTAs: number = 0;
 
 }
 
@@ -207,20 +211,20 @@ export class Marker {
 }
 
 export class MarkerWithChart {
-  markers : Marker[];
-  labels : [];
-  data : [];
-  colours : [];
+  markers: Marker[];
+  labels: [];
+  data: [];
+  colours: [];
 }
 
 export class Performance {
   testAndResult = new TestAndResultFE();
-  classAverage: number=0;
+  classAverage: number = 0;
 }
 
 export class QuestionType {
-  questionTypeID = new Number();
-  questionType = new String();
+  questionTypeID = Number();
+  questionType = String();
 }
 
 export class TutorQuestionPojo {
@@ -235,26 +239,26 @@ export class TutorQuestionPojo {
 export class Option {
   optionID: number;
   questionID: number;
-  optionContent: string="";
+  optionContent: string = "";
   worthMarks: number;
-  feedback: string="";
+  feedback: string = "";
 }
 
 export class CorrectPoint {
   correctPointID: number;
   questionID: number;
-  phrase: string="";
+  phrase: string = "";
   marksWorth: number;
-  feedback: string="";
+  feedback: string = "";
   alternatives: Alternative[];
-  math : number;
+  math: number;
 }
 
 export class Alternative {
   alternativeID: number;
   correctPointID: number;
-  alternativePhrase: string="";
-  math : number;
+  alternativePhrase: string = "";
+  math: number;
 }
 
 export class QuestionMathLine {

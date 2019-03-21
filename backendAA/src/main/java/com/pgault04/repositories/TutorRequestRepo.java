@@ -15,6 +15,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the TutorRequest table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Repository
 public class TutorRequestRepo {
 
@@ -113,7 +120,6 @@ public class TutorRequestRepo {
         return requests;
     }
 
-
     /**
      * Deletes a record from the database
      *
@@ -126,4 +132,3 @@ public class TutorRequestRepo {
         log.debug("User deleted from database #{}", userID);
     }
 }
-

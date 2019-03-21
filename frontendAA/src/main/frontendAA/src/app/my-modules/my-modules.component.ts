@@ -14,6 +14,10 @@ export class MyModulesComponent implements OnInit {
   constructor(private modServ: ModulesService) {
   }
 
+  /**
+   * Called on initialization of component
+   * Needs to clear cache of data from user that may have been logged in before
+   */
   ngOnInit() {
     let parameters = [];
     for (const s of window.location.search.replace("?", "").split("&")) {
@@ -24,13 +28,16 @@ export class MyModulesComponent implements OnInit {
     if (!parameters["cacheCleared"]) {
       (window as any).location.search = '?cacheCleared=1';
     }
-
     this.getMyModulesWithTutors();
   }
 
+  /**
+   * Gets the modules the user is involved with
+   * along with tutor data
+   */
   getMyModulesWithTutors() {
-    return this.modServ.getMyModulesWithTutors()
-      .subscribe(modules => {this.modulesWithTutors = modules});
+    return this.modServ.getMyModulesWithTutors().subscribe(modules => {
+      this.modulesWithTutors = modules
+    });
   }
-
 }

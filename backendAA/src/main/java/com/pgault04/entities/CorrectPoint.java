@@ -5,178 +5,174 @@ import java.util.List;
 /**
  * @author Paul Gault - 40126005
  * @since November 2018
+ * Class represents the correct point table
  */
 public class CorrectPoint {
 
-	/**
-	 * Used as a checker for insertions and updates
-	 */
-	private static final long CORRECT_POINT_INITIAL_ID = -1L;
+    /**
+     * Used as a checker for insertions and updates
+     */
+    private static final long CORRECT_POINT_INITIAL_ID = -1L;
 
-	private Long correctPointID = CORRECT_POINT_INITIAL_ID;
+    private Long correctPointID = CORRECT_POINT_INITIAL_ID;
 
-	private Long questionID;
+    private Long questionID;
 
-	private String phrase;
+    private String phrase;
 
-	private Double marksWorth;
+    private Double marksWorth;
 
-	private String feedback;
-	
-	private List<Alternative> alternatives;
+    private String feedback;
 
-	private Integer indexedAt;
+    private List<Alternative> alternatives;
 
-	private Integer math;
+    private Integer indexedAt;
 
-	/**
-	 * The default constructor
-	 */
-	public CorrectPoint() {}
+    private Integer math;
 
-	/**
-	 * The constructor with args
-	 * @param questionID the question
-	 * @param phrase the phrase that is worth marks
-	 * @param marksWorth the marks the phrase is worth
-	 * @param feedback the feedback given for this phrase appearing
-	 * @param alternatives the list of phrases that are worthy of gaining the exact same marks
-	 */
-	public CorrectPoint(Long questionID, String phrase, Double marksWorth, String feedback, List<Alternative> alternatives, Integer indexedAt, Integer math) {
-		
-		this.setQuestionID(questionID);
-		this.setPhrase(phrase);
-		this.setMarksWorth(marksWorth);
-		this.setFeedback(feedback);
-		this.setAlternatives(alternatives);
-		this.setIndexedAt(indexedAt);
-		this.setMath(math);
-	}
+    /**
+     * The default constructor
+     */
+    public CorrectPoint() {}
 
-	/**
-	 * @return the index position
-	 */
-	public Integer getIndexedAt() { return indexedAt; }
+    /**
+     * The constructor with args
+     *
+     * @param questionID   the question
+     * @param phrase       the phrase that is worth marks
+     * @param marksWorth   the marks the phrase is worth
+     * @param feedback     the feedback given for this phrase appearing
+     * @param alternatives the list of phrases that are worthy of gaining the exact same marks
+     */
+    public CorrectPoint(Long questionID, String phrase, Double marksWorth, String feedback, List<Alternative> alternatives, Integer indexedAt, Integer math) {
+        this.setQuestionID(questionID);
+        this.setPhrase(phrase);
+        this.setMarksWorth(marksWorth);
+        this.setFeedback(feedback);
+        this.setAlternatives(alternatives);
+        this.setIndexedAt(indexedAt);
+        this.setMath(math);
+    }
 
-	/**
-	 * @param indexedAt the index position
-	 */
-	public void setIndexedAt(Integer indexedAt) { this.indexedAt = indexedAt; }
+    /**
+     * @return the index position
+     */
+    public Integer getIndexedAt() { return indexedAt; }
 
-	/**
-	 * @return the list of alternatives
-	 */
-	public List<Alternative> getAlternatives() {
-		return alternatives;
-	}
+    /**
+     * @param indexedAt the index position
+     */
+    public void setIndexedAt(Integer indexedAt) { this.indexedAt = indexedAt; }
 
-	/**
-	 * @param alternatives the list of alternatives to set
-	 */
-	public void setAlternatives(List<Alternative> alternatives) {
-		this.alternatives = alternatives;
-	}
+    /**
+     * @return the list of alternatives
+     */
+    public List<Alternative> getAlternatives() {
+        return alternatives;
+    }
 
-	/**
-	 * @return the correctPointID
-	 */
-	public Long getCorrectPointID() {
-		return correctPointID;
-	}
+    /**
+     * @param alternatives the list of alternatives to set
+     */
+    public void setAlternatives(List<Alternative> alternatives) {
+        this.alternatives = alternatives;
+    }
 
-	/**
-	 * @param correctPointID
-	 *            the correctPointID to set
-	 */
-	public void setCorrectPointID(Long correctPointID) {
-		this.correctPointID = correctPointID;
-	}
+    /**
+     * @return the correctPointID
+     */
+    public Long getCorrectPointID() {
+        return correctPointID;
+    }
 
-	/**
-	 * @return the questionID
-	 */
-	public Long getQuestionID() {
-		return questionID;
-	}
+    /**
+     * @param correctPointID the correctPointID to set
+     */
+    public void setCorrectPointID(Long correctPointID) {
+        this.correctPointID = correctPointID;
+    }
 
-	/**
-	 * @param questionID
-	 *            the questionID to set
-	 */
-	public void setQuestionID(Long questionID) {
-		this.questionID = questionID;
-	}
+    /**
+     * @return the questionID
+     */
+    public Long getQuestionID() {
+        return questionID;
+    }
 
-	/**
-	 * @return the phrase
-	 */
-	public String getPhrase() {
-		return phrase;
-	}
+    /**
+     * @param questionID the questionID to set
+     */
+    public void setQuestionID(Long questionID) {
+        this.questionID = questionID;
+    }
 
-	/**
-	 * @param phrase
-	 *            the phrase to set
-	 */
-	public void setPhrase(String phrase) {
-		this.phrase = phrase;
-	}
+    /**
+     * @return the phrase
+     */
+    public String getPhrase() {
+        return phrase;
+    }
 
-	/**
-	 * @return the marksWorth
-	 */
-	public Double getMarksWorth() {
-		return marksWorth;
-	}
+    /**
+     * @param phrase the phrase to set
+     */
+    public void setPhrase(String phrase) {
+        this.phrase = phrase;
+    }
 
-	/**
-	 * @param marksWorth
-	 *            the marksWorth to set
-	 */
-	public void setMarksWorth(Double marksWorth) {
-		this.marksWorth = marksWorth;
-	}
+    /**
+     * @return the marksWorth
+     */
+    public Double getMarksWorth() {
+        return marksWorth;
+    }
 
-	/**
-	 * @return the feedback
-	 */
-	public String getFeedback() {
-		return feedback;
-	}
+    /**
+     * @param marksWorth the marksWorth to set
+     */
+    public void setMarksWorth(Double marksWorth) {
+        this.marksWorth = marksWorth;
+    }
 
-	/**
-	 * @param feedback
-	 *            the feedback to set
-	 */
-	public void setFeedback(String feedback) {
-		this.feedback = feedback;
-	}
+    /**
+     * @return the feedback
+     */
+    public String getFeedback() {
+        return feedback;
+    }
 
-	/**
-	 * @return where the correct point is of math type
-	 */
-	public Integer getMath() { return math; }
+    /**
+     * @param feedback the feedback to set
+     */
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+    }
 
-	/**
-	 * @param math whether the correct point is math type
-	 */
-	public void setMath(Integer math) { this.math = math; }
+    /**
+     * @return where the correct point is of math type
+     */
+    public Integer getMath() { return math; }
 
-	/**
-	 * @return the object as a string
-	 */
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("CorrectPoint{");
-		sb.append("correctPointID=").append(correctPointID);
-		sb.append(", questionID=").append(questionID);
-		sb.append(", phrase='").append(phrase).append('\'');
-		sb.append(", marksWorth=").append(marksWorth);
-		sb.append(", feedback='").append(feedback).append('\'');
-		sb.append(", alternatives=").append(alternatives);
-		sb.append(", indexedAt=").append(indexedAt);
-		sb.append(", math=").append(math);
-		sb.append('}');
-		return sb.toString();
-	}
+    /**
+     * @param math whether the correct point is math type
+     */
+    public void setMath(Integer math) { this.math = math; }
+
+    /*
+     * the object as a string
+     */
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CorrectPoint{");
+        sb.append("correctPointID=").append(correctPointID);
+        sb.append(", questionID=").append(questionID);
+        sb.append(", phrase='").append(phrase).append('\'');
+        sb.append(", marksWorth=").append(marksWorth);
+        sb.append(", feedback='").append(feedback).append('\'');
+        sb.append(", alternatives=").append(alternatives);
+        sb.append(", indexedAt=").append(indexedAt);
+        sb.append(", math=").append(math);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -10,30 +10,31 @@ import com.pgault04.repositories.UserRepo;
 import com.pgault04.repositories.UserSessionsRepo;
 import com.pgault04.utilities.EmailUtil;
 import com.pgault04.utilities.PasswordUtil;
-import com.pgault04.utilities.PasswordUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.AddressException;
 import java.security.Principal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+/**
+ * Performs logic for all user features
+ * e.g. changing/resetting password, creating/editing profile, changing access levels, removing users
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Service
 public class UserService {
 
-    /**
-     * Logs useful info for debugging and analysis needs
-     */
-    private static final Logger logger = LogManager.getLogger(MainController.class);
     public static final int APPROVED = 1;
     public static final int UNAPPROVED = 0;
-
+    private static final Logger logger = LogManager.getLogger(MainController.class);
     @Autowired
     UserRepo userRepo;
     @Autowired
@@ -45,8 +46,9 @@ public class UserService {
     @Autowired
     UserSessionsRepo userSessionRepo;
 
-
     /**
+     * Gets tutor requests for admins to view
+     *
      * @return all tutor requests along with the tutor's information
      */
     public List<TutorRequestPojo> getTutorRequests(String username) {
@@ -65,7 +67,9 @@ public class UserService {
     }
 
     /**
-     * approves tutor request and notifies the user
+     * Approves tutor request and notifies the user
+     * Email call is asynchronous
+     *
      * @param userID the user
      */
     public void approveTutorRequest(Long userID, String username) {
@@ -81,6 +85,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Logic performed to promote a user to admin
+     * Asynchronously notifies the user that they are now an admin
+     *
+     * @param userID   the user to become an admin
+     * @param username the admin promoting the user
+     */
     public void makeAdmin(Long userID, String username) {
         User admin = userRepo.selectByUsername(username);
         if (admin.getUserRoleID().equals(UserRole.ROLE_ADMIN)) {
@@ -91,6 +102,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Logic performed to promote a user to a tutor
+     * Asynchronously notifies the user that they are now an tutor
+     *
+     * @param userID   the user to become a tutor
+     * @param username the admin promoting the user
+     */
     public void makeTutor(Long userID, String username) {
         User admin = userRepo.selectByUsername(username);
         if (admin.getUserRoleID().equals(UserRole.ROLE_ADMIN)) {
@@ -101,6 +119,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Logic performed to remove a user from the system
+     * Asynchronously notifies the user that they have been removed
+     *
+     * @param userID   the user to be removed
+     * @param username the admin performing the removal
+     */
     public void removeUser(Long userID, String username) {
         User admin = userRepo.selectByUsername(username);
         if (admin.getUserRoleID().equals(UserRole.ROLE_ADMIN)) {
@@ -112,8 +137,10 @@ public class UserService {
 
     /**
      * Allows admins to add users to the system
+     * Added on the front end via CSV this is converted to a list of users to be inserted in to the database
+     * Asynchronously notifies each user that they have been added
      *
-     * @param users the users to add
+     * @param users    the users to add
      * @param username the user name who is adding them
      */
     public void addUsers(List<User> users, String username) {
@@ -132,10 +159,15 @@ public class UserService {
         }
     }
 
+    /**
+     * Gets all the admins to be displayed to a user on the front end
+     * So that the user may get in contact with an admin
+     *
+     * @return the list of admin users
+     */
     public List<User> getAdmins() {
         List<User> users = userRepo.selectAll();
         List<User> admins = new ArrayList<>();
-
         for (User u : users) {
             u.setPassword(null);
             if (u.getUserRoleID().equals(UserRole.ROLE_ADMIN)) {
@@ -146,7 +178,8 @@ public class UserService {
     }
 
     /**
-     * Rejects tutor request and notifies user
+     * Rejects tutor request and notifies user asynchronously
+     *
      * @param userID the user
      */
     public void rejectTutorRequest(Long userID, String username) {
@@ -160,6 +193,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Gets the currently logged in user's info from database
+     *
+     * @param username the username of the currently logged in user
+     * @return the user or throw and exception if no user logged in
+     */
     public User getUser(String username) {
         User user = userRepo.selectByUsername(username);
         if (user != null) {
@@ -170,6 +209,14 @@ public class UserService {
         throw new IllegalArgumentException("No principal user.");
     }
 
+    /**
+     * Changes the users password while logged in
+     * Checks old password matches before allowing new one
+     *
+     * @param changePassword object consisting of all needed info to change password e.g. old password and new password
+     * @param username       the user who is logged in and changing their password
+     * @return new token info to the front end user for authentication throughout rest of session
+     */
     public UserSession changePassword(ChangePassword changePassword, String username) {
         User user = userRepo.selectByUsername(username);
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
@@ -183,10 +230,19 @@ public class UserService {
         }
     }
 
+    /**
+     * Logic performed to allow user to create a new password while not logged in
+     * Each user has a reset string stored in database, this is emailed out to them and
+     * must be included in the link for the password reset to work
+     *
+     * @param email       the user's email / username
+     * @param newPassword the new password they have chosen
+     * @param resetString the reset string held in database
+     * @return success / failure
+     */
     public Boolean resetPassword(String email, String newPassword, String resetString) {
         User user = userRepo.selectByUsername(email);
         PasswordReset passwordReset = passwordResetRepo.selectByUserID(user.getUserID());
-
         if (resetString.equals(passwordReset.getResetString())) {
             user.setPassword(PasswordUtil.encrypt(newPassword));
             userRepo.insert(user);
@@ -201,6 +257,8 @@ public class UserService {
 
     /**
      * Requests a reset email to be sent out to email associated with users account
+     * Email will include the user's reset string
+     *
      * @param email the email
      * @return boolean marker
      */
@@ -215,6 +273,15 @@ public class UserService {
         }
     }
 
+    /**
+     * Submits a user's request to become a tutor
+     * If no request submitted before then a fresh one is entered in to the database
+     * If not the current one is simply updated
+     *
+     * @param tutorRequest the tutor request object includes reason for request
+     * @param username     the logged in user i.e. the one making the request
+     * @return the tutor request
+     */
     public TutorRequests submitTutorRequest(TutorRequests tutorRequest, String username) {
         User user = userRepo.selectByUsername(username);
         TutorRequests tutorRequestCheck = tutorRequestRepo.selectByUserID(user.getUserID());
@@ -237,6 +304,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Gets a user's tutor request providing they have already made one
+     *
+     * @param username the logged in user whose request must be retrieved
+     * @return the tutor request
+     */
     public TutorRequests getTutorRequest(String username) {
         User user = userRepo.selectByUsername(username);
         TutorRequests tutorRequestCheck = tutorRequestRepo.selectByUserID(user.getUserID());
@@ -249,9 +322,10 @@ public class UserService {
 
     /**
      * Checks if the username is already used
+     * Can be for user creating an account or editing theirs
      *
      * @param username the username to check
-     * @return whether the username is used or not
+     * @return returns true when the username is taken
      */
     public boolean usernameCheck(String username, Principal principal) {
         List<User> users = userRepo.selectAll();
@@ -266,7 +340,9 @@ public class UserService {
     }
 
     /**
-     * Creates a new user in the system
+     * Creates a new user in the system sets all necessary data based on what user has entered
+     * Must pass username check to be allowed
+     *
      * @param user the user to create
      * @return the created user
      * @throws IllegalArgumentException thrown if username is already in use
@@ -290,7 +366,9 @@ public class UserService {
 
     /**
      * Edits the users profile
-     * @param user the new user data for the principal user
+     * Must pass username check
+     *
+     * @param user      the new user data for the principal user
      * @param principal the principal user
      * @return the user
      * @throws IllegalArgumentException if the user name is in use

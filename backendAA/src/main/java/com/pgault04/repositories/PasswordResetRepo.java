@@ -13,12 +13,18 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the PasswordReset table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
 @Component
 public class PasswordResetRepo {
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(PasswordResetRepo.class);
 
     private final String insertSQL = "INSERT INTO PasswordReset (userID, resetString) values (:userID, :resetString)";

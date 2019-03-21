@@ -12,23 +12,20 @@ import {Router} from "@angular/router";
 })
 export class AuthorizationService {
 
+  public _base64Credential: string;
 
   constructor(public _http: HttpClient, private app: AppComponent, private router: Router) {
   }
 
-  public _base64Credential: string;
-
   /**
-   *
+   * Performs interaction with backend server to allow user to log in
    * @param user
    */
   public loginServ(user: User) {
-
     this._base64Credential = btoa(user.username + ':' + user.password);
     let headers = new HttpHeaders({'Accept': 'application/json', "Authorization": 'Basic ' + this._base64Credential});
 
     return this._http.get<TokenPojo>(this.app.url + "/main/login", {headers: headers}).pipe(tap(data => {
-
       let userDetails = data.user;
       console.log(data);
       if (userDetails) {
@@ -40,6 +37,10 @@ export class AuthorizationService {
     }));
   }
 
+  /**
+   * Performs the necessary communication with back end server to retrieve the
+   * information on the logged in user
+   */
   getUser(): Observable<User> {
     let headers = new HttpHeaders({
       'Accept': 'application/json',
@@ -54,7 +55,7 @@ export class AuthorizationService {
   }
 
   /**
-   *
+   * Performs communication with backend server to log the user out
    */
   public logoutServ() {
     return this._http.get<any>(this.app.url + '/main/logout', {headers: this.app.headers}).pipe(tap(data => {
@@ -62,6 +63,4 @@ export class AuthorizationService {
       localStorage.removeItem('creds');
     }));
   }
-
-
 }

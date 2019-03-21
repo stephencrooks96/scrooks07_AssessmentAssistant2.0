@@ -2,6 +2,7 @@ package com.pgault04.pojos;
 
 /**
  * Class to accumulate information needed for performance metrics and output them to front end
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -17,8 +18,9 @@ public class Performance {
 
     /**
      * Constructor with args
+     *
      * @param testAndResult the test with students result
-     * @param classAverage the class average for comparison
+     * @param classAverage  the class average for comparison
      */
     public Performance(TestAndResult testAndResult, Double classAverage) {
         this.setTestAndResult(testAndResult);

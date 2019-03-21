@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.pgault04.repositories;
 
 import com.pgault04.entities.ModuleAssociation;
@@ -18,11 +15,21 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the ModuleAssociation table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Component
 public class ModuleAssociationRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(ModuleAssociationRepo.class);
 
     private final String insertSQL = "INSERT INTO ModuleAssociation (moduleID, userID, associationType) values (:moduleID, :userID, :associationType)";
@@ -46,6 +53,7 @@ public class ModuleAssociationRepo {
 
     /**
      * Method to insert or update module associations in to the table
+     *
      * @param moduleAssociation the module association
      * @return the module association after insertion/update
      */
@@ -71,6 +79,7 @@ public class ModuleAssociationRepo {
 
     /**
      * Selects all the module association based on its id
+     *
      * @param associationID the association id
      * @return the association
      */
@@ -89,6 +98,7 @@ public class ModuleAssociationRepo {
 
     /**
      * Selects the module associations for a given module
+     *
      * @param moduleID the module's id
      * @return a list of the module associations
      */
@@ -104,6 +114,7 @@ public class ModuleAssociationRepo {
 
     /**
      * Selects a list of module associations for a given user
+     *
      * @param userID the user's id
      * @return a list of the users module associations
      */
@@ -119,6 +130,7 @@ public class ModuleAssociationRepo {
 
     /**
      * Selects all the module associations based on which type of association they are
+     *
      * @param associationType the associations types id
      * @return the list of module associations
      */
@@ -134,6 +146,7 @@ public class ModuleAssociationRepo {
 
     /**
      * Deletes a module associations from the database
+     *
      * @param associationID the associations id
      */
     public void delete(Long associationID) {

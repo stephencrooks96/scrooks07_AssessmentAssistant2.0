@@ -18,9 +18,18 @@ export class RequestResetPasswordComponent implements OnInit {
   constructor(private router: Router, private userService: UserService) {
   }
 
+  /**
+   * Called on initialisation of the component
+   */
   ngOnInit() {
   }
 
+  /**
+   * Requests a reset password link for the user
+   * Will include a reset string from the database which belongs to the user
+   * Emails entered must match
+   * @param form
+   */
   requestReset(form: NgForm) {
     this.error = false;
     if (this.email != this.confirmEmail) {

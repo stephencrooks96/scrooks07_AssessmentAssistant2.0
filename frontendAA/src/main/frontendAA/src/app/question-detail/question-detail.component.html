@@ -325,8 +325,6 @@
             </div>
           </fieldset>
         </div>
-
-
         <div
           *ngIf="questionDetail.question.questionType == 1 || questionDetail.question.questionType == 3 || questionDetail.question.questionType == 4">
           <fieldset id="markSchemeFieldset" style="width: 100%;">
@@ -434,7 +432,8 @@
                               style="color: #007bff; background-color: transparent; border: none;"><i
                         class="fas fa-plus"></i> Text
                       </button>
-                      <button *ngIf="questionDetail.question.questionType == 4" (click)="addMathAlternative([i])" type="button"
+                      <button *ngIf="questionDetail.question.questionType == 4" (click)="addMathAlternative([i])"
+                              type="button"
                               style="color: #28a745; background-color: transparent; border: none;"><i
                         class="fas fa-plus"></i> Math
                       </button>
@@ -482,20 +481,15 @@
                       </div>
                     </div>
                   </div>
-
-
                 </div>
               </fieldset>
             </div>
 
           </fieldset>
         </div>
-
-
         <input class="shadow button btn-dark" id="addQuestionButton" name='addQuestionButton'
                type="submit" value="Save"/>
       </form>
-
     </div>
   </div>
 </div>

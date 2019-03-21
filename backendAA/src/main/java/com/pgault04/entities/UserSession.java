@@ -2,6 +2,11 @@ package com.pgault04.entities;
 
 import java.sql.Timestamp;
 
+/**
+ * @author Paul Gault 40126005
+ * @since Feb 2019
+ * Represents the UserSession table in the database
+ */
 public class UserSession {
 
     private String username;
@@ -9,16 +14,16 @@ public class UserSession {
     private Timestamp lastActive;
 
     /**
-     *
+     * Default constructor
      */
-    public UserSession() {
-    }
+    public UserSession() {}
 
     /**
+     * Constructor with arguments
      *
-     * @param username
-     * @param token
-     * @param lastActive
+     * @param username   - the user
+     * @param token      - their session token
+     * @param lastActive - when they were last active
      */
     public UserSession(String username, String token, Timestamp lastActive) {
         this.setUsername(username);
@@ -27,48 +32,42 @@ public class UserSession {
     }
 
     /**
-     *
-     * @return
+     * @return the username corresponding to the session
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     *
-     * @param username
+     * @param username sets the username corresponding to the session
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     *
-     * @return
+     * @return the token corresponding to the session
      */
     public String getToken() {
         return token;
     }
 
     /**
-     *
-     * @param token
+     * @param token sets the token corresponding to the session
      */
     public void setToken(String token) {
         this.token = token;
     }
 
     /**
-     *
-     * @return
+     * @return gets when the user was last active
      */
     public Timestamp getLastActive() {
         return lastActive;
     }
 
     /**
-     *
-     * @param lastActive
+     * @param lastActive - sets when the user was last active
      */
     public void setLastActive(Timestamp lastActive) {
         this.lastActive = lastActive;

@@ -3,7 +3,10 @@ package com.pgault04.services;
 import com.pgault04.entities.*;
 import com.pgault04.pojos.*;
 import com.pgault04.repositories.*;
-import com.pgault04.utilities.*;
+import com.pgault04.utilities.BlobUtil;
+import com.pgault04.utilities.EmailUtil;
+import com.pgault04.utilities.PasswordUtil;
+import com.pgault04.utilities.StringToDateUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,7 @@ import java.util.*;
 @Service
 public class ModuleService {
 
-    /**
-     * Logs useful information for debugging and problem resolution
-     */
     private static final Logger logger = LogManager.getLogger(ModuleService.class);
-
     private static final int SCHEDULED = 1;
     private static final int READY_FOR_REVIEW = 0;
     private static final int PUBLISH_TRUE = 1;
@@ -72,7 +71,11 @@ public class ModuleService {
     PasswordResetRepo passwordResetRepo;
 
     /**
-     * @return all tutor requests along with the tutor's information
+     * Method to retrieve list of all module requests
+     * and display them to the admins for approval / rejection
+     *
+     * @param username - the user requesting the list
+     * @return the module requests or null (if user is not an admin)
      */
     public List<ModuleRequestPojo> getModuleRequests(String username) {
         User user = userRepo.selectByUsername(username);
@@ -90,8 +93,12 @@ public class ModuleService {
     }
 
     /**
-     * approves module request and notifies the tutor
-     * @param moduleID the module
+     * Allows admin to approve a users request to add a certain module.
+     * Also asynchronously informs associates that they have been added to the module
+     * and informs the tutor their request has been approved.
+     *
+     * @param moduleID - the module
+     * @param username - the users who is performing the action
      */
     public void approveModuleRequest(Long moduleID, String username) {
         User admin = userRepo.selectByUsername(username);
@@ -109,8 +116,11 @@ public class ModuleService {
     }
 
     /**
-     * Rejects module request and notifies tutor
-     * @param moduleID the module
+     * Allows admin to reject a module request
+     * Asynchronously informs the tutor that this module request has been rejected
+     *
+     * @param moduleID - the module to be rejected
+     * @param username - the user performing the action
      */
     public void rejectModuleRequest(Long moduleID, String username) {
         User user = userRepo.selectByUsername(username);
@@ -121,6 +131,14 @@ public class ModuleService {
         }
     }
 
+    /**
+     * Removes an associate from a module
+     * Asynchronously informs them that they have been removed
+     *
+     * @param username  - the user to be removed from the module
+     * @param moduleID  - the module
+     * @param principal - the user performing the action (must be the module tutor)
+     */
     public void removeAssociate(String username, Long moduleID, String principal) {
         Long check = checkValidAssociation(principal, moduleID);
         if (check != null && check == AssociationType.TUTOR) {
@@ -135,6 +153,14 @@ public class ModuleService {
         }
     }
 
+    /**
+     * Retrieves all associates for the module for display in the module home
+     * using the Associate pojo
+     *
+     * @param moduleID  - the module
+     * @param principal - the user making the request (must be the module tutor)
+     * @return the associates or null if the user is not the tutor
+     */
     public List<Associate> getAssociates(Long moduleID, String principal) {
         if (checkValidAssociation(principal, moduleID) != null) {
             List<ModuleAssociation> moduleAssociations = modAssocRepo.selectByModuleID(moduleID);
@@ -142,13 +168,7 @@ public class ModuleService {
             for (ModuleAssociation ma : moduleAssociations) {
                 User user = userRepo.selectByUserID(ma.getUserID());
                 String associationType;
-                if (ma.getAssociationType().equals(AssociationType.TUTOR)) {
-                    associationType = "Tutor";
-                } else if (ma.getAssociationType().equals(AssociationType.STUDENT)) {
-                    associationType = "Student";
-                } else {
-                    associationType = "Teaching Assistant";
-                }
+                associationType = setUserAssociationTypeForAssociateList(ma);
                 associates.add(new Associate(associationType, user.getUsername(), user.getFirstName(), user.getLastName()));
             }
             return associates;
@@ -156,9 +176,25 @@ public class ModuleService {
         return null;
     }
 
+    /*
+     * Checks which type of associates they are and sets a string to add to the pojo
+     */
+    private String setUserAssociationTypeForAssociateList(ModuleAssociation ma) {
+        String associationType;
+        if (ma.getAssociationType().equals(AssociationType.TUTOR)) {
+            associationType = "Tutor";
+        } else if (ma.getAssociationType().equals(AssociationType.STUDENT)) {
+            associationType = "Student";
+        } else {
+            associationType = "Teaching Assistant";
+        }
+        return associationType;
+    }
+
     /**
      * Performs necessary actions needed to retrieve the active tests
      * from database and return them to user for a given module
+     * Active test is one that is scheduled, not a practice test and current time is within the start-end period
      *
      * @param moduleID the module id
      * @return the list of active tests
@@ -183,6 +219,15 @@ public class ModuleService {
         return null;
     }
 
+    /**
+     * Performs necessary actions needed to retrieve the practice tests
+     * from database and return them to user for a given module
+     * Practice test is one that is scheduled, marked as a practice test and current time is within the start-end period
+     *
+     * @param username - the user making the request
+     * @param moduleID - the module
+     * @return the list of practice tests or null if invalid association
+     */
     public List<Tests> practiceTests(String username, Long moduleID) {
         logger.info("Request made for practice tests for module #{}", moduleID);
         if (checkValidAssociation(username, moduleID) != null) {
@@ -205,6 +250,7 @@ public class ModuleService {
 
     /**
      * Gets a given module with its tutor info
+     * combined in a pojo
      *
      * @param moduleID the module id
      * @return the module with tutor info
@@ -235,6 +281,16 @@ public class ModuleService {
         return modTutors;
     }
 
+    /**
+     * Allows a tutor to add a new module
+     * Sets all required data and emails the tutor informing them that their
+     * request is pending approval
+     * Also emails admins to remind them to approve the module
+     *
+     * @param modulePojo - the module request information
+     * @param username   - the user requesting the module addition
+     * @throws IllegalArgumentException thrown if user is not a tutor
+     */
     public void addModule(ModulePojo modulePojo, String username) throws IllegalArgumentException {
         final User user = userRepo.selectByUsername(username);
         modulePojo.getModule().setApproved(UNAPPROVED);
@@ -251,6 +307,9 @@ public class ModuleService {
         emailAdmins(modulePojo, user);
     }
 
+    /*
+     * Asynchronously cycles through the admins for the system and emails them about a new module pending approval
+     */
     private void emailAdmins(ModulePojo modulePojo, User user) {
         List<User> admins = userRepo.selectAll();
         for (User u : admins) {
@@ -260,7 +319,18 @@ public class ModuleService {
         }
     }
 
-    public void addAssociations(Long moduleID, List<Associate> associations, String username) throws IllegalArgumentException{
+    /**
+     * Adds associations to a module
+     * Can only be a teaching assistant (TA) or student (S)
+     * Comes from CSV uploaded on front end and are converted to objects of Associate type
+     *
+     * @param moduleID     - the module they are being added to
+     * @param associations - the new associations
+     * @param username     - the user requesting to add the associations
+     * @throws IllegalArgumentException - thrown when user attempting to add the associations is not a tutor
+     *                                  or if incorrect AssociationType is added
+     */
+    public void addAssociations(Long moduleID, List<Associate> associations, String username) throws IllegalArgumentException {
         boolean associationTypeError = false;
         Long check = checkValidAssociation(username, moduleID);
         if (check != null && check == AssociationType.TUTOR) {
@@ -278,10 +348,7 @@ public class ModuleService {
                     associationTypeError = true;
                     continue;
                 }
-                moduleAssociation.setAssociationID(-1L);
-                moduleAssociation.setUserID(user.getUserID());
-                moduleAssociation.setModuleID(moduleID);
-                modAssocRepo.insert(moduleAssociation);
+                finaliseNewModuleAssociationAndInsert(moduleID, user, moduleAssociation);
             }
             if (associationTypeError) {
                 throw new IllegalArgumentException("One or more associations have included a type which is not TA or S.");
@@ -291,6 +358,23 @@ public class ModuleService {
         }
     }
 
+    /*
+     * Sets the association id to initial for insertion
+     * Sets user and moduleID before entering
+     */
+    private void finaliseNewModuleAssociationAndInsert(Long moduleID, User user, ModuleAssociation moduleAssociation) {
+        moduleAssociation.setAssociationID(-1L);
+        moduleAssociation.setUserID(user.getUserID());
+        moduleAssociation.setModuleID(moduleID);
+        modAssocRepo.insert(moduleAssociation);
+    }
+
+    /*
+     * Creates a new user when one doesn't exist corresponding to a user in the CSV file that's been uploaded
+     * Adds the new user in to database
+     * Gives the user a random password which is emailed to them
+     * Generates a session and a password reset string for the user
+     */
     private User newUserFromCsv(String username, Associate a) {
         User user;
         String password = PasswordUtil.generateRandomString();
@@ -304,6 +388,7 @@ public class ModuleService {
 
     /**
      * Gets the modules that are awaiting approval
+     *
      * @param username the user
      * @return unapproved modules
      */
@@ -375,6 +460,10 @@ public class ModuleService {
         return null;
     }
 
+    /*
+     * Checks which type of marker the user is and calls methods to populate marking
+     * data accordingly
+     */
     private void populateMarkingData(Long associationType, User user, List<TestMarking> tmList, Tests t) {
         List<Answer> answers = answerRepo.selectByTestID(t.getTestID());
         TestMarking tm = new TestMarking(t, 0, 0, 0, 0, 0);
@@ -394,6 +483,10 @@ public class ModuleService {
         tmList.add(tm);
     }
 
+    /*
+     * If the user is a tutor then this method is called to
+     * populate how many answers the teaching assistants have and haven't marked so far
+     */
     private void populateMarkingDataForTeachingAssistants(TestMarking tm, Answer a) {
         tm.setTotalForTAs(tm.getTotalForTAs() + 1);
         if (a.getMarkerApproved() != null && a.getMarkerApproved() != MARKER_APPROVED) {
@@ -403,6 +496,10 @@ public class ModuleService {
         }
     }
 
+    /*
+     * Populates the users own marking data
+     * i.e. how many answers they have and haven't marked
+     */
     private void populateMarkingDataForUser(TestMarking tm, Answer a) {
         tm.setTotalForYou(tm.getTotalForYou() + 1);
         if (a.getMarkerApproved() != null && a.getMarkerApproved() != MARKER_APPROVED) {
@@ -413,27 +510,30 @@ public class ModuleService {
     }
 
     /**
-     * Performs necessary actions needed to retrieve the active results
+     * Performs necessary actions needed to retrieve the active grades
      * from database and return them to user for a given module
      *
      * @param moduleID the module id
      * @param username the user
-     * @return the active results
+     * @return the active grades
      */
-    public List<TestAndGrade> activeResults(Long moduleID, String username) throws SQLException {
+    public List<TestAndGrade> activeGrades(Long moduleID, String username) throws SQLException {
         logger.info("Request made for active results for module #{}", moduleID);
         Long check = checkValidAssociation(username, moduleID);
         if (check != null && AssociationType.STUDENT == check) {
             List<Tests> tests = testsRepo.selectByModuleID(moduleID);
             User user = userRepo.selectByUsername(username);
             List<TestAndGrade> testAndGradeList = new ArrayList<>();
-            populateActiveResults(tests, user, testAndGradeList);
+            populateActiveGrades(tests, user, testAndGradeList);
             return testAndGradeList;
         }
         return null;
     }
 
-    private void populateActiveResults(List<Tests> tests, User user, List<TestAndGrade> testAndGradeList) throws SQLException {
+    /*
+     * Populates each grade and necessary data for any tests that are publishing grades currently
+     */
+    private void populateActiveGrades(List<Tests> tests, User user, List<TestAndGrade> testAndGradeList) throws SQLException {
         for (Tests test : tests) {
             if (test.getPublishGrades() == PUBLISH_TRUE && test.getPractice() == 0) {
                 for (TestResult testResult : testResultRepo.selectByTestID(test.getTestID())) {
@@ -450,6 +550,9 @@ public class ModuleService {
         }
     }
 
+    /*
+     * Gets the total score of questions in the test the Result is being generated for
+     */
     private double getPercentageScore(List<QuestionAndAnswer> questions, double percentageScore) {
         for (QuestionAndAnswer q : questions) {
             percentageScore += q.getQuestion().getQuestion().getMaxScore();
@@ -457,11 +560,8 @@ public class ModuleService {
         return percentageScore;
     }
 
-    /**
+    /*
      * Adds questions from a test to a list and returns the list
-     *
-     * @param test - the test
-     * @return the list of questions
      */
     List<QuestionAndAnswer> addQuestionsToList(Tests test, Long userID) throws SQLException {
         List<QuestionAndAnswer> questions = new ArrayList<>();
@@ -471,6 +571,9 @@ public class ModuleService {
         return questions;
     }
 
+    /*
+     * Populates the question and answer object with all necessary date for display
+     */
     private void populateQuestionAndAnswer(Tests test, Long userID, List<QuestionAndAnswer> questions, TestQuestion testQuestion) throws SQLException {
         Question questionToAdd = questionRepo.selectByQuestionID(testQuestion.getQuestionID());
         Answer answer = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(questionToAdd.getQuestionID(), userID, test.getTestID());
@@ -500,6 +603,9 @@ public class ModuleService {
         return null;
     }
 
+    /*
+     * Populates tests in to list that are still in the draft phase
+     */
     private void populateDraftTests(List<Tests> tests, List<Tests> testReturn) {
         for (Tests t : tests) {
             if (t.getScheduled() != SCHEDULED || t.getPractice() == 1) {
@@ -527,6 +633,10 @@ public class ModuleService {
         return null;
     }
 
+    /*
+     * Populates tests that are in the marking review phase
+     * i.e. tests where every answer has been approved by markers
+     */
     private void populateTestsReadyForReview(Date now, List<Tests> tests, List<TestMarking> tmList) {
         for (Tests t : tests) {
             try {
@@ -543,6 +653,9 @@ public class ModuleService {
         }
     }
 
+    /*
+     * Checks for any answers for the test that are yet to be marked
+     */
     private int getAnswersUnmarked(int answersUnmarked, List<Answer> answers) {
         for (Answer a : answers) {
             if (a.getMarkerApproved() != null && a.getMarkerApproved() == 0) {
@@ -553,8 +666,7 @@ public class ModuleService {
     }
 
     /**
-     * Displays all the modules that a given user is associated with as string of
-     * HTML5 tags
+     * Outputs all modules that the logged in user is involved with
      *
      * @param username the user
      * @return moduleMessage
@@ -575,7 +687,7 @@ public class ModuleService {
     /**
      * Performs the actions necessary to get the performance data and return it to the user on front end
      *
-     * @param moduleID  - the module id
+     * @param moduleID - the module id
      * @param username - the user
      * @return the performance data
      */
@@ -592,6 +704,10 @@ public class ModuleService {
         return null;
     }
 
+    /*
+     * Populates all data needed to show how student has performed
+     * i.e.the student's result and the average score for the class
+     */
     private void populatePerformanceList(List<Tests> tests, User user, List<Performance> performanceList) throws SQLException {
         for (Tests test : tests) {
             if (test.getPublishResults() == PUBLISH_TRUE && test.getPractice() != 1) {
@@ -599,8 +715,8 @@ public class ModuleService {
                 TestAndResult tar = null;
                 List<TestResult> testResults = testResultRepo.selectByTestID(test.getTestID());
                 for (TestResult testResult : testResults) {
-                    tar = getTestAndResult(user, test, tar, testResult);
                     classAverage += testResult.getTestScore();
+                    tar = getTestAndResult(user, test, tar, testResult);
                 }
                 int questionTotal = 0;
                 questionTotal = testServ.getQuestionTotal(test, questionTotal);
@@ -610,6 +726,10 @@ public class ModuleService {
         }
     }
 
+    /*
+     * Sets the test and result if it belongs to the user
+     * For output with performance data
+     */
     private TestAndResult getTestAndResult(User user, Tests test, TestAndResult tar, TestResult testResult) throws SQLException {
         if (testResult.getStudentID().equals(user.getUserID())) {
             tar = new TestAndResult(test, testResult, addQuestionsToList(test, user.getUserID()), user);
@@ -631,6 +751,9 @@ public class ModuleService {
         return getTheAssociationTypeID(ma, u);
     }
 
+    /*
+     * Checks what kind of association the user has to the module
+     */
     private Long getTheAssociationTypeID(List<ModuleAssociation> ma, User u) {
         Long theAssociationTypeID = null;
         for (ModuleAssociation m : ma) {
@@ -641,12 +764,9 @@ public class ModuleService {
         return theAssociationTypeID != null ? associationTypeRepo.selectByAssociationTypeID(theAssociationTypeID).getAssociationTypeID() : null;
     }
 
-    /**
+    /*
      * Used to assign a users score to a grade for occasions
      * when a tutor wants to reveal a grade and not score
-     *
-     * @param score the score
-     * @return the grade
      */
     String checkGrade(double score) {
         if (score > 89) {

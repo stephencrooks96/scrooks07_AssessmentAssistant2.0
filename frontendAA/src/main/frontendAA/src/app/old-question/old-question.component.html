@@ -25,9 +25,12 @@
           <h4>Mark Allocations:</h4>
           <div *ngFor="let correctPoint of oldQuestion.correctPoints">
             <h5><b>Phrase: </b>{{correctPoint.phrase}}</h5>
-            <h5 *ngIf="correctPoint.math == 1"><b>Math: </b><ng-katex [equation]="correctPoint.phrase" [options]="options"></ng-katex></h5>
+            <h5 *ngIf="correctPoint.math == 1"><b>Math: </b>
+              <ng-katex [equation]="correctPoint.phrase" [options]="options"></ng-katex>
+            </h5>
             <h5><b>Allocated Mark: </b>{{correctPoint.marksWorth}}</h5>
-            <h5 *ngIf="correctPoint.alternatives && correctPoint.alternatives.length > 0"><b>Alternative Phrases: </b></h5>
+            <h5 *ngIf="correctPoint.alternatives && correctPoint.alternatives.length > 0"><b>Alternative Phrases: </b>
+            </h5>
             <ol *ngIf="correctPoint.alternatives && correctPoint.alternatives.length > 0">
               <li *ngFor="let alt of correctPoint.alternatives">
                 {{alt.alternativePhrase}}
@@ -41,5 +44,4 @@
       </ngb-panel>
     </ngb-accordion>
   </div>
-
 </div>

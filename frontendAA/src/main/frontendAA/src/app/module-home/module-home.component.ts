@@ -12,13 +12,10 @@ import {
   User
 } from "../modelObjs/objects.model";
 import {ActivatedRoute, Router} from "@angular/router";
-import {interval, Observable, Subscription} from "rxjs";
+import {interval, Subscription} from "rxjs";
 import {TestService} from "../services/test.service";
 import {NgForm} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-
-
-
 
 @Component({
   selector: 'app-module-home',
@@ -64,14 +61,17 @@ export class ModuleHomeComponent implements OnInit {
   fileSuccess: boolean = false;
   associationsFile: any;
   associations = [];
-  userToRemove : string;
-  contactAssociates : false;
-  associates : Associate[];
+  userToRemove: string;
+  contactAssociates: false;
+  associates: Associate[];
 
   constructor(private testServ: TestService, private modServ: ModulesService, private route: ActivatedRoute, private modalService: NgbModal, private userServ: UserService, private testService: TestService, private router: Router) {
     this.moduleID = +this.route.snapshot.paramMap.get('moduleID');
   }
 
+  /**
+   * Called on initialisation of the component
+   */
   ngOnInit() {
     this.checkValid(this.moduleID);
     this.getAnsweredTests();
@@ -98,6 +98,10 @@ export class ModuleHomeComponent implements OnInit {
       });
   }
 
+  /**
+   * Gets the associates for the module
+   * @param moduleID
+   */
   getAssociates(moduleID) {
     return this.modServ.getAssociates(moduleID)
       .subscribe(associates => this.associates = associates);
@@ -111,11 +115,19 @@ export class ModuleHomeComponent implements OnInit {
     this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'});
   }
 
+  /**
+   * Removes an associate from the module
+   * @param username
+   */
   removeAssociation(username) {
     return this.modServ.removeAssociation(username, this.moduleID)
       .subscribe(user => this.getAssociates(this.moduleID));
   }
 
+  /**
+   * Reads in new associations from CSV file
+   * @param csv
+   */
   readAssociations(csv: any) {
     this.associationsFile = csv.target.files[0];
 
@@ -183,9 +195,12 @@ export class ModuleHomeComponent implements OnInit {
       }
       this.fileSuccess = true;
     };
-
   }
 
+  /**
+   * Adds the new associations brought in from the CSV to the database
+   * @param form
+   */
   addAssociations(form: NgForm) {
 
     if (this.fileError) {
@@ -204,10 +219,20 @@ export class ModuleHomeComponent implements OnInit {
       });
   }
 
+  /**
+   * Calculates progress made by markers for a test
+   * @param marked
+   * @param toBeMarkedByYou
+   * @param toBeMarkedByTAs
+   */
   calculateProgress(marked, toBeMarkedByYou, toBeMarkedByTAs): number {
     return Math.round((marked / (marked + toBeMarkedByYou + toBeMarkedByTAs)) * 100.00);
   }
 
+  /**
+   * Sends test back from schedule to a draft
+   * @param testID
+   */
   retractScheduled(testID) {
     this.testServ.scheduleTest(testID).subscribe(
       success => {
@@ -217,23 +242,34 @@ export class ModuleHomeComponent implements OnInit {
     );
   }
 
+  /**
+   * Gets the performance information for the user for all tests it is available for
+   * @param moduleID
+   */
   getPerformance(moduleID) {
-
-    return this.modServ.getPerformance(moduleID)
-      .subscribe(performance => this.performanceList = performance);
+    return this.modServ.getPerformance(moduleID).subscribe(performance => this.performanceList = performance);
   }
 
+  /**
+   * Gets the module info along with tutor info
+   * @param moduleID
+   */
   getModuleAndTutor(moduleID) {
-
-    return this.modServ.getModuleAndTutor(moduleID)
-      .subscribe(moduleTutor => this.moduleTutor = moduleTutor);
+    return this.modServ.getModuleAndTutor(moduleID).subscribe(moduleTutor => this.moduleTutor = moduleTutor);
   }
 
+  /**
+   * Checks which association current user has with the module
+   * @param moduleID
+   */
   getModuleAssociation(moduleID) {
-    return this.modServ.getModuleAssociation(moduleID)
-      .subscribe(modAssoc => this.moduleAssoc = modAssoc);
+    return this.modServ.getModuleAssociation(moduleID).subscribe(modAssoc => this.moduleAssoc = modAssoc);
   }
 
+  /**
+   * Checks if the module association is valid and if not return the user to home
+   * @param moduleID
+   */
   checkValid(moduleID) {
     return this.modServ.getModuleAssociation(moduleID)
       .subscribe(checkValid => {
@@ -243,6 +279,10 @@ export class ModuleHomeComponent implements OnInit {
       });
   }
 
+  /**
+   * Gets the active tests for the module
+   * @param moduleID
+   */
   getActiveTests(moduleID) {
     return this.modServ.getActiveTests(moduleID)
       .subscribe(tests => {
@@ -250,6 +290,10 @@ export class ModuleHomeComponent implements OnInit {
       });
   }
 
+  /**
+   * Gets the practice tests for the module
+   * @param moduleID
+   */
   getPracticeTests(moduleID) {
     return this.modServ.getPracticeTests(moduleID)
       .subscribe(tests => {
@@ -257,6 +301,9 @@ export class ModuleHomeComponent implements OnInit {
       });
   }
 
+  /**
+   * Gets the tests the user has already answered
+   */
   getAnsweredTests() {
     return this.testServ.getAnsweredTests()
       .subscribe(answeredSet => {
@@ -264,29 +311,43 @@ export class ModuleHomeComponent implements OnInit {
       });
   }
 
+  /**
+   * Gets the active results for the tests that are publishing them
+   * @param moduleID
+   */
   getActiveResults(moduleID) {
-    return this.modServ.getActiveResults(moduleID)
-      .subscribe(tests => this.activeResults = tests);
+    return this.modServ.getActiveResults(moduleID).subscribe(tests => this.activeResults = tests);
   }
 
+  /**
+   * Gets the scheduled tests for the module
+   * @param moduleID
+   */
   getScheduledTests(moduleID) {
-    return this.modServ.getScheduledTests(moduleID)
-      .subscribe(tests => this.scheduledTests = tests);
+    return this.modServ.getScheduledTests(moduleID).subscribe(tests => this.scheduledTests = tests);
   }
 
+  /**
+   * Gets the marking data for tests that are currently being marked
+   * @param moduleID
+   */
   getMarking(moduleID) {
-    return this.modServ.getMarking(moduleID)
-      .subscribe(tests => this.marking = tests);
+    return this.modServ.getMarking(moduleID).subscribe(tests => this.marking = tests);
   }
 
+  /**
+   * Gets the test drafts for the module
+   * @param moduleID
+   */
   getTestDrafts(moduleID) {
-    return this.modServ.getTestDrafts(moduleID)
-      .subscribe(tests => this.testDrafts = tests);
+    return this.modServ.getTestDrafts(moduleID).subscribe(tests => this.testDrafts = tests);
   }
 
+  /**
+   * Gets the information on tests that are ready to have their marking reviewed
+   * @param moduleID
+   */
   getReviewMarking(moduleID) {
-    return this.modServ.getReviewMarking(moduleID)
-      .subscribe(tests => this.testsForReview = tests);
+    return this.modServ.getReviewMarking(moduleID).subscribe(tests => this.testsForReview = tests);
   }
-
 }

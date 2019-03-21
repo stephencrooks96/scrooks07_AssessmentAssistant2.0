@@ -1,10 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {User} from "../modelObjs/objects.model";
 import {UserService} from "../services/user.service";
-import {ModulesService} from "../services/modules.service";
-import {AuthorizationService} from "../services/authorization.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-admin-list',
@@ -13,16 +9,23 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 })
 export class AdminListComponent implements OnInit {
 
-  users : User[];
-  constructor(private userService : UserService, private moduleService : ModulesService, private auth : AuthorizationService, private route : ActivatedRoute, private router: Router, private modalService: NgbModal) { }
+  users: User[];
 
+  constructor(private userService: UserService) {
+  }
+
+  /**
+   * Called when the component is initialised
+   */
   ngOnInit() {
     this.getAdmins();
   }
 
+  /**
+   * Gets all the admins in the system
+   */
   getAdmins() {
     return this.userService.getAdmins()
       .subscribe(users => this.users = users);
   }
-
 }

@@ -1,5 +1,10 @@
 package com.pgault04.entities;
 
+/**
+ * @author Paul Gault 40126005
+ * @since Feb 2019
+ * Represents the TutorRequest table
+ */
 public class TutorRequests {
 
     private Long tutorRequestID = -1L;
@@ -8,15 +13,16 @@ public class TutorRequests {
     private Integer approved;
 
     /**
-     *
+     * Default constructor
      */
     public TutorRequests() {}
 
     /**
+     * Constructor with arguments
      *
-     * @param userID
-     * @param reason
-     * @param approved
+     * @param userID   - the user
+     * @param reason   - the reason for wanting to become a tutor
+     * @param approved - whether the request has been approved
      */
     public TutorRequests(Long userID, String reason, Integer approved) {
         this.setUserID(userID);
@@ -25,55 +31,47 @@ public class TutorRequests {
     }
 
     /**
-     *
-     * @return
+     * @return gets the unique identifier for the tutor request
      */
     public Long getTutorRequestID() { return tutorRequestID; }
 
     /**
-     *
-     * @param tutorRequestID
+     * @param tutorRequestID - sets the unique identifier for the tutor request
      */
     public void setTutorRequestID(Long tutorRequestID) { this.tutorRequestID = tutorRequestID; }
 
     /**
-     *
-     * @return
+     * @return gets the unique identifier for the user who the request belongs to
      */
     public Long getUserID() { return userID; }
 
     /**
-     *
-     * @param userID
+     * @param userID - sets the unique identifier for the user who the request belongs to
      */
     public void setUserID(Long userID) { this.userID = userID; }
 
     /**
-     *
-     * @return
+     * @return gets the reason the user is making the request
      */
     public String getReason() { return reason; }
 
     /**
-     *
-     * @param reason
+     * @param reason - sets the reason the user is making the request
      */
     public void setReason(String reason) { this.reason = reason; }
 
     /**
-     *
-     * @return
+     * @return - gets whether the request has been approved
      */
     public Integer getApproved() { return approved; }
 
     /**
-     *
-     * @param approved
+     * @param approved - sets whether the request has been approved or not
      */
     public void setApproved(Integer approved) { this.approved = approved; }
 
     /*
-     *
+     * the object as string
      */
     @Override
     public String toString() {

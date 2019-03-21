@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the UserRole table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -127,9 +130,7 @@ public class UserRoleRepo {
      */
     public void delete(Long userRoleID) {
         log.debug("UserRoleRepo delete #{}", userRoleID);
-
         tmpl.update(deleteSQL, userRoleID);
         log.debug("UserRole deleted from database #{}", userRoleID);
-
     }
 }

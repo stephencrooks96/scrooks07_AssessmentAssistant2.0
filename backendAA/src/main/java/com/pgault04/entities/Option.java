@@ -1,12 +1,9 @@
-/**
- *
- */
 package com.pgault04.entities;
 
 /**
  * @author Paul Gault - 40126005
  * @since November 2018
- *
+ * Represents the option table
  */
 public class Option {
 
@@ -21,7 +18,7 @@ public class Option {
 
     private String optionContent;
 
-    private  Integer worthMarks;
+    private Integer worthMarks;
 
     private String feedback;
 
@@ -32,7 +29,8 @@ public class Option {
 
     /**
      * Constructor with args
-     * @param questionID the question
+     *
+     * @param questionID    the question
      * @param optionContent the optionContent text
      */
     public Option(Long questionID, String optionContent, Integer worthMarks, String feedback) {
@@ -42,13 +40,15 @@ public class Option {
         this.setFeedback(feedback);
     }
 
-    public String getFeedback() {
-        return feedback;
-    }
+    /**
+     * @return gets the feedback for this given option
+     */
+    public String getFeedback() { return feedback; }
 
-    public void setFeedback(String feedback) {
-        this.feedback = feedback;
-    }
+    /**
+     * @param feedback sets the feedback for the option
+     */
+    public void setFeedback(String feedback) { this.feedback = feedback; }
 
     /**
      * @return the marks it is worth
@@ -102,8 +102,8 @@ public class Option {
         this.optionContent = optionContent;
     }
 
-    /**
-     * @return the object as a string
+    /*
+     * the object as a string
      */
     @Override
     public String toString() {

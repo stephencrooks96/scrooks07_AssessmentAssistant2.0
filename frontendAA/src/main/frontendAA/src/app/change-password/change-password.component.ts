@@ -1,9 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ChangePassword} from "../modelObjs/objects.model";
 import {UserService} from "../services/user.service";
-import {Router} from "@angular/router";
-import {HttpHeaders} from "@angular/common/http";
-import {AppComponent} from "../app.component";
 
 @Component({
   selector: 'app-change-password',
@@ -16,14 +13,22 @@ export class ChangePasswordComponent implements OnInit {
   errorMessage: string;
   error = false;
 
-  constructor(private userService: UserService, private router: Router, private app: AppComponent) {
+  constructor(private userService: UserService) {
   }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
   }
 
+  /**
+   * Submits change password request from form
+   * to database
+   * Performs validation and output necessary error messages
+   * Also updates users token info in line with new password
+   */
   changePassword() {
-
     if (this.changePasswordObj.newPassword.length < 8) {
       this.errorMessage = "Password must be at least 8 characters in length.";
       this.error = true;
@@ -62,5 +67,4 @@ export class ChangePasswordComponent implements OnInit {
         this.errorMessage = "Current password incorrect."
       });
   }
-
 }

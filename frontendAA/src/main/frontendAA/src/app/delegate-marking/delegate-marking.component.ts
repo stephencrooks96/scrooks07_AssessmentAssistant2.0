@@ -27,17 +27,22 @@ export class DelegateMarkingComponent implements OnInit, AfterViewInit, DoCheck 
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Performed on initialization of component
+   */
   ngOnInit() {
     this.getByTestID(this.testID);
     this.getMarkersData(this.testID);
   }
 
+  /**
+   * Checked regularly throughout use of component
+   */
   ngDoCheck() {
     if (this.markerWithChart) {
       if (this.markerWithChart.labels && this.markerWithChart.colours && this.markerWithChart.data) {
         if (this.markerWithChart.labels.length > 1 && this.markerWithChart.colours.length > 1 && this.markerWithChart.data.length > 1) {
           this.chartCheck = true;
-
           if (this.chartCount == 0) {
             this.chart = this.mainChartInit();
             this.chartCount++;
@@ -47,11 +52,18 @@ export class DelegateMarkingComponent implements OnInit, AfterViewInit, DoCheck 
     }
   }
 
+  /**
+   * Called after initialization of view
+   */
   ngAfterViewInit() {
     this.chart = this.mainChartInit();
     this.cdr.detectChanges();
   }
 
+  /**
+   * Creates the chart
+   * Amount of scripts owned by tutor vs owned by teaching assistants
+   */
   mainChartInit() {
     return new Chart('main', {
       type: 'doughnut',
@@ -68,6 +80,10 @@ export class DelegateMarkingComponent implements OnInit, AfterViewInit, DoCheck 
     });
   }
 
+  /**
+   * Gets information on the test
+   * @param testID
+   */
   getByTestID(testID) {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
@@ -76,6 +92,10 @@ export class DelegateMarkingComponent implements OnInit, AfterViewInit, DoCheck 
       );
   }
 
+  /**
+   * Gets data on all the markers for use in the chart
+   * @param testID
+   */
   getMarkersData(testID) {
     return this.markServ.getMarkersData(testID)
       .subscribe(markers => {
@@ -85,5 +105,4 @@ export class DelegateMarkingComponent implements OnInit, AfterViewInit, DoCheck 
         }
       );
   }
-
 }

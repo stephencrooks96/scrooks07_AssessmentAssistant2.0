@@ -2,6 +2,11 @@ package com.pgault04.pojos;
 
 import com.pgault04.entities.User;
 
+/**
+ * @author Paul Gault - 40126005
+ * @since Jan 2019
+ * Pojo to allow collection of answer data to be sent to/from front end for front end
+ */
 public class AnswerData {
 
     private QuestionAndAnswer questionAndAnswer;
@@ -26,30 +31,22 @@ public class AnswerData {
     /**
      * @return the question and answer obj
      */
-    public QuestionAndAnswer getQuestionAndAnswer() {
-        return questionAndAnswer;
-    }
+    public QuestionAndAnswer getQuestionAndAnswer() { return questionAndAnswer; }
 
     /**
      * @param questionAndAnswer the question and answer obj
      */
-    public void setQuestionAndAnswer(QuestionAndAnswer questionAndAnswer) {
-        this.questionAndAnswer = questionAndAnswer;
-    }
+    public void setQuestionAndAnswer(QuestionAndAnswer questionAndAnswer) { this.questionAndAnswer = questionAndAnswer; }
 
     /**
      * @return the student
      */
-    public User getStudent() {
-        return student;
-    }
+    public User getStudent() { return student; }
 
     /**
      * @param student the student
      */
-    public void setStudent(User student) {
-        this.student = student;
-    }
+    public void setStudent(User student) { this.student = student; }
 
     /**
      * @return the object as string

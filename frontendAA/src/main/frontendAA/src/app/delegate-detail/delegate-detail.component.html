@@ -13,12 +13,12 @@
         <div class="col-sm-3"></div>
       </div>
 
-
       <form #assignScriptForm="ngForm" (submit)="assign(assignScriptForm)"
             id='assignScriptForm'
             name='assignScriptForm' role="form"
             style="width: 100%;">
-        <h4>Assign Scripts From Other User <span><input class="shadow button btn-sm btn-success" style="margin: 10px 0 10px 0;" id="reassign" name='reassign'
+        <h4>Assign Scripts From Other User <span><input class="shadow button btn-sm btn-success"
+                                                        id="reassign" name='reassign' style="margin: 10px 0 10px 0;"
                                                         type="submit" value="Save"/></span></h4>
 
         <span *ngIf="percentageError">Percentage must be between 0 and 100</span>
@@ -33,8 +33,10 @@
           </thead>
           <tbody>
           <tr *ngFor="let markerObj of markerWithChart.markers; let i = index">
-            <td data-label="Markers" *ngIf="markerObj.marker.userID != markerDetail.marker.userID">{{markerObj.marker.firstName + " " + markerObj.marker.lastName}}</td>
-            <td data-label="Unmarked Answers" *ngIf="markerObj.marker.userID != markerDetail.marker.userID">{{markerObj.unmarked}}</td>
+            <td *ngIf="markerObj.marker.userID != markerDetail.marker.userID"
+                data-label="Markers">{{markerObj.marker.firstName + " " + markerObj.marker.lastName}}</td>
+            <td *ngIf="markerObj.marker.userID != markerDetail.marker.userID"
+                data-label="Unmarked Answers">{{markerObj.unmarked}}</td>
             <td *ngIf="markerObj.marker.userID != markerDetail.marker.userID">
               <select *ngIf="reassign" [(ngModel)]="reassign[i].specifyQuestion" class="form-control"
                       id="specifyQuestion"
@@ -44,9 +46,10 @@
                 <option *ngFor="let q of questions; let j = index" [value]="q.question.questionID">{{j + 1}}</option>
               </select>
             </td>
-            <td style="width: 20%;" *ngIf="markerObj.marker.userID != markerDetail.marker.userID && reassign"><input class="form-control" id="maxScore"
-                   min="0" max="100"
-                       name="maxScore" [(ngModel)]="reassign[i].numberToReassign" type="number"/></td>
+            <td *ngIf="markerObj.marker.userID != markerDetail.marker.userID && reassign" style="width: 20%;"><input
+              [(ngModel)]="reassign[i].numberToReassign" class="form-control"
+              id="maxScore" max="100"
+              min="0" name="maxScore" type="number"/></td>
           </tr>
           </tbody>
         </table>

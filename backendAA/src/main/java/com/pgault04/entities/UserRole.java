@@ -5,19 +5,29 @@ import org.springframework.stereotype.Component;
 /**
  * @author Paul Gault 40126005
  * @since November 2018
+ * Represents the UserRole table in the database
  */
 @Component
 public class UserRole {
 
+    /**
+     * Constant represents where the admin role is held in the table
+     */
     public static final Long ROLE_ADMIN = 1L;
+
+    /**
+     * Constant represents where the user role is held in the table
+     */
     public static final Long ROLE_USER = 2L;
 
     private Long userRoleID = -1L;
 
     private String role;
 
-    public UserRole() {
-    }
+    /**
+     * Default constructor
+     */
+    public UserRole() {}
 
     /**
      * Constructor with args
@@ -56,8 +66,8 @@ public class UserRole {
         this.role = role;
     }
 
-    /**
-     * @return the object as string
+    /*
+     * the object as string
      */
     @Override
     public String toString() {

@@ -15,11 +15,21 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the Inputs table table
+ *
+ * @author Paul Gault 40126005
+ * @since December 2018
+ */
 @Component
 public class InputsRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(InputsRepo.class);
 
     private final String insertSQL = "INSERT INTO Inputs (inputValue, inputIndex, answerID, math) values (:inputValue, :inputIndex, :answerID, :math)";
@@ -52,7 +62,6 @@ public class InputsRepo {
         if (input.getInputID() < INSERT_CHECKER_CONSTANT) {
             // insert
             log.debug("Inserting new input...");
-
             KeyHolder keyHolder = new GeneratedKeyHolder();
             namedparamTmpl.update(insertSQL, namedParams, keyHolder);
             input.setInputID(Objects.requireNonNull(keyHolder.getKey()).longValue());

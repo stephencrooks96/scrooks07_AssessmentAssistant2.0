@@ -11,9 +11,7 @@
   </nav>
 
   <div class="row">
-
     <div class="col-sm-4">
-
       <h3 *ngIf="test">{{test.testTitle}}</h3>
       <div class="row">
         <div class="col-sm-8">
@@ -26,7 +24,7 @@
         </div>
       </div>
       <h3>Questions</h3>
-      <div class="panel panel-default pre-scrollable"  style="max-height: 50vh; height: 50vh;">
+      <div class="panel panel-default pre-scrollable" style="max-height: 50vh; height: 50vh;">
         <table class="table-striped">
           <tr *ngFor="let question of questions; let i = index">
             <td style="padding-left: 5px;">{{i + 1}}</td>
@@ -71,7 +69,6 @@
           </div>
         </ng-template>
 
-
         <div class="pre-scrollable">
           <div class="panel panel-default default">
             <div class="panel-body">
@@ -83,23 +80,26 @@
                     [src]="readyImage(question.question.base64)" alt="QuestionFigure"></div>
                   <div class="form-row">
                     <h4 *ngIf="question.question.question.questionType == 3">Insert the missing word(s):</h4>
-                    <div class="form-group col-sm-12"><h4>{{i + 1}}
-                      . {{question.question.question.questionContent}}
-                      <span *ngIf="question.question.mathLines && question.question.mathLines.length >0">
+                    <div class="form-group col-sm-12">
+                      <h4>{{i + 1}}
+                        . {{question.question.question.questionContent}}
+                        <span *ngIf="question.question.mathLines && question.question.mathLines.length >0">
                         <span *ngFor="let mathLine of question.question.mathLines;">
                           <span style="margin-top: 3px;">
                             <ng-katex [equation]="mathLine.content" [options]="options"></ng-katex>
                           </span>
                         </span>
                       </span>
-                      <small style="float: right;">({{question.question.question.maxScore}} marks)</small></h4>
+                        <small style="float: right;">({{question.question.question.maxScore}} marks)</small>
+                      </h4>
                     </div>
                   </div>
 
                   <div *ngIf="question.question.question.questionType == 4">
                     <div class="col-sm-12">
                       <button type="button" class="btn btn-primary btn-sm"
-                              (click)="addTextInput(i)" style="margin-bottom: 10px; margin-right: 3px;">Add a line of text
+                              (click)="addTextInput(i)" style="margin-bottom: 10px; margin-right: 3px;">Add a line of
+                        text
                       </button>
                       <button type="button" class="btn btn-success btn-sm"
                               (click)="addMathInput(i)" style="margin-bottom: 10px;">Add a line of math
@@ -116,11 +116,13 @@
                           class="fas fa-times"></i></button>
                       </div>
                       <div class="form-group col-sm-6">
-                        <textarea [(ngModel)]="input.inputValue" class="form-control" type="text" id="inputMath_({{i}}, {{j}})"
-                                  name="inputMath_({{i}}, {{j}})" [ngStyle]="{'border-color' : input.math == 1 ? '#28a745' : '#007bff'}"></textarea>
+                        <textarea [(ngModel)]="input.inputValue" class="form-control" type="text"
+                                  id="inputMath_({{i}}, {{j}})"
+                                  name="inputMath_({{i}}, {{j}})"
+                                  [ngStyle]="{'border-color' : input.math == 1 ? '#28a745' : '#007bff'}"></textarea>
                       </div>
                       <div class="col-sm-5">
-                        <ng-katex *ngIf="input.math == 1"  [equation]="input.inputValue" [options]="options"></ng-katex>
+                        <ng-katex *ngIf="input.math == 1" [equation]="input.inputValue" [options]="options"></ng-katex>
                       </div>
                     </div>
                   </div>
@@ -143,7 +145,9 @@
                     <p *ngIf="question.question.question.allThatApply == 1">Select all that apply...</p>
                     <div *ngFor="let option of question.question.options; let j = index" class="form-check">
                       <div *ngIf="question.question.question.allThatApply == 0">
-                        <input [checked]="question.optionEntries[0].optionID == option.optionID" (click)="question.optionEntries[0].optionID == option.optionID ? question.optionEntries[j].optionID = 0 : question.optionEntries[0].optionID = option.optionID;" class="form-check-input" type="radio"
+                        <input [checked]="question.optionEntries[0].optionID == option.optionID"
+                               (click)="question.optionEntries[0].optionID == option.optionID ? question.optionEntries[j].optionID = 0 : question.optionEntries[0].optionID = option.optionID;"
+                               class="form-check-input" type="radio"
                                name="option_{{i}}" id="option_{{i}}">
                         <label style="font-size: large;" class="form-check-label" for="option_{{i}}">
                           {{option.optionContent}}
@@ -151,8 +155,11 @@
                       </div>
 
                       <div *ngIf="question.question.question.allThatApply == 1">
-                        <input *ngIf="question.optionEntries[j]" [checked]="question.optionEntries[j].optionID == option.optionID" class="form-check-input" type="radio"
-                               name="option_{{i}}_{{j}}" id="option_{{i}}_{{j}}" (click)="question.optionEntries[j].optionID == option.optionID ? question.optionEntries[j].optionID = 0 : question.optionEntries[j].optionID = option.optionID;">
+                        <input *ngIf="question.optionEntries[j]"
+                               [checked]="question.optionEntries[j].optionID == option.optionID"
+                               class="form-check-input" type="radio"
+                               name="option_{{i}}_{{j}}" id="option_{{i}}_{{j}}"
+                               (click)="question.optionEntries[j].optionID == option.optionID ? question.optionEntries[j].optionID = 0 : question.optionEntries[j].optionID = option.optionID;">
                         <label style="font-size: large;" class="form-check-label" for="option_{{i}}_{{j}}">
                           {{option.optionContent}}
                         </label>

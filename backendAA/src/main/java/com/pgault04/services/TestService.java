@@ -17,71 +17,53 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Performs logic for method such as adding and editing tests, submitting tests and auto-marking submissions
+ *
  * @author Paul Gault - 40126005
  * @since December 2018
  */
 @Service
 public class TestService {
 
-
-    public static final int SCHEDULED = 1;
-    public static final int UNSCHEDULED = 0;
-    public static final int PUBLISH_TRUE = 1;
-    /**
-     * Logs useful info for debugging and analysis needs
-     */
+    private static final int SCHEDULED = 1;
+    private static final int UNSCHEDULED = 0;
+    private static final int PUBLISH_TRUE = 1;
     private static final Logger logger = LogManager.getLogger(TestService.class);
+
     @Autowired
     TestsRepo testRepo;
-
     @Autowired
     EmailUtil emailSender;
-
     @Autowired
     OptionEntriesRepo optionEntriesRepo;
-
     @Autowired
     TestResultRepo trRepo;
-
     @Autowired
     InputsRepo inputsRepo;
-
     @Autowired
     AnswerRepo answerRepo;
-
     @Autowired
     ModuleRepo modRepo;
-
     @Autowired
     UserRepo userRepo;
-
     @Autowired
     MarkingService markingService;
-
     @Autowired
     ModuleService modServ;
-
     @Autowired
     QuestionTypeRepo questionTypeRepo;
-
     @Autowired
     QuestionRepo questionRepo;
-
     @Autowired
     TestQuestionRepo testQuestionRepo;
-
     @Autowired
     CorrectPointRepo cpRepo;
-
     @Autowired
     AlternativeRepo alternativeRepo;
-
     @Autowired
     OptionRepo optionRepo;
-
     @Autowired
     QuestionMathLineRepo questionMathLineRepo;
-
     @Autowired
     ModuleAssociationRepo moduleAssociationRepo;
 
@@ -100,18 +82,9 @@ public class TestService {
      */
     public Tests addTest(Tests test, String username) {
         logger.info("Request made to add a test to the database by {}", username);
-        test.setTestID(-1L);
-        test.setScheduled(0);
-        test.setPublishResults(0);
-        if (test.getPractice() == 1) {
-            test.setPublishGrades(1);
-        } else {
-            test.setPublishGrades(0);
-        }
-        test.setTestTitle(test.getTestTitle().trim());
+        primeInitialTestInfo(test);
         User user = userRepo.selectByUsername(username);
         Module module = modRepo.selectByModuleID(test.getModuleID());
-
         try {
             // Parse exceptions could be thrown here
             test.setEndDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getEndDateTime()));
@@ -126,10 +99,28 @@ public class TestService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
+    /*
+     * Primes general info belonging to the test to be inserted in to the database
+     */
+    private void primeInitialTestInfo(Tests test) {
+        test.setTestID(-1L);
+        test.setScheduled(0);
+        test.setPublishResults(0);
+        test.setPublishGrades(test.getPractice() == 1 ? 1 : 0);
+        test.setTestTitle(test.getTestTitle().trim());
+    }
+
+    /**
+     * Logic performed for a user to submit their answers to a test
+     *
+     * @param script   - the list of answers to questions
+     * @param username - the user making the submission
+     * @return success / failure
+     * @throws SQLException if error converting image types / date types
+     */
     public boolean submitTest(List<QuestionAndAnswer> script, String username) throws SQLException {
         logger.info("Request made to add a test to the database by {}", username);
         User student = userRepo.selectByUsername(username);
@@ -146,18 +137,35 @@ public class TestService {
                 questionAndAnswer.getAnswer().setContent("");
             }
             answerRepo.insert(questionAndAnswer.getAnswer());
-            if (!answerMatch && questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
-                autoMarkMultipleChoice(questionAndAnswer);
-            } else if (!answerMatch && (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED))) {
-                autoMarkCorrectPoints(questionAndAnswer);
-            }
+            automark(questionAndAnswer, answerMatch);
         }
-        if (test.getPractice() == 1) {
-            markingService.insertAndUpdateTestResult(test.getTestID(), username);
-        }
+        updateResultForPracticeTest(username, test);
         return true;
     }
 
+    /*
+     * If the test is a practice test then this is called to update the test result automatically
+     */
+    private void updateResultForPracticeTest(String username, Tests test) throws SQLException {
+        if (test.getPractice() == 1) {
+            markingService.insertAndUpdateTestResult(test.getTestID(), username);
+        }
+    }
+
+    /*
+     * Calls auto-marking methods for questions of certain types
+     */
+    private void automark(QuestionAndAnswer questionAndAnswer, boolean answerMatch) {
+        if (!answerMatch && questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
+            autoMarkMultipleChoice(questionAndAnswer);
+        } else if (!answerMatch && (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED))) {
+            autoMarkCorrectPoints(questionAndAnswer);
+        }
+    }
+
+    /*
+     * Calls identical checks for questions of certain types
+     */
     private boolean checkForIdenticals(QuestionAndAnswer questionAndAnswer, boolean answerMatch) {
         List<Answer> answers = answerRepo.selectByQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID());
         if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
@@ -168,6 +176,9 @@ public class TestService {
         return answerMatch;
     }
 
+    /*
+     * Checks for identical answers in input based questions
+     */
     private boolean checkForInputBasedIdenticals(QuestionAndAnswer questionAndAnswer, boolean answerMatch, List<Answer> answers) {
         for (Answer a : answers) {
             List<Inputs> inputs = inputsRepo.selectByAnswerID(a.getAnswerID());
@@ -183,6 +194,9 @@ public class TestService {
         return answerMatch;
     }
 
+    /*
+     * Checks for identical answers in text based questions
+     */
     private boolean checkForTextBasedIdenticals(QuestionAndAnswer questionAndAnswer, boolean answerMatch, List<Answer> answers) {
         for (Answer a : answers) {
             if (questionAndAnswer.getAnswer().getContent().equalsIgnoreCase(a.getContent())) {
@@ -193,6 +207,9 @@ public class TestService {
         return answerMatch;
     }
 
+    /*
+     * If an identical answer this is found this is called to give the current answer the same score and feedback
+     */
     private boolean markAgainstIdenticalAnswer(QuestionAndAnswer questionAndAnswer, Answer a) {
         questionAndAnswer.getAnswer().setScore(a.getScore());
         questionAndAnswer.getAnswer().setFeedback(a.getFeedback());
@@ -201,6 +218,9 @@ public class TestService {
         return true;
     }
 
+    /*
+     * Gets a new answer ready to be submitted in to database
+     */
     private void prepareAnswerForSubmission(User student, User tutor, QuestionAndAnswer questionAndAnswer) {
         questionAndAnswer.getAnswer().setQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID());
         questionAndAnswer.getAnswer().setAnswererID(student.getUserID());
@@ -209,6 +229,9 @@ public class TestService {
         questionAndAnswer.getAnswer().setMarkerApproved(0);
     }
 
+    /*
+     * Deletes any previous submissions for this test by the student submitting
+     */
     private void deletePreviousSubmissions(User student, Tests test, QuestionAndAnswer questionAndAnswer) {
         List<Answer> answers = answerRepo.selectByAnswererID(student.getUserID());
         if (answers != null && answers.size() > 0) {
@@ -220,6 +243,9 @@ public class TestService {
         }
     }
 
+    /*
+     * Auto-marks multiples choice questions based on score and feedback given to options in marking phase
+     */
     private void autoMarkMultipleChoice(QuestionAndAnswer questionAndAnswer) {
         Question question = questionRepo.selectByQuestionID(questionAndAnswer.getAnswer().getQuestionID());
         List<Option> options = findOptions(questionAndAnswer.getAnswer().getQuestionID());
@@ -237,6 +263,9 @@ public class TestService {
         }
     }
 
+    /*
+     * When an option is found in one of the users entries then the mark and feedback for the option is added to their answer
+     */
     private void addMarkAndFeedbackForCorrectOption(Option o, QuestionAndAnswer questionAndAnswer, OptionEntries oe) {
         oe.setAnswerID(questionAndAnswer.getAnswer().getAnswerID());
         optionEntriesRepo.insert(oe);
@@ -245,6 +274,10 @@ public class TestService {
         questionAndAnswer.getAnswer().setMarkerApproved(1);
     }
 
+    /*
+     * Auto-marking method for all questions that use correct points
+     * Calls relevant methods for their specific question types
+     */
     void autoMarkCorrectPoints(QuestionAndAnswer questionAndAnswer) {
         Question question = questionRepo.selectByQuestionID(questionAndAnswer.getAnswer().getQuestionID());
         List<CorrectPoint> correctPoints = findCorrectPoints(questionAndAnswer.getAnswer().getQuestionID());
@@ -252,21 +285,32 @@ public class TestService {
         prepareAnswerForAutoMarking(questionAndAnswer);
         if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD) || question.getQuestionType().equals(QuestionType.TEXT_MATH)) {
             insertInputs(questionAndAnswer);
-            for (CorrectPoint c : correctPoints) {
-                for (Inputs i : questionAndAnswer.getInputs()) {
-                    if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD)) {
-                        autoMarkCorrectPointsForInsertTheWord(questionAndAnswer, c, i);
-                    } else {
-                        if (autoMarkCorrectPointsForTextMath(questionAndAnswer, c, i)) break;
-                    }
-                }
-            }
+            automarkCorrectPointsForInputs(questionAndAnswer, question, correctPoints);
         } else {
             autoMarkCorrectPointsForTextBased(questionAndAnswer, correctPoints);
         }
         validateScore(questionAndAnswer.getAnswer(), question);
     }
 
+    /*
+     * Auto-marking method for questions that use inputs
+     * Calls submethods for automarking insert the word and math type inputs
+     */
+    private void automarkCorrectPointsForInputs(QuestionAndAnswer questionAndAnswer, Question question, List<CorrectPoint> correctPoints) {
+        for (CorrectPoint c : correctPoints) {
+            for (Inputs i : questionAndAnswer.getInputs()) {
+                if (question.getQuestionType().equals(QuestionType.INSERT_THE_WORD)) {
+                    autoMarkCorrectPointsForInsertTheWord(questionAndAnswer, c, i);
+                } else {
+                    if (autoMarkCorrectPointsForTextMath(questionAndAnswer, c, i)) break;
+                }
+            }
+        }
+    }
+
+    /*
+     * Gets answer ready for auto-marking - i.e. removes prior feedback, score and trims the content to ensure random spaces to affect the content check
+     */
     private void prepareAnswerForAutoMarking(QuestionAndAnswer questionAndAnswer) {
         questionAndAnswer.getAnswer().setScore(0);
         questionAndAnswer.getAnswer().setFeedback("");
@@ -275,6 +319,10 @@ public class TestService {
         }
     }
 
+    /*
+     * Performs auto-marking for text based questions
+     * Checks if answer contains a correct point and then if not check the correct points alternatives
+     */
     private void autoMarkCorrectPointsForTextBased(QuestionAndAnswer questionAndAnswer, List<CorrectPoint> correctPoints) {
         for (CorrectPoint cp : correctPoints) {
             if (questionAndAnswer.getAnswer().getContent().toLowerCase().contains(cp.getPhrase().toLowerCase())) {
@@ -290,6 +338,10 @@ public class TestService {
         }
     }
 
+    /*
+     * Auto-marks text-math type questions
+     * If the correct point is exactly contained the marks are given if not the alternatives are checked
+     */
     private boolean autoMarkCorrectPointsForTextMath(QuestionAndAnswer questionAndAnswer, CorrectPoint c, Inputs i) {
         if (i.getInputValue().trim().equalsIgnoreCase(c.getPhrase())) {
             setScoreAndFeedbackForCorrectPoint(questionAndAnswer, c.getMarksWorth(), c.getFeedback());
@@ -307,6 +359,10 @@ public class TestService {
         }
     }
 
+    /*
+     * Auto-marks insert the word type questions
+     * If the correct point or one of it's alternatives are contained in the correctly indexed input then mark is given
+     */
     private void autoMarkCorrectPointsForInsertTheWord(QuestionAndAnswer questionAndAnswer, CorrectPoint c, Inputs i) {
         if (i.getInputValue().equalsIgnoreCase(c.getPhrase()) && i.getInputIndex().equals(c.getIndexedAt())) {
             setScoreAndFeedbackForCorrectPoint(questionAndAnswer, c.getMarksWorth(), c.getFeedback());
@@ -320,12 +376,18 @@ public class TestService {
         }
     }
 
+    /*
+     * If the correct points is found its score and feedback are added to the answer in this method
+     */
     private void setScoreAndFeedbackForCorrectPoint(QuestionAndAnswer questionAndAnswer, Double marksWorth, String feedback) {
         questionAndAnswer.getAnswer().setScore(questionAndAnswer.getAnswer().getScore() + marksWorth.intValue());
         questionAndAnswer.getAnswer().setFeedback(questionAndAnswer.getAnswer().getFeedback() + feedback + "\n");
         questionAndAnswer.getAnswer().setMarkerApproved(1);
     }
 
+    /*
+     * Inserts users inputs in to database
+     */
     private void insertInputs(QuestionAndAnswer questionAndAnswer) {
         for (Inputs i : questionAndAnswer.getInputs()) {
             i.setAnswerID(questionAndAnswer.getAnswer().getAnswerID());
@@ -333,6 +395,9 @@ public class TestService {
         }
     }
 
+    /*
+     * Checks if the score given is above or below max or minimum scores and alters to match
+     */
     void validateScore(Answer answer, Question question) {
         if (answer.getScore() < question.getMinScore()) {
             answer.setScore(question.getMinScore());
@@ -342,9 +407,17 @@ public class TestService {
         answerRepo.insert(answer);
     }
 
+    /**
+     * Gets the grade and feedback for the user for a given test to be shown in the feedback section
+     *
+     * @param testID   - the test
+     * @param username - the user making the request
+     * @return the performance data tailor to only show grade and class average grade
+     * @throws SQLException             if issue arises converting image types
+     * @throws IllegalArgumentException if test is not publishing grades
+     */
     public Performance getGrades(Long testID, String username) throws SQLException, IllegalArgumentException {
         logger.info("Request made for grades for test with id #{} and user: {}", testID, username);
-
         Tests test = testRepo.selectByTestID(testID);
         User user = userRepo.selectByUsername(username);
         if (test.getPublishGrades() == PUBLISH_TRUE) {
@@ -353,6 +426,10 @@ public class TestService {
         throw new IllegalArgumentException("This test is not publishing results or grades yet.");
     }
 
+    /*
+     * Checks what result the user has obtained and what the class average is
+     * alters them to a corresponding grade minimum
+     */
     private Performance populatePerformanceForGrade(Tests test, User user) throws SQLException {
         double classAverage = 0.0;
         int questionTotal = getQuestionTotal(test, 0);
@@ -371,6 +448,9 @@ public class TestService {
         return new Performance(tar, classAverage);
     }
 
+    /*
+     * Gets the requested test and the result the student received
+     */
     private TestAndResult getTestAndResult(Tests test, User user, TestAndResult tar, TestResult testResult) throws SQLException {
         if (testResult.getStudentID().equals(user.getUserID())) {
             tar = new TestAndResult(test, testResult, modServ.addQuestionsToList(test, user.getUserID()), user);
@@ -378,6 +458,9 @@ public class TestService {
         return tar;
     }
 
+    /*
+     * Checks the class average grade and assigns a matching min score
+     */
     private double alignClassAverageWithGrade(String avg) {
         double classAverage;
         switch (avg) {
@@ -403,6 +486,9 @@ public class TestService {
         return classAverage;
     }
 
+    /*
+     * Checks what grade the student received and assigns a matching grade
+     */
     private void alignTestScoreWithGrade(TestAndResult tar, String grade) {
         switch (grade) {
             case "A*":
@@ -426,6 +512,10 @@ public class TestService {
         }
     }
 
+    /*
+     * Removes score from options for student to view when scores aren't being published but grades are
+     * Removes correct insertions for the same reason
+     */
     private void prepareMultipleChoiceAnInsertForView(TestAndResult tar) {
         for (QuestionAndAnswer qa : tar.getQuestions()) {
             qa.getAnswer().setScore(0);
@@ -441,6 +531,9 @@ public class TestService {
         }
     }
 
+    /*
+     * Totals up the questions for the given test
+     */
     int getQuestionTotal(Tests test, int questionTotal) {
         for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
             Question question = questionRepo.selectByQuestionID(tq.getQuestionID());
@@ -508,6 +601,10 @@ public class TestService {
         return null;
     }
 
+    /*
+     * Checks it is okay to edit the test
+     * i.e. parameters don't cause problems with database constraints
+     */
     private boolean checkTestEditIsValid(Tests test, User user, Module module) throws ParseException {
         // Parse exceptions could be thrown here
         test.setEndDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getEndDateTime()));
@@ -524,7 +621,6 @@ public class TestService {
      */
     public Tests getByTestID(String username, Long testID) {
         logger.info("Request made for test #{} with tutor info by {}", testID, username);
-
         Tests test = testRepo.selectByTestID(testID);
         if (modServ.checkValidAssociation(username, test.getModuleID()) != null) {
             return primeTestForUserView(test);
@@ -540,11 +636,9 @@ public class TestService {
      */
     public Set<Integer> getAnsweredTests(String username) {
         logger.info("Request made for answered tests by {}", username);
-
         Set<Integer> tests = new HashSet<>();
         User user = userRepo.selectByUsername(username);
         List<Answer> answers = answerRepo.selectByAnswererID(user.getUserID());
-
         for (Answer a : answers) {
             tests.add(a.getTestID().intValue());
         }
@@ -576,6 +670,15 @@ public class TestService {
         return null;
     }
 
+    /**
+     * Gets questions in a format that is okay for a student to view while taking the test
+     * No mark scheme included etc
+     *
+     * @param username - the user making the request
+     * @param testID   - the test being sat
+     * @return the list of question and blank answers
+     * @throws SQLException if an error arises converting image from database blob to base64
+     */
     public List<QuestionAndAnswer> getQuestionsStudent(String username, Long testID) throws SQLException {
         logger.info("Request made for questions for test #{} by {}", testID, username);
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
@@ -587,6 +690,9 @@ public class TestService {
         return null;
     }
 
+    /*
+     * Populates the necessary data in to the questions for view
+     */
     private void populateQuestionsForStudent(List<TestQuestion> tqs, List<QuestionAndAnswer> questions) throws SQLException {
         for (TestQuestion tq : tqs) {
             Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
@@ -605,6 +711,9 @@ public class TestService {
         }
     }
 
+    /*
+     * Prepares the right amount of possible option entries
+     */
     private void populateOptionEntriesForStudent(Question q, List<OptionEntries> optionEntries, List<Option> options) {
         if (q.getAllThatApply() == 0) {
             optionEntries.add(new OptionEntries(null, null));
@@ -615,6 +724,9 @@ public class TestService {
         }
     }
 
+    /*
+     * Edits the options to show no marks and feedback
+     */
     private List<Option> populateOptionsForStudent(Question q) {
         List<Option> options;
         options = optionRepo.selectByQuestionID(q.getQuestionID());
@@ -625,6 +737,9 @@ public class TestService {
         return options;
     }
 
+    /*
+     * Generate correct amount of inputs for the amount of missing words
+     */
     private List<Inputs> populateInputsForStudent(Question q) {
         List<Inputs> inputs = new LinkedList<>();
         if (q.getQuestionType() == QuestionType.INSERT_THE_WORD) {
@@ -637,6 +752,9 @@ public class TestService {
         return inputs;
     }
 
+    /*
+     * Removes marking data from insert the word questions
+     */
     private List<Object> prepareInsertTheWordForStudent(Question q) {
         List<CorrectPoint> correctPoints = cpRepo.selectByQuestionID(q.getQuestionID());
         int inputs = 0;
@@ -647,6 +765,9 @@ public class TestService {
         return insertions;
     }
 
+    /*
+     * Removes correct phrase from question content in insert the word and replaces with blank area
+     */
     private int removeCorrectPhraseFromQuestionForInsertTheWord(Question q, List<CorrectPoint> correctPoints, int inputs) {
         for (CorrectPoint cp : correctPoints) {
             if (q.getQuestionContent().contains("[[" + cp.getPhrase() + "]]")) {
@@ -677,6 +798,10 @@ public class TestService {
         return allTutorQuestions;
     }
 
+    /*
+     * Gets the questions that need to be removed from old questions list
+     * i.e. ones already being used in current test
+     */
     private void getQuestionsToRemove(List<TutorQuestionPojo> currents, List<TutorQuestionPojo> allTutorQuestions, List<TutorQuestionPojo> tutorQuestionsToRemove) {
         for (TutorQuestionPojo next : allTutorQuestions) {
             for (TutorQuestionPojo c : currents) {
@@ -687,31 +812,31 @@ public class TestService {
         }
     }
 
+    /*
+     * Gets all questions that belong to tutor
+     */
     private void populateTutorQuestionList(Long testID, List<TutorQuestionPojo> allTutorQuestions, Question q) throws SQLException {
         TutorQuestionPojo tqToAdd = new TutorQuestionPojo(testID, prepareFigure(q), q, findOptions(q.getQuestionID()), findMathLines(q.getQuestionID()), findCorrectPoints(q.getQuestionID()));
         tqToAdd.getQuestion().setQuestionFigure(null);
         allTutorQuestions.add(tqToAdd);
     }
 
+    /*
+     * Cals method that changes blob type to base64
+     */
     private String prepareFigure(Question q) throws SQLException {
         return BlobUtil.blobToBase(q.getQuestionFigure());
     }
 
-    /**
+    /*
      * Finds all the necessary options that are associated with this question, if it is a question that uses this type of input
-     *
-     * @param questionID - the question
-     * @return the answerable options for this question
      */
     private List<Option> findOptions(Long questionID) {
         return optionRepo.selectByQuestionID(questionID);
     }
 
-    /**
+    /*
      * Find all the correct points that associated with this question
-     *
-     * @param questionID the questions id
-     * @return the correct points for the question
      */
     List<CorrectPoint> findCorrectPoints(Long questionID) {
         List<CorrectPoint> correctPoints = cpRepo.selectByQuestionID(questionID);
@@ -721,29 +846,20 @@ public class TestService {
         return correctPoints;
     }
 
-    /**
+    /*
      * Returns the math lines for the question
-     *
-     * @param questionID the question
-     * @return the math lines
      */
     List<QuestionMathLine> findMathLines(Long questionID) { return questionMathLineRepo.selectByQuestionID(questionID); }
 
-    /**
+    /*
      * finds all the alternatives that are equivalent to given correct points
-     *
-     * @param correctPointID - the correct point
-     * @return - its alternatives
      */
     private List<Alternative> findAlternatives(Long correctPointID) {
         return alternativeRepo.selectByCorrectPointID(correctPointID);
     }
 
-    /**
+    /*
      * Primes the test dates to make them readable by the users on the front end
-     *
-     * @param test - the test
-     * @return the test after alteration
      */
     Tests primeTestForUserView(Tests test) {
         if (test != null) {
@@ -761,7 +877,7 @@ public class TestService {
      * @param questionData - collection of all question data available to tutor
      * @param username     - the principal user
      * @return the collection of all question data available to tutor after insertion
-     * @throws Exception generic
+     * @throws SQLException image conversion
      */
     public TutorQuestionPojo newQuestion(TutorQuestionPojo questionData, String username, Boolean update) throws SQLException {
         logger.info("Request made to add new question in to the database by {}", username);
@@ -779,18 +895,27 @@ public class TestService {
         return null;
     }
 
+    /*
+     * Sets the option for question in the question data to be output
+     */
     private void prepareMultipleChoice(TutorQuestionPojo questionData, Boolean update) {
         if (questionData.getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
             questionData.setOptions(addOptions(questionData.getQuestion().getQuestionID(), questionData.getOptions(), update));
         }
     }
 
+    /*
+     * Sets correct points in question data to be output
+     */
     private void prepareNonMultipleChoice(TutorQuestionPojo questionData, Boolean update, List<CorrectPoint> correctPoints) {
         if (!questionData.getQuestion().getQuestionType().equals(QuestionType.MULTIPLE_CHOICE)) {
             questionData.setCorrectPoints(addCorrectPoints(correctPoints, questionData.getQuestion().getQuestionID(), update));
         }
     }
 
+    /*
+     * Generic preparation for all question types to be output to tutor
+     */
     private List<CorrectPoint> prepareQuestionGeneral(TutorQuestionPojo questionData, String username, Boolean update) throws SQLException {
         Question question = questionData.getQuestion();
         if (question.getQuestionID() == null || question.getQuestionID() < 1) {
@@ -823,18 +948,25 @@ public class TestService {
      */
     public TestQuestion addExistingQuestion(Long questionID, Long testID, String username) {
 
-            logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, username);
+        logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, username);
 
-            Tests test = testRepo.selectByTestID(testID);
-            Question question = questionRepo.selectByQuestionID(questionID);
-            Long check = modServ.checkValidAssociation(username, test.getModuleID());
-            if (check != null && check == AssociationType.TUTOR && question.getCreatorID().equals(userRepo.selectByUsername(username).getUserID())) {
-                return testQuestionRepo.insert(new TestQuestion(testID, questionID));
-            }
+        Tests test = testRepo.selectByTestID(testID);
+        Question question = questionRepo.selectByQuestionID(questionID);
+        Long check = modServ.checkValidAssociation(username, test.getModuleID());
+        if (check != null && check == AssociationType.TUTOR && question.getCreatorID().equals(userRepo.selectByUsername(username).getUserID())) {
+            return testQuestionRepo.insert(new TestQuestion(testID, questionID));
+        }
 
         return null;
     }
 
+    /**
+     * Method to duplicate a question to ensure that if you want to edit it it doesnt affect answering of times it has been used before
+     *
+     * @param questionID - the question to duplicate
+     * @param username   - the user requesting it
+     * @return success / failure
+     */
     public Boolean duplicateQuestion(Long questionID, String username) {
         logger.info("Request made to duplicate question #{} by {}", questionID, username);
         Question question = questionRepo.selectByQuestionID(questionID);
@@ -849,6 +981,9 @@ public class TestService {
         return false;
     }
 
+    /*
+     * Certain things need to be duplicated for certain question types such as options / correct points
+     */
     private void addDetailsForSpecificQuestionTypes(Question question, List<Option> options, List<CorrectPoint> cps, Question newQuestion) {
         newQuestion.setQuestionID(-1L);
         newQuestion = questionRepo.insert(newQuestion);
@@ -857,12 +992,18 @@ public class TestService {
         duplicateForNotMultipleChoice(question, cps, newQuestion);
     }
 
+    /*
+     * Finds each alternative that belongs to each correct point in a list
+     */
     private void getAlternativesForCorrectPoints(List<CorrectPoint> cps) {
         for (CorrectPoint cp : cps) {
             cp.setAlternatives(alternativeRepo.selectByCorrectPointID(cp.getCorrectPointID()));
         }
     }
 
+    /*
+     * Duplicates a question that isn't multiple choice
+     */
     private void duplicateForNotMultipleChoice(Question question, List<CorrectPoint> cps, Question newQuestion) {
         if (question.getQuestionType() != QuestionType.MULTIPLE_CHOICE) {
             for (CorrectPoint cp : cps) {
@@ -878,6 +1019,9 @@ public class TestService {
         }
     }
 
+    /*
+     * Duplicates a question that is a multiple choice
+     */
     private void duplicateForMultipleChoice(Question question, List<Option> options, Question newQuestion) {
         if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
             for (Option opt : options) {
@@ -888,13 +1032,8 @@ public class TestService {
         }
     }
 
-    /**
+    /*
      * Carries out actions needed to add correct points in to the database
-     *
-     * @param correctPoints - the correct points
-     * @param questionID    - the id of the question
-     * @return the correct points
-     * @throws Exception generic
      */
     List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID, Boolean update) {
         Question question = questionRepo.selectByQuestionID(questionID);
@@ -909,6 +1048,9 @@ public class TestService {
         return correctPoints;
     }
 
+    /*
+     * Prepares each correct point for entry in to database
+     */
     private void prepareCorrectPointsForEntry(List<CorrectPoint> correctPoints, Long questionID, Boolean update) {
         for (CorrectPoint cp : correctPoints) {
             cp.setQuestionID(questionID);
@@ -920,6 +1062,9 @@ public class TestService {
         }
     }
 
+    /*
+     * Aligns correct point in correct order when they belong to an insert the word question
+     */
     private void sortCorrectPointsBaseOnAppearanceInQuestion(List<CorrectPoint> correctPoints, Question question, Map<Integer, CorrectPoint> correctPointTreeMap) {
         for (CorrectPoint c : correctPoints) {
             correctPointTreeMap.put(question.getQuestionContent().indexOf("[[" + c.getPhrase() + "]]"), c);
@@ -932,13 +1077,8 @@ public class TestService {
         }
     }
 
-    /**
+    /*
      * Carries out actions need to input alternatives in to the database
-     *
-     * @param correctPointID the correct points
-     * @param alternatives   the alternative phrases
-     * @return the list of alternatives
-     * @throws Exception generic
      */
     List<Alternative> addAlternatives(Long correctPointID, List<Alternative> alternatives, Boolean update) {
         if (alternatives != null && alternatives.size() > 0) {
@@ -954,6 +1094,9 @@ public class TestService {
         return alternatives;
     }
 
+    /*
+     * Adds question math lines for question to database
+     */
     private List<QuestionMathLine> addMathLines(Long questionID, List<QuestionMathLine> questionMathLines) {
         if (questionMathLines != null && questionMathLines.size() > 0) {
             for (QuestionMathLine qm : questionMathLines) {
@@ -965,6 +1108,9 @@ public class TestService {
         return null;
     }
 
+    /*
+     * Adds options for question in to database
+     */
     private List<Option> addOptions(Long questionID, List<Option> options, Boolean update) {
         if (options != null && options.size() > 0) {
             for (Option option : options) {
@@ -1003,6 +1149,13 @@ public class TestService {
         return false;
     }
 
+    /**
+     * Removes a math line from a question after it has been inserted in to the db
+     *
+     * @param questionMathLineID - the math line to delete
+     * @param username           - the user performing the action
+     * @return success / failure
+     */
     public Boolean removeQuestionMathLine(Long questionMathLineID, String username) {
         logger.info("Request made to remove question math line #{} by {}", questionMathLineID, username);
 
@@ -1016,12 +1169,17 @@ public class TestService {
         return false;
     }
 
+    /**
+     * Removes a correct point form question after it has been entered to database
+     *
+     * @param correctPointID - the correct point to delete
+     * @param username       - the user making the request
+     * @return success / failure
+     */
     public Boolean removeCorrectPoint(Long correctPointID, String username) {
         logger.info("Request made to remove correct point #{} by {}", correctPointID, username);
-
         CorrectPoint cp = cpRepo.selectByCorrectPointID(correctPointID);
         User user = userRepo.selectByUsername(username);
-
         if (user.getUserID().equals(questionRepo.selectByQuestionID(cp.getQuestionID()).getCreatorID())) {
             List<Alternative> alts = alternativeRepo.selectByCorrectPointID(correctPointID);
             for (Alternative alt : alts) {
@@ -1033,13 +1191,18 @@ public class TestService {
         return false;
     }
 
+    /**
+     * Removes an alternative from a correct point after it has been entered in to the database
+     *
+     * @param alternativeID - the alternative to delete
+     * @param username      - the user making the request
+     * @return success / failure
+     */
     public Boolean removeAlternative(Long alternativeID, String username) {
         logger.info("Request made to remove alternative #{} by {}", alternativeID, username);
-
         User user = userRepo.selectByUsername(username);
         Alternative alt = alternativeRepo.selectByAlternativeID(alternativeID);
         CorrectPoint cp = cpRepo.selectByCorrectPointID(alt.getCorrectPointID());
-
         if (user.getUserID().equals(questionRepo.selectByQuestionID(cp.getQuestionID()).getCreatorID())) {
             alternativeRepo.delete(alt.getAlternativeID());
             return true;
@@ -1047,12 +1210,17 @@ public class TestService {
         return false;
     }
 
+    /**
+     * Removes an option from a question after it has been added to the database
+     *
+     * @param optionID - the option to remove
+     * @param username - the user requesting the removal
+     * @return success / failure
+     */
     public Boolean removeOption(Long optionID, String username) {
         logger.info("Request made to remove option #{} by {}", optionID, username);
-
         User user = userRepo.selectByUsername(username);
         Option option = optionRepo.selectByOptionID(optionID);
-
         if (user.getUserID().equals(questionRepo.selectByQuestionID(option.getQuestionID()).getCreatorID())) {
             optionRepo.delete(option.getOptionID());
             return true;
@@ -1103,6 +1271,9 @@ public class TestService {
         return false;
     }
 
+    /*
+     * Emails students that a new test has been added
+     */
     private void sendNewTestToAssociates(Tests test) throws ParseException {
         List<ModuleAssociation> moduleAssociations = moduleAssociationRepo.selectByModuleID(test.getModuleID());
         Module module = modRepo.selectByModuleID(test.getModuleID());

@@ -1,11 +1,8 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ModulesService} from "../services/modules.service";
-import {MarkingService} from "../services/marking.service";
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {TestService} from "../services/test.service";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DomSanitizer} from "@angular/platform-browser";
-import {QuestionAndAnswer, Performance} from "../modelObjs/objects.model";
+import {Performance, QuestionAndAnswer} from "../modelObjs/objects.model";
 import {KatexOptions} from "ng-katex";
 
 @Component({
@@ -27,22 +24,33 @@ export class PerformanceComponent implements OnInit {
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Called on initialization of the component
+   */
   ngOnInit() {
     this.getPerformance(this.testID);
   }
 
+  /**
+   * Converts the image from base64 to an actual visible image
+   * @param base64
+   */
   readyImage(base64): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + base64);
   }
 
+  /**
+   * Gets the performance data on this test for this user
+   * Contains all information such as scores and feedback
+   * @param testID
+   */
   getPerformance(testID) {
     return this.testServ.getPerformance(testID)
       .subscribe(performance => {
-          this.performance = performance;
-          this.answerDetail = this.performance.testAndResult.questions[this.answerCounter];
-        }, error => {
-            this.router.navigate(['/myModules']);
-        });
+        this.performance = performance;
+        this.answerDetail = this.performance.testAndResult.questions[this.answerCounter];
+      }, error => {
+        this.router.navigate(['/myModules']);
+      });
   }
-
 }

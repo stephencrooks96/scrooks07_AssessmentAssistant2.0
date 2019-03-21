@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {Tests, TutorRequest, User} from "../modelObjs/objects.model";
+import {Component, OnInit} from '@angular/core';
+import {TutorRequest, User} from "../modelObjs/objects.model";
 import {NgForm} from "@angular/forms";
 import {UserService} from "../services/user.service";
 import {Router} from "@angular/router";
@@ -14,14 +14,23 @@ export class BecomeTutorComponent implements OnInit {
 
   request = new TutorRequest();
   user = new User();
-  constructor(private userService : UserService, private router : Router, private authorizationService : AuthorizationService) { }
 
+  constructor(private userService: UserService, private router: Router, private authorizationService: AuthorizationService) {
+  }
+
+  /**
+   * Called when component is initialized
+   */
   ngOnInit() {
     this.request.tutorRequestID = -1;
     this.getTutorRequest();
     this.getUser();
   }
 
+  /**
+   * Gets the logged in user from database
+   * If they are already a tutor they are returned home
+   */
   getUser() {
     this.authorizationService.getUser().subscribe(
       user => {
@@ -33,6 +42,9 @@ export class BecomeTutorComponent implements OnInit {
       });
   }
 
+  /**
+   * Gets the users currently pending tutor request if any
+   */
   getTutorRequest() {
     this.userService.getTutorRequest().subscribe(
       request => {
@@ -44,14 +56,17 @@ export class BecomeTutorComponent implements OnInit {
           this.request.tutorRequestID = -1;
         }
       }, error => {
-    });
+      });
   }
 
+  /**
+   * Submits new tutor request from form
+   * @param form
+   */
   submitRequest(form: NgForm) {
     if (!this.request.reason || this.request.reason.length < 1 || this.request.reason.length > 56535) {
       return;
     }
-
     this.userService.submitRequest(this.request)
       .subscribe(test => {
         form.reset();
@@ -60,5 +75,4 @@ export class BecomeTutorComponent implements OnInit {
         return;
       });
   }
-
 }

@@ -41,7 +41,6 @@ export class QuestionDetailComponent implements OnInit {
   optionError = false;
   worthMarksError = false;
   insertError = -1;
-  questionTypeChecker: number = 1;
   optFeedbackError = false;
   fileSuccess: boolean;
   minScoreError: boolean;
@@ -49,21 +48,29 @@ export class QuestionDetailComponent implements OnInit {
     displayMode: true,
   };
 
-
   constructor(private testServ: TestService, private modalService: NgbModal, private editTest: EditTestComponent, private sanitizer: DomSanitizer) {
     this.getQuestionTypes();
     this.testID = this.editTest.testID;
-
   }
 
-
+  /**
+   * Called on initialisation of component
+   */
   ngOnInit() {
   }
 
+  /**
+   * Called when an image is added to the question
+   * @param event
+   */
   async imageAdded(event) {
     await this.read(event);
   }
 
+  /**
+   * Reads the image file added to the question
+   * @param event
+   */
   read(event: any): void {
     this.fileSuccess = false;
     let image: File = event.target.files[0];
@@ -84,24 +91,32 @@ export class QuestionDetailComponent implements OnInit {
     this.fileSuccess = true;
   }
 
+  /**
+   * Adds an new option to the question
+   */
   addOption() {
     const option = new Option();
     option.optionContent = '';
     option.worthMarks = 0;
     this.questionDetail.options.push(option);
-
     return false;
   }
 
+  /**
+   * Removes an option from the question
+   * @param i
+   */
   removeOption(i) {
     this.testServ.removeOption(this.questionDetail.options[i] as Option)
       .subscribe(success => {
       });
-
     this.questionDetail.options.splice(i, 1);
     return false;
   }
 
+  /**
+   * Adds a new math line to the question
+   */
   addMathLine() {
     const mathLine = new QuestionMathLine();
     mathLine.questionMathLineID = 0;
@@ -112,15 +127,22 @@ export class QuestionDetailComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Removes a math line from the question
+   * @param i
+   */
   removeMathLine(i) {
     this.testServ.removeQuestionMathLine(this.questionDetail.mathLines[i].questionMathLineID)
       .subscribe(success => {
       });
-
     this.questionDetail.mathLines.splice(i, 1);
     return false;
   }
 
+  /**
+   * Adds a new alternative to the question
+   * @param i
+   */
   addMathAlternative(i) {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -131,6 +153,9 @@ export class QuestionDetailComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Adds a new text correct point to the question
+   */
   addCorrectPoint() {
     const correctPoint = new CorrectPoint();
     correctPoint.alternatives = [];
@@ -140,21 +165,27 @@ export class QuestionDetailComponent implements OnInit {
     correctPoint.questionID = 0;
     correctPoint.math = 0;
     this.questionDetail.correctPoints.push(correctPoint);
-
     return false;
   }
 
+  /**
+   * Removes a correct point from the question
+   * @param i
+   */
   removeCorrectPoint(i) {
     if (this.questionDetail.correctPoints[i].correctPointID > 0) {
       this.testServ.removeCorrectPoint(this.questionDetail.correctPoints[i].correctPointID)
         .subscribe(success => {
         });
     }
-
     this.questionDetail.correctPoints.splice(i, 1);
     return false;
   }
 
+  /**
+   * Adds a text alternative to a correct point
+   * @param i
+   */
   addAlternative(i) {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -165,8 +196,12 @@ export class QuestionDetailComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Removes an alternative from a correct point
+   * @param i
+   * @param j
+   */
   removeAlternative(i, j) {
-
     if (this.questionDetail.correctPoints[i].alternatives[j].alternativeID > 0) {
       this.testServ.removeAlternative(this.questionDetail.correctPoints[i].alternatives[j].alternativeID)
         .subscribe(success => {
@@ -176,6 +211,11 @@ export class QuestionDetailComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Adds new question information to database
+   * Performs validation and outputs appropriate error messages
+   * @param form
+   */
   async addQuestion(form: NgForm) {
 
     this.fileError = false;
@@ -244,7 +284,6 @@ export class QuestionDetailComponent implements OnInit {
           this.generalError = true;
         }
       }
-
     } else {
       this.questionDetail.options = null;
     }
@@ -259,9 +298,7 @@ export class QuestionDetailComponent implements OnInit {
       }
     }
 
-
     for (let i = 0; i < this.questionDetail.correctPoints.length; i++) {
-
       if (!this.questionDetail.correctPoints[i].phrase || this.questionDetail.correctPoints[i].phrase.trim().length <= 0 || this.questionDetail.correctPoints[i].phrase.length > 65535) {
         this.phraseError = i;
         this.generalError = true;
@@ -315,6 +352,11 @@ export class QuestionDetailComponent implements OnInit {
       });
   }
 
+  /**
+   * Duplicates question if need for editing in event the question has been used before
+   * to ensure auto-marking isn't affected for old submissions
+   * @param questionID
+   */
   duplicateQuestion(questionID: number) {
     this.testServ.duplicateQuestion(questionID)
       .subscribe(success => {
@@ -325,12 +367,15 @@ export class QuestionDetailComponent implements OnInit {
       });
   }
 
+  /**
+   * Converts image from base64 to be output as actual image
+   */
   readyImage(): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + this.questionDetail.base64);
   }
 
   /**
-   *
+   * Retrieves all question types from database
    */
   getQuestionTypes() {
     return this.testServ.getQuestionTypes()
@@ -338,7 +383,7 @@ export class QuestionDetailComponent implements OnInit {
   }
 
   /**
-   *
+   * Removes the question from the test
    * @param questionID
    * @param testID
    */
@@ -355,5 +400,4 @@ export class QuestionDetailComponent implements OnInit {
   open(modal) {
     this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'});
   }
-
 }

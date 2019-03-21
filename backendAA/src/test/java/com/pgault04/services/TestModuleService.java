@@ -17,10 +17,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.*;
 
-import static java.util.Collections.EMPTY_LIST;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -436,7 +434,7 @@ public class TestModuleService {
         // Student association
         modAssoc.setAssociationType(2L);
         moduleAssociationRepo.insert(modAssoc);
-        tests = moduleService.activeResults(module.getModuleID(), USERNAME_IN_DB);
+        tests = moduleService.activeGrades(module.getModuleID(), USERNAME_IN_DB);
         assertEquals(1, tests.size());
         assertEquals("A*", tests.get(0).getGrade());
     }

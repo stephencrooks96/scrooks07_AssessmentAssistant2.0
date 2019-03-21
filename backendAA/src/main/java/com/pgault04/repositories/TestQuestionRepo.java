@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the TestQuestion table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */
@@ -24,6 +27,9 @@ public class TestQuestionRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(TestQuestionRepo.class);
 
     private final String insertSQL = "INSERT INTO TestQuestion (testID, questionID) values (:testID, :questionID)";

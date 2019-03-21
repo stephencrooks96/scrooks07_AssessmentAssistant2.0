@@ -33,16 +33,27 @@ export class AddModuleComponent implements OnInit {
   constructor(private moduleService: ModulesService) {
   }
 
+  /*
+  * Called every time this component is initialised
+   */
   ngOnInit() {
     this.nextYear.setFullYear(this.nextYear.getFullYear() + 1);
     this.getPendingApproval();
   }
 
+  /**
+   * Gets the modules pending approval for the user
+   */
   getPendingApproval() {
-    return this.moduleService.getPendingApproval()
-      .subscribe(mod => this.modules = mod);
+    return this.moduleService.getPendingApproval().subscribe(mod => this.modules = mod);
   }
 
+  /**
+   * Reads in associations from CSV uploaded by user
+   * Converts CSV entries in to objects of type Associate
+   * List of Associate's sent to back app for processing and entry to database
+   * @param csv
+   */
   readAssociations(csv: any) {
     this.associationsFile = csv.target.files[0];
 
@@ -113,6 +124,11 @@ export class AddModuleComponent implements OnInit {
 
   }
 
+  /**
+   * Adds a module from the data inserted to the form
+   * Performs validation on all inputs and triggers errors to be shown on screen in necessary
+   * @param form
+   */
   async addModule(form: NgForm) {
 
     let generalError = false;

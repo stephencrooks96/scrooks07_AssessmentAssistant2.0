@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the TimeModifier table
+ *
  * @author Paul Gault 40126005
  * @since November 2018
  */

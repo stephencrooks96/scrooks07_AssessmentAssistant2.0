@@ -2,26 +2,22 @@ package com.pgault04.controller;
 
 import com.pgault04.entities.Module;
 import com.pgault04.entities.Tests;
-import com.pgault04.entities.User;
 import com.pgault04.pojos.*;
 import com.pgault04.repositories.ModuleAssociationRepo;
 import com.pgault04.repositories.ModuleRepo;
 import com.pgault04.repositories.UserRepo;
 import com.pgault04.services.ModuleService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.internet.AddressException;
 import java.security.Principal;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Paul Gault 40126005
  * @since November 2018
+ * Rest controller for module functions
  */
 @RestController
 @RequestMapping("/modules")
@@ -29,16 +25,16 @@ public class ModuleController {
 
     @Autowired
     ModuleRepo modRepo;
-
     @Autowired
     UserRepo userRepo;
-
     @Autowired
     ModuleAssociationRepo modAssocRepo;
-
     @Autowired
     ModuleService modService;
 
+    /**
+     * Default constructor
+     */
     public ModuleController() {}
 
     /**
@@ -73,22 +69,41 @@ public class ModuleController {
      */
     @CrossOrigin
     @RequestMapping(value = "/getMyModulesWithTutors", method = RequestMethod.GET)
-    public List<ModuleWithTutor> getModulesWithTutors(Principal principal) {
-        return modService.getMyModulesWithTutor(principal.getName());
-    }
+    public List<ModuleWithTutor> getModulesWithTutors(Principal principal) { return modService.getMyModulesWithTutor(principal.getName()); }
 
+    /**
+     * Provides rest endpoint for user to add a new module
+     *
+     * @param modulePojo - data required to add module
+     * @param principal  - logged in user
+     * @throws IllegalArgumentException - if the user is not a valid tutor
+     */
     @CrossOrigin
     @RequestMapping(value = "/addModule", method = RequestMethod.POST)
     public void addModule(@RequestBody ModulePojo modulePojo, Principal principal) throws IllegalArgumentException {
         modService.addModule(modulePojo, principal.getName());
     }
 
+    /**
+     * Rest endpoint to add associates to a module
+     *
+     * @param moduleID         - the module
+     * @param associationPojos - the data required for the associates
+     * @param principal        - the logged in user
+     * @throws IllegalArgumentException - if the user is not the tutor of the module
+     */
     @CrossOrigin
     @RequestMapping(value = "/addAssociations", method = RequestMethod.POST)
     public void addAssociations(Long moduleID, @RequestBody List<Associate> associationPojos, Principal principal) throws IllegalArgumentException {
         modService.addAssociations(moduleID, associationPojos, principal.getName());
     }
 
+    /**
+     * Rest endpoint to deliver which modules need to be approved to the user who requested them
+     *
+     * @param principal - the logged in user
+     * @return the list of modules
+     */
     @CrossOrigin
     @RequestMapping(value = "/getModulesPendingApproval", method = RequestMethod.GET)
     public List<Module> getModulesPendingApproval(Principal principal) {
@@ -108,6 +123,13 @@ public class ModuleController {
         return modService.activeTests(principal.getName(), moduleID);
     }
 
+    /**
+     * Rest endpoint to retrieve practice tests
+     *
+     * @param principal - the logged in user
+     * @param moduleID  - the module
+     * @return the tests
+     */
     @CrossOrigin
     @RequestMapping(value = "/getPracticeTests", method = RequestMethod.GET)
     public List<Tests> getPracticeTests(Principal principal, Long moduleID) {
@@ -124,7 +146,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getActiveResults", method = RequestMethod.GET)
     public List<TestAndGrade> getActiveResults(Principal principal, Long moduleID) throws SQLException {
-        return modService.activeResults(moduleID, principal.getName());
+        return modService.activeGrades(moduleID, principal.getName());
     }
 
     /**
@@ -205,30 +227,62 @@ public class ModuleController {
         return modService.checkValidAssociation(principal.getName(), moduleID);
     }
 
+    /**
+     * Gets the modules that have been requested and returns it to admin area
+     *
+     * @param principal - the logged in user
+     * @return the modules requested
+     */
     @CrossOrigin
     @RequestMapping(value = "/getModuleRequests", method = RequestMethod.GET)
     public List<ModuleRequestPojo> getModuleRequests(Principal principal) {
         return modService.getModuleRequests(principal.getName());
     }
 
+    /**
+     * Rest endpoint to allow an admin to approve a module request
+     *
+     * @param moduleID  - the module
+     * @param principal - the logged in user
+     */
     @CrossOrigin
     @RequestMapping(value = "/approveModuleRequest", method = RequestMethod.GET)
     public void approveModuleRequest(Long moduleID, Principal principal) {
         modService.approveModuleRequest(moduleID, principal.getName());
     }
 
+    /**
+     * Rest endpoint to allow an admin to reject a module request
+     *
+     * @param moduleID  - the module
+     * @param principal - the logged in user
+     */
     @CrossOrigin
     @RequestMapping(value = "/rejectModuleRequest", method = RequestMethod.GET)
     public void rejectModuleRequest(Long moduleID, Principal principal) {
         modService.rejectModuleRequest(moduleID, principal.getName());
     }
 
+    /**
+     * Gets the associates for a module
+     *
+     * @param moduleID  - the module
+     * @param principal - the logged in user
+     * @return the associates
+     */
     @CrossOrigin
     @RequestMapping(value = "/getAssociates", method = RequestMethod.GET)
     public List<Associate> getAssociates(Long moduleID, Principal principal) {
         return modService.getAssociates(moduleID, principal.getName());
     }
 
+    /**
+     * Removes an associate from a module
+     *
+     * @param username  - the associate to remove
+     * @param moduleID  - the module
+     * @param principal - the logged in user
+     */
     @CrossOrigin
     @RequestMapping(value = "/removeAssociate", method = RequestMethod.GET)
     public void removeAssociate(String username, Long moduleID, Principal principal) {

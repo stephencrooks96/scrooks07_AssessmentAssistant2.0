@@ -15,7 +15,6 @@ import {
   Tests,
   User
 } from "../modelObjs/objects.model";
-import {Test} from "tslint";
 import {NgForm} from "@angular/forms";
 import {ModulesService} from "../services/modules.service";
 import {KatexOptions} from "ng-katex";
@@ -49,7 +48,7 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
   scripts: AnswerData[];
   studentSet: User[];
   questionSet: Question[];
-  moduleAssoc : number;
+  moduleAssoc: number;
   studentDetail = new User();
   questionDetail = new Question();
   answerDetail = new AnswerData();
@@ -62,9 +61,9 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
   editFeedbackShow = false;
   feedbackError;
   checkFeedback;
-  approvalFeedback : string[];
-  altToRemove : number=-1;
-  correctPointToRemove : number=-1;
+  approvalFeedback: string[];
+  altToRemove: number = -1;
+  correctPointToRemove: number = -1;
   addAlternativeEdit = false;
   addCorrectPointEdit = false;
   alternativeToInsert = new Alternative();
@@ -82,6 +81,9 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Called on initialisation of component
+   */
   ngOnInit() {
     this.approvalFeedback = [];
     this.approvalFeedback.push("");
@@ -92,6 +94,10 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     this.getScriptsByTestID(this.testID);
   }
 
+  /**
+   * Gets the test information
+   * @param testID
+   */
   getByTestID(testID) {
     return this.testServ.getByTestID(testID)
       .subscribe(test => {
@@ -101,27 +107,37 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       );
   }
 
+  /**
+   * Gets the question result chart
+   * How the class performed on average for each question
+   * @param testID
+   */
   getQuestionResultChart(testID) {
     return this.markServ.getQuestionResultChart(testID).subscribe(resultChartData => this.resultQuestionChartData = resultChartData);
   }
 
+  /**
+   * Gets the result chart of how each user performed in the test
+   * @param testID
+   */
   getResultChart(testID) {
     return this.markServ.getResultChart(testID).subscribe(resultChartData => this.resultChartData = resultChartData);
   }
 
+  /**
+   * Called at intervals during running of component
+   */
   ngDoCheck() {
     if (this.resultChartData) {
       if (this.resultChartData.labels && this.resultChartData.colors && this.resultChartData.scores) {
         if (this.resultChartData.labels.length > 0 && this.resultChartData.colors.length > 0 && this.resultChartData.scores.length > 0) {
           this.chartCheck = true;
-
           if (this.chartCount == 0) {
             this.chart = this.mainChartInit();
             this.chartCount++;
           }
         }
       }
-
       if (this.resultQuestionChartData && this.resultQuestionChartData[0] && this.resultQuestionChartData[1]) {
         if (this.resultQuestionChartData[0].labels && this.resultQuestionChartData[0].scores && this.resultQuestionChartData[1].labels && this.resultQuestionChartData[1].scores) {
           if (this.resultQuestionChartData[1].labels.length > 0 && this.resultQuestionChartData[1].scores.length > 0 && this.resultQuestionChartData[0].labels.length > 0 && this.resultQuestionChartData[0].scores.length > 0) {
@@ -137,12 +153,18 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     }
   }
 
+  /**
+   * Called after component initialises
+   */
   ngAfterViewInit() {
     this.chart = this.mainChartInit();
     this.questionChart = this.byQuestionChartInit();
     this.cdr.detectChanges();
   }
 
+  /**
+   * Generates the question chart as mentioned above
+   */
   byQuestionChartInit() {
     return new Chart('byQuestion', {
       type: 'bar',
@@ -183,6 +205,9 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     });
   }
 
+  /**
+   * Generates the result chart as mentioned above
+   */
   mainChartInit() {
     return new Chart('main', {
       type: 'line',
@@ -217,21 +242,37 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     });
   }
 
+  /**
+   * Gets the question image ready for view by
+   * converting from bse64 to actual visible image
+   * @param base64
+   */
   readyImage(base64): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + base64);
   }
 
-
+  /**
+   * Gets the users association to the module
+   * @param moduleID
+   */
   getModuleAssociation(moduleID) {
     return this.modServ.getModuleAssociation(moduleID)
       .subscribe(moduleAssoc => this.moduleAssoc = moduleAssoc);
   }
 
+  /**
+   * Gets the correct points for a question
+   * @param questionID
+   */
   getCorrectPoints(questionID) {
     return this.markServ.getCorrectPoints(questionID, this.testID)
       .subscribe(correctPoints => this.answerDetail.questionAndAnswer.correctPoints = correctPoints);
   }
 
+  /**
+   * Approve the marking of an answer
+   * @param answerID
+   */
   approve(answerID) {
     return this.markServ.approve(answerID)
       .subscribe(ans => {
@@ -239,36 +280,56 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       });
   }
 
+  /**
+   * Removes an alternative from a correct point
+   * @param altID
+   */
   removeAlt(altID) {
     this.markServ.removeAlternative(altID, this.testID)
-      .subscribe(success =>{
+      .subscribe(success => {
         this.getScriptsByTestID(this.testID);
         this.getCorrectPoints(this.answerDetail.questionAndAnswer.question.question.questionID);
       });
   }
 
+  /**
+   * Decides that the test should now publish grades
+   */
   publishGrades() {
     this.markServ.publishGrades(this.testID)
-      .subscribe(success =>{
+      .subscribe(success => {
         this.getByTestID(this.testID);
       });
   }
 
+  /**
+   * Decides that the test should now publish results
+   */
   publishResults() {
     this.markServ.publishResults(this.testID)
-      .subscribe(success =>{
+      .subscribe(success => {
         this.getByTestID(this.testID);
       });
   }
 
+  /**
+   * Removes a correct point from a question
+   * @param correctPointID
+   */
   removeCorrectPoint(correctPointID) {
     this.markServ.removeCorrectPoint(correctPointID, this.testID)
-      .subscribe(success =>{
+      .subscribe(success => {
         this.getScriptsByTestID(this.testID);
         this.getCorrectPoints(this.answerDetail.questionAndAnswer.question.question.questionID);
       });
   }
 
+  /**
+   * Gets the scripts owned by the marker for this given test
+   * For the marker to mark
+   * In this case it is the tutor always
+   * @param testID
+   */
   getScriptsByTestID(testID) {
     return this.markServ.getScriptsByTestIDTutor(testID)
       .subscribe(scripts => {
@@ -310,6 +371,10 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       );
   }
 
+  /**
+   * Chooses a new answer to view in detail based on user
+   * @param studentID
+   */
   newAnswerDetailUser(studentID) {
     for (let x = 0; x < this.scripts.length; x++) {
       if (this.scripts[x].student.userID == studentID) {
@@ -319,6 +384,10 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     }
   }
 
+  /**
+   * Chooses a new answer to view in detail based on a new question clicked
+   * @param questionID
+   */
   newAnswerDetailQuestion(questionID) {
     for (let x = 0; x < this.scripts.length; x++) {
       if (this.scripts[x].questionAndAnswer.question.question.questionID == questionID) {
@@ -336,6 +405,10 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title'});
   }
 
+  /**
+   * Manually edits a score and sends it to database
+   * @param form
+   */
   editScore(form: NgForm) {
     if (this.answerDetail.questionAndAnswer.answer.score > this.answerDetail.questionAndAnswer.question.question.maxScore || this.answerDetail.questionAndAnswer.answer.score < -1 * this.answerDetail.questionAndAnswer.question.question.maxScore) {
       this.checkScore = errorColour;
@@ -352,6 +425,9 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       });
   }
 
+  /**
+   * Initialises a new correct point to be added to a question
+   */
   initCorrectPoint() {
     const correctPoint = new CorrectPoint();
     correctPoint.alternatives = [];
@@ -365,10 +441,12 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     correctPoint.phrase = '';
     correctPoint.questionID = 0;
     this.correctPointToInsert = correctPoint;
-
     return false;
   }
 
+  /**
+   * Adds a new text based alternative to a correct point
+   */
   initTextAlternative() {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -379,6 +457,9 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     return false;
   }
 
+  /**
+   * Adds a new math based alternative to a correct point
+   */
   initMathAlternative() {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -389,11 +470,20 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
     return false;
   }
 
+  /**
+   * Removes an alternative from a correct point
+   * @param j
+   */
   removeAlternative(j) {
     this.correctPointToInsert.alternatives.splice(j, 1);
     return false;
   }
 
+  /**
+   * Adds a new correct point to a question and saves it in database
+   * Validation is performed and appropriate error messages output
+   * @param form
+   */
   addCorrectPoint(form: NgForm) {
     this.generalError = false;
     this.correctPointToInsert.questionID = this.answerDetail.questionAndAnswer.question.question.questionID;
@@ -430,7 +520,6 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       return;
     }
 
-
     this.markServ.addCorrectPoint(this.correctPointToInsert as CorrectPoint, this.testID)
       .subscribe(answer => {
         form.reset();
@@ -447,6 +536,11 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       });
   }
 
+  /**
+   * Adds a new alternative to the correct point and sends it to the database
+   * @param form
+   * @param correctPointID
+   */
   addAlternative(form: NgForm, correctPointID) {
     this.alternativeToInsert.correctPointID = correctPointID;
     if (this.alternativeToInsert.alternativePhrase.length > 56535 || this.alternativeToInsert.alternativePhrase.length < 0) {
@@ -467,6 +561,11 @@ export class ReviewMarkingComponent implements OnInit, DoCheck, AfterViewInit {
       });
   }
 
+  /**
+   * Manually edits feedback on an answer and send it to database
+   * Triggers auto-marking on backend
+   * @param form
+   */
   editFeedback(form: NgForm) {
     if (this.answerDetail.questionAndAnswer.answer.feedback.length > 56535 || this.answerDetail.questionAndAnswer.answer.feedback.length < 0) {
       this.checkFeedback = errorColour;

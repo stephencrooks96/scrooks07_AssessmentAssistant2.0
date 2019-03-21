@@ -1,7 +1,6 @@
 package com.pgault04.repositories;
 
 import com.pgault04.entities.User;
-import com.pgault04.utilities.PasswordUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,13 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class to execute queries to database and receive information
+ * For the User table
+ *
+ * @author Paul Gault 40126005
+ * @since November 2018
+ */
 @Repository
 @Transactional
 public class UserRepo {
@@ -69,7 +75,6 @@ public class UserRepo {
         log.info("UserRepo returning user: {}", user);
         return user;
     }
-
 
     /**
      * Selects all users from the table
@@ -153,7 +158,6 @@ public class UserRepo {
         return users;
     }
 
-
     /**
      * Deletes a record from the database
      *
@@ -161,9 +165,7 @@ public class UserRepo {
      */
     public void delete(Long userID) {
         log.debug("UserRepo delete #{}", userID);
-
         tmpl.update(deleteSQL, userID);
         log.debug("User deleted from database #{}", userID);
-
     }
 }

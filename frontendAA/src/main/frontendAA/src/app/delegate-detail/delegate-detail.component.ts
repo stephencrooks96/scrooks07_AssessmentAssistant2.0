@@ -1,16 +1,9 @@
 import {AfterViewInit, Component, DoCheck, Input, OnInit} from '@angular/core';
-import {
-  Marker,
-  MarkerAndReassigned,
-  MarkerWithChart,
-  Question,
-  Tests,
-  TutorQuestionPojo
-} from "../modelObjs/objects.model";
+import {Marker, MarkerAndReassigned, MarkerWithChart, TutorQuestionPojo} from "../modelObjs/objects.model";
 import {Chart} from 'chart.js';
 import {DelegateMarkingComponent} from "../delegate-marking/delegate-marking.component";
 import {MarkingService} from "../services/marking.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {TestService} from "../services/test.service";
 import {NgForm} from "@angular/forms";
 
@@ -26,20 +19,26 @@ export class DelegateDetailComponent implements OnInit, DoCheck, AfterViewInit {
   markerDetailCheck;
   testID: number;
   percentageError = false;
-  questions : TutorQuestionPojo[];
-  reassign : MarkerAndReassigned[];
+  questions: TutorQuestionPojo[];
+  reassign: MarkerAndReassigned[];
   markerWithChart = new MarkerWithChart();
 
   constructor(private testServ: TestService, private route: ActivatedRoute, private markServ: MarkingService, private del: DelegateMarkingComponent) {
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
     this.getMarkersData(this.testID);
     this.getQuestions(this.testID);
     this.markerDetailCheck = this.markerDetail;
   }
 
+  /**
+   * Checked regularly for updates during running of component
+   */
   ngDoCheck() {
     if (this.markerDetailCheck != this.markerDetail) {
       this.markerDetailCheck = this.markerDetail;
@@ -47,14 +46,26 @@ export class DelegateDetailComponent implements OnInit, DoCheck, AfterViewInit {
     }
   }
 
+  /**
+   * After initialization of component these actions are performed
+   */
   ngAfterViewInit() {
     this.detailChart = this.chartInit();
   }
 
+  /**
+   * Gets questions for certain test
+   * @param testID
+   */
   getQuestions(testID) {
     return this.testServ.getQuestions(testID).subscribe(questions => this.questions = questions);
   }
 
+  /**
+   * Gets marking data for the chosen marker currently in this delegate detail
+   * The data is then used in the chart later
+   * @param testID
+   */
   getMarkersData(testID) {
     return this.markServ.getMarkersData(testID)
       .subscribe(markers => {
@@ -70,6 +81,10 @@ export class DelegateDetailComponent implements OnInit, DoCheck, AfterViewInit {
       );
   }
 
+  /**
+   * Initializes the pie chart of marked and unmarked questions
+   * for the marker
+   */
   chartInit() {
     return new Chart('detail', {
       type: 'doughnut',
@@ -89,8 +104,12 @@ export class DelegateDetailComponent implements OnInit, DoCheck, AfterViewInit {
     });
   }
 
+  /**
+   * Assigns new scripts from other users to this user
+   * from the form
+   * @param form
+   */
   assign(form: NgForm) {
-
     for (let x = 0; x < this.reassign.length; x++) {
       this.reassign[x].markerID = this.markerDetail.marker.userID;
       if (this.reassign[x].numberToReassign > 100) {
@@ -108,5 +127,4 @@ export class DelegateDetailComponent implements OnInit, DoCheck, AfterViewInit {
         return;
       });
   }
-
 }

@@ -72,7 +72,8 @@
     <button type="button" class="btn btn-success btn-sm"
             (click)="addMathLine()" style="margin-bottom: 10px;">Add a math line
     </button>
-    <a *ngIf="questionInsert.mathLines && questionInsert.mathLines.length > 0" href="https://katex.org/docs/support_table.html" target="_blank">
+    <a *ngIf="questionInsert.mathLines && questionInsert.mathLines.length > 0"
+       href="https://katex.org/docs/support_table.html" target="_blank">
       What's available?</a>
     <div *ngFor="let mathLine of questionInsert.mathLines; let rowIndex = index;">
       <div class="row">
@@ -167,7 +168,6 @@
     </fieldset>
   </div>
 
-
   <div *ngIf="questionTypeChecker == 1 || questionTypeChecker == 3 || questionTypeChecker == 4">
     <fieldset id="markSchemeFieldset" style="width: 100%;">
       <legend>
@@ -187,7 +187,7 @@
                                                 style="color: #dc3545; background-color: transparent; border: none;"> <i
             class="fas fa-times"></i></button></span></legend>
           <div class="row">
-            <div class="form-group col-md-4" *ngIf="questionTypeChecker == 4" >
+            <div class="form-group col-md-4" *ngIf="questionTypeChecker == 4">
               <label for="correctPointType{{i}}">Type </label>
 
               <select #cpType="ngModel" [(ngModel)]="correctPoint.math" class="form-control"
@@ -209,7 +209,7 @@
               <label *ngIf="correctPoint.math == 0" for="marksWorth{{[i]}}">Allocated Mark <span
                 *ngIf="marksWorthError == i"
                 style="font-size: x-small; color: #dc3545;">Must not exceed +/- the total mark.</span></label>
-              <label *ngIf="correctPoint.math == 1" >Math output of phrase:</label>
+              <label *ngIf="correctPoint.math == 1">Math output of phrase:</label>
             </div>
           </div>
 
@@ -228,7 +228,6 @@
                         [options]="options"></ng-katex>
             </div>
           </div>
-
 
           <div class="form-row">
             <div class="form-group col-md-6">
@@ -251,10 +250,12 @@
               <label>Alternative Phrases
                 <button (click)="addAlternative([i])" type="button"
                         style="color: #007bff; background-color: transparent; border: none;"><i
-                  class="fas fa-plus"></i> Text</button>
+                  class="fas fa-plus"></i> Text
+                </button>
                 <button *ngIf="questionTypeChecker == 4" (click)="addMathAlternative([i])" type="button"
                         style="color: #28a745; background-color: transparent; border: none;"><i
-                  class="fas fa-plus"></i> Math</button>
+                  class="fas fa-plus"></i> Math
+                </button>
 
               </label><br/>
               <span *ngIf="alternativePhraseError" style="font-size: x-small; color: #dc3545;">Must not exceed 65,535 characters.</span>
@@ -263,8 +264,11 @@
                   <div class="col-sm-11" style="padding-right: 0;">
                     <textarea rows="1" [(ngModel)]="alt.alternativePhrase"
                               class="form-control" id="{{[i]}}alternatives{{[j]}}" name="{{[i]}}alternatives{{[j]}}"
-                              type="text" [ngStyle]="{'border-color' : alt.math == 1 ? '#28a745' : '#007bff'}"></textarea>
-                    <p style="margin-top: 3px;" *ngIf="alt.math == 1"><ng-katex [equation]="alt.alternativePhrase" [options]="options"></ng-katex></p>
+                              type="text"
+                              [ngStyle]="{'border-color' : alt.math == 1 ? '#28a745' : '#007bff'}"></textarea>
+                    <p style="margin-top: 3px;" *ngIf="alt.math == 1">
+                      <ng-katex [equation]="alt.alternativePhrase" [options]="options"></ng-katex>
+                    </p>
                   </div>
                   <div class="col-sm-1" style="padding-left: 0;">
                     <button type="button"
@@ -282,8 +286,6 @@
 
     </fieldset>
   </div>
-
-
   <input class="shadow button btn-dark" id="addQuestionButton" name='addQuestionButton'
          type="submit" value="Save"/>
 </form>

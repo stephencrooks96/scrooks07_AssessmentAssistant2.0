@@ -15,6 +15,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class ThreadStarvationPreventer {
 
+    /**
+     * Starts an empty task every ten minutes to prevent application shutdown due to inactivity
+     */
     @Scheduled(fixedDelay = 600000)
     public void scheduleReadPrices() {}
 }

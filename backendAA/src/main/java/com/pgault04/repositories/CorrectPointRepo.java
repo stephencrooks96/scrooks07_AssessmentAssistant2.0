@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Class to execute queries to database and receive information
+ * For the CorrectPoint table table
+ *
  * @author Paul Gault 40126005
  * @since December 2018
  */
@@ -24,6 +27,9 @@ public class CorrectPointRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
 
+    /**
+     * Logs useful info for problem resolution
+     */
     private static final Logger log = LogManager.getLogger(CorrectPointRepo.class);
 
     private final String insertSQL = "INSERT INTO CorrectPoint (questionID, phrase, marksWorth, feedback, indexedAt, math) values (:questionID, :phrase, :marksWorth, :feedback, :indexedAt, :math)";
@@ -47,6 +53,7 @@ public class CorrectPointRepo {
 
     /**
      * Inserts or updates a correct point in to the database
+     *
      * @param correctPoint the correct point
      * @return the returned correct point after insertion
      */
@@ -72,6 +79,7 @@ public class CorrectPointRepo {
 
     /**
      * Selects a correct point from the db by its id
+     *
      * @param correctPointID the correct point's id
      * @return the correct point
      */
@@ -90,6 +98,7 @@ public class CorrectPointRepo {
 
     /**
      * Selects a list of correct points from the db based on their question id
+     *
      * @param questionID the question id
      * @return the list of correct points
      */
@@ -105,6 +114,7 @@ public class CorrectPointRepo {
 
     /**
      * Deletes a correct point from the database
+     *
      * @param correctPointID the correct point's id
      */
     public void delete(Long correctPointID) {

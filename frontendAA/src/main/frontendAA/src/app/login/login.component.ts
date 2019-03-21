@@ -10,20 +10,26 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent implements OnInit {
 
-  user: User=new User();
-  errorMsg:string;
+  user: User = new User();
+  errorMsg: string;
 
-  constructor(private auth: AuthorizationService, private router: Router) { }
+  constructor(private auth: AuthorizationService, private router: Router) {
+  }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
   }
 
+  /**
+   * Logs user in to system based on credentials entered
+   */
   login() {
     this.auth.loginServ(this.user).subscribe(data => {
       this.router.navigate(['/myModules']);
     }, error => {
-      this.errorMsg="error : Username or password is incorrect";
+      this.errorMsg = "error : Username or password is incorrect";
     });
   }
-
 }

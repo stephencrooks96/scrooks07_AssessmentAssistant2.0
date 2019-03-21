@@ -15,42 +15,55 @@ export class CreateProfileComponent implements OnInit {
   repeatPassword: string;
   usernameError: boolean;
   usernameErrorMessage: string;
-  firstnameErrorMessage: string;
-  firstnameError: boolean;
-  lastnameErrorMessage: string;
-  lastnameError: boolean;
+  firstNameErrorMessage: string;
+  firstNameError: boolean;
+  lastNameErrorMessage: string;
+  lastNameError: boolean;
   passwordErrorMessage: string;
   passwordError: boolean;
 
   constructor(private userService: UserService, private route: ActivatedRoute, private router: Router) {
   }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
     this.repeatPassword = "";
     this.usernameError = false;
     this.usernameErrorMessage = "";
-    this.firstnameErrorMessage = "";
-    this.firstnameError = false;
-    this.lastnameErrorMessage = "";
-    this.lastnameError = false;
+    this.firstNameErrorMessage = "";
+    this.firstNameError = false;
+    this.lastNameErrorMessage = "";
+    this.lastNameError = false;
     this.passwordErrorMessage = "";
     this.passwordError = false;
   }
 
-  getUsernames(username) {
+  /**
+   * Gets all usernames from database to ensure user doesn't choose one that
+   * is already in use
+   * @param username
+   */
+  getUserNames(username) {
     this.usernameError = false;
-    return this.userService.getUsernames(username)
+    return this.userService.getUserNames(username)
       .subscribe(usernameCheck => {
         this.usernameError = usernameCheck;
         this.usernameErrorMessage = "This email is already associated with an account on this site.";
       });
   }
 
+  /**
+   * Creates a users profile based on the form entries
+   * Performs validation and outputs necessary error messages
+   * @param form
+   */
   createProfile(form: NgForm) {
-
     if (this.usernameError) {
       return;
     }
+
     if (!this.user.username && this.user.username.length < 1) {
       this.usernameErrorMessage = "You must enter an email address.";
       this.usernameError = true;
@@ -64,26 +77,26 @@ export class CreateProfileComponent implements OnInit {
     }
 
     if (!this.user.firstName && this.user.username.length < 1) {
-      this.firstnameErrorMessage = "You must enter a first name.";
-      this.firstnameError = true;
+      this.firstNameErrorMessage = "You must enter a first name.";
+      this.firstNameError = true;
       return;
     }
 
     if (this.user.firstName && this.user.firstName.length > 30) {
-      this.firstnameErrorMessage = "First name must be less than 30 characters long.";
-      this.firstnameError = true;
+      this.firstNameErrorMessage = "First name must be less than 30 characters long.";
+      this.firstNameError = true;
       return;
     }
 
     if (!this.user.lastName && this.user.lastName.length < 1) {
-      this.lastnameErrorMessage = "You must enter a last name.";
-      this.lastnameError = true;
+      this.lastNameErrorMessage = "You must enter a last name.";
+      this.lastNameError = true;
       return;
     }
 
     if (this.user.lastName && this.user.lastName.length > 30) {
-      this.lastnameErrorMessage = "Last name must be less than 30 characters long.";
-      this.lastnameError = true;
+      this.lastNameErrorMessage = "Last name must be less than 30 characters long.";
+      this.lastNameError = true;
       return;
     }
 
@@ -120,5 +133,4 @@ export class CreateProfileComponent implements OnInit {
       }, error => {
       });
   }
-
 }

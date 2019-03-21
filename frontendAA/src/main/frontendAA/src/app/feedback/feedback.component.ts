@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Performance, QuestionAndAnswer} from "../modelObjs/objects.model";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TestService} from "../services/test.service";
@@ -24,14 +24,25 @@ export class FeedbackComponent implements OnInit {
     this.testID = +this.route.snapshot.paramMap.get('testID');
   }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
     this.getFeedback(this.testID);
   }
 
+  /**
+   * Outputs images of chosen question
+   * @param base64
+   */
   readyImage(base64): any {
     return this.sanitizer.bypassSecurityTrustResourceUrl("data:image/png;base64," + base64);
   }
 
+  /**
+   * Gets the feedback on the test from the database
+   * @param testID
+   */
   getFeedback(testID) {
     return this.testServ.getFeedback(testID)
       .subscribe(performance => {
@@ -41,5 +52,4 @@ export class FeedbackComponent implements OnInit {
         this.router.navigate(['/myModules']);
       });
   }
-
 }

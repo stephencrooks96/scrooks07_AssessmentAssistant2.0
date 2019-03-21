@@ -4,10 +4,10 @@ import {EditTestComponent} from "../edit-test/edit-test.component";
 import {
   Alternative,
   CorrectPoint,
-  QuestionType,
-  TutorQuestionPojo,
   Option,
-  QuestionMathLine
+  QuestionMathLine,
+  QuestionType,
+  TutorQuestionPojo
 } from "../modelObjs/objects.model";
 import {NgForm} from "@angular/forms";
 import {KatexOptions} from "ng-katex";
@@ -47,33 +47,43 @@ export class AddQuestionComponent implements OnInit {
   constructor(private editTest: EditTestComponent, private testServ: TestService) {
   }
 
+  /**
+   * Called on initialization of component
+   */
   ngOnInit() {
     this.getQuestionTypes();
     this.questionInsert.correctPoints = [];
     this.addCorrectPoint();
     this.questionInsert.options = [];
     this.addOption();
-
     this.questionInsert.question.minScore = 0;
   }
 
+  /**
+   * Called when a question type is selected
+   * @param questionType
+   */
   onTypeClick(questionType: any) {
     this.questionTypeChecker = questionType;
   }
 
+  /**
+   * Called when an image is added
+   * @param event
+   */
   async imageAdded(event) {
     await this.read(event);
   }
 
+  /**
+   * Reads an image file in and converts to base64 upon entry
+   * @param event
+   */
   read(event: any): void {
     this.fileSuccess = false;
     let image: File = event.target.files[0];
     this.fileSize = event.target.files[0].size;
-    if (this.fileSize > 1048576) {
-      this.fileError = true;
-    } else {
-      this.fileError = false;
-    }
+    this.fileError = this.fileSize > 1048576;
     let fileReader: FileReader = new FileReader();
 
     fileReader.onloadend = (_) => {
@@ -84,11 +94,17 @@ export class AddQuestionComponent implements OnInit {
     this.fileSuccess = true;
   }
 
+  /**
+   * Gets the various types of question from database
+   */
   getQuestionTypes() {
     return this.testServ.getQuestionTypes()
       .subscribe(questionTypes => this.questionTypesToShow = questionTypes);
   }
 
+  /**
+   * Adds a new initialized option to the question
+   */
   addOption() {
     const option = new Option();
     option.optionContent = '';
@@ -97,11 +113,18 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Removes an option from the question
+   * @param i
+   */
   removeOption(i) {
     this.questionInsert.options.splice(i, 1);
     return false;
   }
 
+  /**
+   * Adds an empty correct point to the question
+   */
   addCorrectPoint() {
     const correctPoint = new CorrectPoint();
     correctPoint.alternatives = [];
@@ -115,11 +138,19 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Removes the chosen correct point from the question
+   * @param i
+   */
   removeCorrectPoint(i) {
     this.questionInsert.correctPoints.splice(i, 1);
     return false;
   }
 
+  /**
+   * Adds an empty alternative non-math to a correct point
+   * @param i
+   */
   addAlternative(i) {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -130,6 +161,9 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Adds an empty math line to the question
+   */
   addMathLine() {
     const mathLine = new QuestionMathLine();
     mathLine.questionMathLineID = 0;
@@ -140,11 +174,19 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Removes a chosen math line from the question
+   * @param i
+   */
   removeMathLine(i) {
     this.questionInsert.mathLines.splice(i, 1);
     return false;
   }
 
+  /**
+   * Adds a mathematical alternative to the question
+   * @param i
+   */
   addMathAlternative(i) {
     const alternative = new Alternative();
     alternative.alternativeID = 0;
@@ -155,11 +197,21 @@ export class AddQuestionComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Removes a chosen alternative from a chosen correct point
+   * @param i
+   * @param j
+   */
   removeAlternative(i, j) {
     this.questionInsert.correctPoints[i].alternatives.splice(j, 1);
     return false;
   }
 
+  /**
+   * Adds a new question to the database from the form data
+   * Performs validation and outputs error messages where required
+   * @param form
+   */
   async addQuestion(form: NgForm) {
 
     this.fileError = false;
@@ -239,7 +291,6 @@ export class AddQuestionComponent implements OnInit {
       }
     }
 
-
     for (let i = 0; i < this.questionInsert.correctPoints.length; i++) {
 
       if (!this.questionInsert.correctPoints[i].phrase || this.questionInsert.correctPoints[i].phrase.trim().length <= 0 || this.questionInsert.correctPoints[i].phrase.length > 65535) {
@@ -292,5 +343,4 @@ export class AddQuestionComponent implements OnInit {
         return;
       });
   }
-
 }
