@@ -186,7 +186,7 @@ public class MarkingService {
      */
     private void checkTypeAndUpdateFeedback(Answer answer, List<Inputs> inputs, List<OptionEntries> optionEntries, Answer a) {
         if (a.getQuestionID().equals(answer.getQuestionID())) {
-            Question questionToCompare = questionRepo.selectByQuestionID(a.getQuestionID());
+            Question questionToCompare = questionRepo.selectByID(a.getQuestionID());
             if (questionToCompare.getQuestionType() == QuestionType.TEXT_BASED && a.getContent().equalsIgnoreCase(answer.getContent())) {
                 updateFeedback(answer, a);
             } else if (questionToCompare.getQuestionType() == QuestionType.INSERT_THE_WORD || questionToCompare.getQuestionType() == QuestionType.TEXT_MATH) {
@@ -275,7 +275,7 @@ public class MarkingService {
      */
     private void checkTypeAndUpdateScore(Answer answer, List<OptionEntries> optionEntries, List<Inputs> inputs, Answer a) {
         if (a.getQuestionID().equals(answer.getQuestionID())) {
-            Question questionToCompare = questionRepo.selectByQuestionID(a.getQuestionID());
+            Question questionToCompare = questionRepo.selectByID(a.getQuestionID());
             if (questionToCompare.getQuestionType() == QuestionType.TEXT_BASED && a.getContent().equalsIgnoreCase(answer.getContent())) {
                 updateScore(answer, a);
             } else if (questionToCompare.getQuestionType() == QuestionType.INSERT_THE_WORD || questionToCompare.getQuestionType() == QuestionType.TEXT_MATH) {
@@ -338,7 +338,7 @@ public class MarkingService {
      */
     public Answer approve(String username, Long answerID) throws IllegalArgumentException {
         User user = userRepo.selectByUsername(username);
-        Answer answer = answerRepo.selectByAnswerID(answerID);
+        Answer answer = answerRepo.selectByID(answerID);
         Tests test = testsRepo.selectByTestID(answer.getTestID());
         Long check = modService.checkValidAssociation(username, test.getModuleID());
         if (check != null && check == AssociationType.TUTOR || user.getUserID().equals(answer.getMarkerID())) {
@@ -396,7 +396,7 @@ public class MarkingService {
         List<AnswerData> scripts = new ArrayList<>();
         for (Answer a : answers) {
             if (a.getTestID().equals(testID)) {
-                Question question = questionRepo.selectByQuestionID(a.getQuestionID());
+                Question question = questionRepo.selectByID(a.getQuestionID());
                 AnswerData answerData = new AnswerData(new QuestionAndAnswer(new QuestionAndBase64("", new ArrayList<>(), testService.findMathLines(question.getQuestionID()), question), a, new LinkedList<>(), new ArrayList<>(), new ArrayList<>()), userRepo.selectByUserID(a.getAnswererID()));
                 prepareBlobToBaseForAnswerData(question, answerData);
                 prepareMultipleChoiceForAnswerData(a, question, answerData);
@@ -733,7 +733,7 @@ public class MarkingService {
      * @throws Exception if requester isnt tutor
      */
     public Boolean removeAlternative(String username, Long alternativeID, Long testID) throws Exception {
-        Alternative a = alternativeRepo.selectByAlternativeID(alternativeID);
+        Alternative a = alternativeRepo.selectByID(alternativeID);
         Tests test = testsRepo.selectByTestID(testID);
         Long check = modService.checkValidAssociation(username, test.getModuleID());
         if (check != null && check == AssociationType.TUTOR) {
@@ -757,7 +757,7 @@ public class MarkingService {
      * @throws Exception thrown if user is not the tutor
      */
     public Boolean removeCorrectPoint(String username, Long correctPointID, Long testID, Boolean remove) throws Exception {
-        CorrectPoint cp = correctPointRepo.selectByCorrectPointID(correctPointID);
+        CorrectPoint cp = correctPointRepo.selectByID(correctPointID);
         Tests test = testsRepo.selectByTestID(testID);
         if (AssociationType.TUTOR == modService.checkValidAssociation(username, test.getModuleID())) {
             if (remove) {
@@ -771,7 +771,7 @@ public class MarkingService {
                         int originalScore = original.getScore();
                         String originalFeedback = original.getFeedback();
                         testService.autoMarkCorrectPoints(s.getQuestionAndAnswer());
-                        Answer revised = answerRepo.selectByAnswerID(original.getAnswerID());
+                        Answer revised = answerRepo.selectByID(original.getAnswerID());
                         if (originalScore != revised.getScore() || originalFeedback.equalsIgnoreCase(revised.getFeedback())) {
                             revised.setMarkerApproved(0);
                             revised.setTutorApproved(0);
@@ -789,7 +789,7 @@ public class MarkingService {
      * Auto-marks eligible answers inline with new correct point
      */
     private void autoMarkNewCorrectPoint(CorrectPoint correctPoint, Answer answer) {
-        Question question = questionRepo.selectByQuestionID(answer.getQuestionID());
+        Question question = questionRepo.selectByID(answer.getQuestionID());
         if (question.getQuestionType() == QuestionType.TEXT_BASED) {
             if (answer.getContent().toLowerCase().contains(correctPoint.getPhrase().toLowerCase())) {
                 updateScoreAndFeedbackFromNewCorrectPoint(correctPoint, answer);
@@ -859,8 +859,8 @@ public class MarkingService {
      * Auto-marks eligible answers inline with new alternative
      */
     private void autoMarkNewAlternative(Alternative alternative, Answer answer) {
-        Question question = questionRepo.selectByQuestionID(answer.getQuestionID());
-        CorrectPoint correctPoint = correctPointRepo.selectByCorrectPointID(alternative.getCorrectPointID());
+        Question question = questionRepo.selectByID(answer.getQuestionID());
+        CorrectPoint correctPoint = correctPointRepo.selectByID(alternative.getCorrectPointID());
         boolean check = false;
         if (question.getQuestionType() == QuestionType.TEXT_BASED) {
             check = autoMarkNewAlternativeForTextBased(alternative, answer, correctPoint, check);
@@ -941,7 +941,7 @@ public class MarkingService {
         Long check = modService.checkValidAssociation(username, test.getModuleID());
         if (check != null && check == AssociationType.TUTOR) {
             testService.addAlternatives(alternative.getCorrectPointID(), alternatives, false);
-            CorrectPoint correctPoint = correctPointRepo.selectByCorrectPointID(alternative.getCorrectPointID());
+            CorrectPoint correctPoint = correctPointRepo.selectByID(alternative.getCorrectPointID());
             List<TestQuestion> testQuestions = testQuestionRepo.selectByQuestionID(correctPoint.getQuestionID());
             for (TestQuestion tq : testQuestions) {
                 Tests t = testsRepo.selectByTestID(tq.getTestID());
@@ -1046,7 +1046,7 @@ public class MarkingService {
      * Gets the maximum possible score from a test
      */
     private double getTotalMarks(List<TestQuestion> testQuestions) {
-        return testQuestions.stream().mapToDouble(testQuestion -> questionRepo.selectByQuestionID(testQuestion.getQuestionID()).getMaxScore()).sum();
+        return testQuestions.stream().mapToDouble(testQuestion -> questionRepo.selectByID(testQuestion.getQuestionID()).getMaxScore()).sum();
     }
 
     /**
@@ -1094,7 +1094,7 @@ public class MarkingService {
     private void iterateQuestionsForQuestionResultChart(List<Answer> answers, ResultChartPojo resultChartPojo1, ResultChartPojo resultChartPojo2, Set<Long> questions) {
         int counter = 1;
         for (Long q : questions) {
-            Question question = questionRepo.selectByQuestionID(q);
+            Question question = questionRepo.selectByID(q);
             resultChartPojo1.getLabels().add(counter++ + ". " + question.getQuestionContent());
             resultChartPojo1.getScores().add(question.getMaxScore());
             int totalScore = 0;

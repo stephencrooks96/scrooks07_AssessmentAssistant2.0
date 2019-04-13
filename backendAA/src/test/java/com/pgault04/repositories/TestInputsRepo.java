@@ -1,6 +1,5 @@
 package com.pgault04.repositories;
 
-import com.pgault04.entities.Answer;
 import com.pgault04.entities.Inputs;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +72,7 @@ public class TestInputsRepo {
     public void testSelectByInputID() {
         // Inserts one inputs to table
         Inputs input = inputsRepo.insert(inputs);
-        input = inputsRepo.selectByInputID(input.getInputID());
+        input = inputsRepo.selectByID(input.getInputID());
         assertNotNull(input);
     }
 
@@ -82,7 +81,7 @@ public class TestInputsRepo {
         // Inserts one inputs to table
         Inputs input = inputsRepo.insert(inputs);
         inputsRepo.delete(input.getInputID());
-        input = inputsRepo.selectByInputID(input.getInputID());
+        input = inputsRepo.selectByID(input.getInputID());
         assertNull(input);
     }
 }

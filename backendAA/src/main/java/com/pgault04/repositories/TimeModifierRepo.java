@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class TimeModifierRepo {
 
     private static final Logger log = LogManager.getLogger(TimeModifierRepo.class);
@@ -74,7 +74,7 @@ public class TimeModifierRepo {
      * @return the time modifier
      */
     public TimeModifier selectByUserID(Long userID) {
-        log.debug("TimeModifierRepo selectByUserID: #{}", userID);
+        log.debug("TimeModifierRepo selectByID: #{}", userID);
         String selectByUserIDSQL = selectSQL + "userID=?";
         List<TimeModifier> timeModifiers = tmpl.query(selectByUserIDSQL,
                 new BeanPropertyRowMapper<>(TimeModifier.class), userID);

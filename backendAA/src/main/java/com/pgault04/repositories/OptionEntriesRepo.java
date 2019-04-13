@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class OptionEntriesRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -85,8 +85,8 @@ public class OptionEntriesRepo {
      * @param optionEntryID the option entry's id
      * @return the option entry
      */
-    public OptionEntries selectByOptionEntryID(Long optionEntryID) {
-        log.debug("OptionEntriesRepo selectByInputID: #{}", optionEntryID);
+    public OptionEntries selectByID(Long optionEntryID) {
+        log.debug("OptionEntriesRepo selectByID: #{}", optionEntryID);
         String selectByOptionEntriesIDSQL = selectSQL + "optionEntryID=?";
         List<OptionEntries> optionEntries = tmpl.query(selectByOptionEntriesIDSQL,
                 new BeanPropertyRowMapper<>(OptionEntries.class), optionEntryID);
@@ -105,7 +105,7 @@ public class OptionEntriesRepo {
      * @return the list of option entries
      */
     public List<OptionEntries> selectByAnswerID(Long answerID) {
-        log.debug("OptionEntriesRepo selectByAnswerID: #{}", answerID);
+        log.debug("OptionEntriesRepo selectByID: #{}", answerID);
         String selectByAnswerIDSQL = selectSQL + "answerID=?";
         List<OptionEntries> optionEntries = tmpl.query(selectByAnswerIDSQL,
                 new BeanPropertyRowMapper<>(OptionEntries.class), answerID);

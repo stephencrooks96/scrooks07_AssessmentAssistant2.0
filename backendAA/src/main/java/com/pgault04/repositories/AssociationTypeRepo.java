@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class AssociationTypeRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -96,8 +96,8 @@ public class AssociationTypeRepo {
      * @param associationTypeID the association type id
      * @return the association type
      */
-    public AssociationType selectByAssociationTypeID(Long associationTypeID) {
-        log.debug("AssociationTypeRepo selectByAssociationTypeID: {}", associationTypeID);
+    public AssociationType selectByID(Long associationTypeID) {
+        log.debug("AssociationTypeRepo selectByID: {}", associationTypeID);
         String selectByAssociationTypeIDSQL = selectSQL + "associationTypeID=?";
         List<AssociationType> associationTypes = tmpl.query(selectByAssociationTypeIDSQL,
                 new BeanPropertyRowMapper<>(AssociationType.class), associationTypeID);

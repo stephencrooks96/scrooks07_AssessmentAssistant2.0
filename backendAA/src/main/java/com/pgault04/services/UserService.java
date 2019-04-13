@@ -242,7 +242,7 @@ public class UserService {
      */
     public Boolean resetPassword(String email, String newPassword, String resetString) {
         User user = userRepo.selectByUsername(email);
-        PasswordReset passwordReset = passwordResetRepo.selectByUserID(user.getUserID());
+        PasswordReset passwordReset = passwordResetRepo.selectByID(user.getUserID());
         if (resetString.equals(passwordReset.getResetString())) {
             user.setPassword(PasswordUtil.encrypt(newPassword));
             userRepo.insert(user);
@@ -265,7 +265,7 @@ public class UserService {
     public Boolean requestResetPassword(String email) {
         User user = userRepo.selectByUsername(email);
         if (user != null) {
-            PasswordReset passwordReset = passwordResetRepo.selectByUserID(user.getUserID());
+            PasswordReset passwordReset = passwordResetRepo.selectByID(user.getUserID());
             emailSender.sendPasswordResetMessageFromSystemToUser(user, passwordReset);
             return true;
         } else {

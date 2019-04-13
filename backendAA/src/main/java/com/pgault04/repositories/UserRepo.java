@@ -96,7 +96,7 @@ public class UserRepo {
      * @return the user
      */
     public User selectByUserID(Long userID) {
-        log.debug("UserRepo selectByUserID: #{}", userID);
+        log.debug("UserRepo selectByID: #{}", userID);
         String selectByUserIDSQL = selectSQL + "userID=?";
         List<User> users = tmpl.query(selectByUserIDSQL, new BeanPropertyRowMapper<>(User.class), userID);
 

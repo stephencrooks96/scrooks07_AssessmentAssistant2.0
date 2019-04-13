@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.pgault04.entities.QuestionType;
-import com.pgault04.repositories.QuestionTypeRepo;
 
 /**
  * @author Paul Gault 40126005
@@ -53,13 +52,13 @@ public class TestQuestionTypeRepo {
 		// Inserts one questionType to table
 		QuestionType returnedQuestionType = questionTypeRepo.insert(questionTypeObj);
 		QuestionType questionTypes = questionTypeRepo
-				.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
+				.selectByID(returnedQuestionType.getQuestionTypeID());
 		assertNotNull(questionTypes);
 		// Updates the questionType in the table
 		returnedQuestionType.setQuestionType("quesType");
 		// Inserts one questionType to table
 		questionTypeRepo.insert(returnedQuestionType);
-		questionTypes = questionTypeRepo.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
+		questionTypes = questionTypeRepo.selectByID(returnedQuestionType.getQuestionTypeID());
 		assertEquals("quesType", questionTypes.getQuestionType());
 	}
 
@@ -73,7 +72,7 @@ public class TestQuestionTypeRepo {
 		// Inserts one questionType to table
 		QuestionType returnedQuestionType = questionTypeRepo.insert(questionTypeObj);
 		QuestionType questionTypes = questionTypeRepo
-				.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
+				.selectByID(returnedQuestionType.getQuestionTypeID());
 		assertNotNull(questionTypes);
 	}
 
@@ -91,7 +90,7 @@ public class TestQuestionTypeRepo {
 		QuestionType returnedQuestionType = questionTypeRepo.insert(questionTypeObj);
 		questionTypeRepo.delete(returnedQuestionType.getQuestionTypeID());
 		QuestionType questionTypes = questionTypeRepo
-				.selectByQuestionTypeID(returnedQuestionType.getQuestionTypeID());
+				.selectByID(returnedQuestionType.getQuestionTypeID());
 		assertNull(questionTypes);
 	}
 }

@@ -19,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.transaction.Transactional;
 import java.security.Principal;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -686,7 +685,7 @@ public class TestTestService {
         questionMathLine = questionMathLineRepo.insert(questionMathLine);
         assertFalse(testController.removeQuestionMathLine(questionMathLine.getQuestionMathLineID(), principalOther));
         assertTrue(testController.removeQuestionMathLine(questionMathLine.getQuestionMathLineID(), principal));
-        assertNull(questionMathLineRepo.selectByQuestionMathLineID(questionMathLine.getQuestionMathLineID()));
+        assertNull(questionMathLineRepo.selectByID(questionMathLine.getQuestionMathLineID()));
     }
 
     @Test
@@ -707,8 +706,8 @@ public class TestTestService {
         alternative = alternativeRepo.insert(alternative);
         assertFalse(testController.removeCorrectPoint(correctPoint.getCorrectPointID(), principalOther));
         assertTrue(testController.removeCorrectPoint(correctPoint.getCorrectPointID(), principal));
-        assertNull(correctPointRepo.selectByCorrectPointID(correctPoint.getCorrectPointID()));
-        assertNull(alternativeRepo.selectByAlternativeID(alternative.getAlternativeID()));
+        assertNull(correctPointRepo.selectByID(correctPoint.getCorrectPointID()));
+        assertNull(alternativeRepo.selectByID(alternative.getAlternativeID()));
     }
 
     @Test
@@ -729,7 +728,7 @@ public class TestTestService {
         alternative = alternativeRepo.insert(alternative);
         assertFalse(testController.removeAlternative(alternative.getAlternativeID(), principalOther));
         assertTrue(testController.removeAlternative(alternative.getAlternativeID(), principal));
-        assertNull(alternativeRepo.selectByAlternativeID(alternative.getAlternativeID()));
+        assertNull(alternativeRepo.selectByID(alternative.getAlternativeID()));
     }
 
     @Test
@@ -748,7 +747,7 @@ public class TestTestService {
         option = optionRepo.insert(option);
         assertFalse(testController.removeOption(option.getOptionID(), principalOther));
         assertTrue(testController.removeOption(option.getOptionID(), principal));
-        assertNull(optionRepo.selectByOptionID(option.getOptionID()));
+        assertNull(optionRepo.selectByID(option.getOptionID()));
     }
 
     @Test

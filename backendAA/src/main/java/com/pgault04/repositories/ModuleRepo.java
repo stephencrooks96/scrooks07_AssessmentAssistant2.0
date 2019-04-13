@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class ModuleRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -83,8 +83,8 @@ public class ModuleRepo {
      * @param moduleID the module's id
      * @return the module
      */
-    public Module selectByModuleID(Long moduleID) {
-        log.debug("ModuleRepo selectByModuleID: {}", moduleID);
+    public Module selectByID(Long moduleID) {
+        log.debug("ModuleRepo selectByID: {}", moduleID);
         String selectByModuleIDSQL = selectSQL + "moduleID=?";
         List<Module> modules = tmpl.query(selectByModuleIDSQL, new BeanPropertyRowMapper<>(Module.class), moduleID);
 

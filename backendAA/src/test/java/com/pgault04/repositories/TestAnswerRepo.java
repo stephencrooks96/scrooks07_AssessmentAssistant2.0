@@ -55,13 +55,13 @@ public class TestAnswerRepo {
     public void testInsert() {
         // Inserts one answer to table
         Answer returnedAnswer = answerRepo.insert(answer);
-        Answer answer = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+        Answer answer = answerRepo.selectByID(returnedAnswer.getAnswerID());
         assertNotNull(answer);
         // Updates the answer in the table
         returnedAnswer.setContent("content 2");
         // Inserts one answer to table
         answerRepo.insert(returnedAnswer);
-        answer = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+        answer = answerRepo.selectByID(returnedAnswer.getAnswerID());
         assertEquals(returnedAnswer.getContent(), answer.getContent());
     }
 
@@ -95,7 +95,7 @@ public class TestAnswerRepo {
     public void testSelectByAnswerID() {
         // Inserts one answer to table
         Answer returnedAnswer = answerRepo.insert(answer);
-        Answer answer = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+        Answer answer = answerRepo.selectByID(returnedAnswer.getAnswerID());
         assertNotNull(answer);
     }
 
@@ -120,7 +120,7 @@ public class TestAnswerRepo {
         // Inserts one answer to table
         Answer returnedAnswer = answerRepo.insert(answer);
         answerRepo.delete(returnedAnswer.getAnswerID());
-        Answer answers = answerRepo.selectByAnswerID(returnedAnswer.getAnswerID());
+        Answer answers = answerRepo.selectByID(returnedAnswer.getAnswerID());
         assertNull(answers);
     }
 }

@@ -56,13 +56,13 @@ public class TestModuleRepo {
     public void testInsert() {
         // Inserts one module to table
         Module returnedModule = moduleRepo.insert(module);
-        returnedModule = moduleRepo.selectByModuleID(returnedModule.getModuleID());
+        returnedModule = moduleRepo.selectByID(returnedModule.getModuleID());
         assertNotNull(returnedModule);
         // Updates the module in the table
         returnedModule.setModuleName("moduleName2");
         // Inserts one module to table
         moduleRepo.insert(returnedModule);
-        returnedModule = moduleRepo.selectByModuleID(returnedModule.getModuleID());
+        returnedModule = moduleRepo.selectByID(returnedModule.getModuleID());
         assertEquals("moduleName2", returnedModule.getModuleName());
     }
 
@@ -70,7 +70,7 @@ public class TestModuleRepo {
     public void testSelectByModuleID() {
         // Inserts one module to table
         Module returnedModule = moduleRepo.insert(module);
-        returnedModule = moduleRepo.selectByModuleID(returnedModule.getModuleID());
+        returnedModule = moduleRepo.selectByID(returnedModule.getModuleID());
         assertNotNull(returnedModule);
     }
 
@@ -103,7 +103,7 @@ public class TestModuleRepo {
         // Inserts one module to table
         Module returnedModule = moduleRepo.insert(module);
         moduleRepo.delete(returnedModule.getModuleID());
-        returnedModule = moduleRepo.selectByModuleID(returnedModule.getModuleID());
+        returnedModule = moduleRepo.selectByID(returnedModule.getModuleID());
         assertNull(returnedModule);
     }
 }

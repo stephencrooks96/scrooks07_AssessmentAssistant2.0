@@ -48,18 +48,18 @@ public class TestAlternativeRepo {
     @Test
     public void testInsert() {
         Alternative returnedAlt = alternativeRepo.insert(alternative);
-        Alternative alternative = alternativeRepo.selectByAlternativeID(returnedAlt.getAlternativeID());
+        Alternative alternative = alternativeRepo.selectByID(returnedAlt.getAlternativeID());
         assertNotNull(alternative);
         returnedAlt.setAlternativePhrase("p 2");
         alternativeRepo.insert(returnedAlt);
-        alternative = alternativeRepo.selectByAlternativeID(returnedAlt.getAlternativeID());
+        alternative = alternativeRepo.selectByID(returnedAlt.getAlternativeID());
         assertEquals(returnedAlt.getAlternativePhrase(), alternative.getAlternativePhrase());
     }
 
     @Test
     public void testSelectByAlternativeID() {
         Alternative returnedAlt = alternativeRepo.insert(alternative);
-        Alternative alts = alternativeRepo.selectByAlternativeID(returnedAlt.getAlternativeID());
+        Alternative alts = alternativeRepo.selectByID(returnedAlt.getAlternativeID());
         assertNotNull(alts);
     }
 
@@ -74,7 +74,7 @@ public class TestAlternativeRepo {
     public void testDelete() {
         Alternative returnedAlt = alternativeRepo.insert(alternative);
         alternativeRepo.delete(returnedAlt.getAlternativeID());
-        Alternative alts = alternativeRepo.selectByAlternativeID(returnedAlt.getAlternativeID());
+        Alternative alts = alternativeRepo.selectByID(returnedAlt.getAlternativeID());
         assertNull(alts);
     }
 }

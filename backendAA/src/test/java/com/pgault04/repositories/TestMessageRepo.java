@@ -56,13 +56,13 @@ public class TestMessageRepo {
     public void testInsert() {
         // Inserts one message to table
         Message returnedMessage = messageRepo.insert(message);
-        Message messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
+        Message messages = messageRepo.selectByID(returnedMessage.getMessageID());
         assertNotNull(messages);
         // Updates the message in the table
         returnedMessage.setNewMessage(1);
         // Inserts one message to table
         messageRepo.insert(returnedMessage);
-        messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
+        messages = messageRepo.selectByID(returnedMessage.getMessageID());
         assertEquals(1, messages.getNewMessage().intValue());
     }
 
@@ -70,7 +70,7 @@ public class TestMessageRepo {
     public void testSelectByMessageID() {
         // Inserts one message to table
         Message returnedMessage = messageRepo.insert(message);
-        Message messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
+        Message messages = messageRepo.selectByID(returnedMessage.getMessageID());
         assertNotNull(messages);
     }
 
@@ -95,7 +95,7 @@ public class TestMessageRepo {
         // Inserts one message to table
         Message returnedMessage = messageRepo.insert(message);
         messageRepo.delete(returnedMessage.getMessageID());
-        Message messages = messageRepo.selectByMessageID(returnedMessage.getMessageID());
+        Message messages = messageRepo.selectByID(returnedMessage.getMessageID());
         assertNull(messages);
     }
 }

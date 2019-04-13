@@ -49,11 +49,11 @@ public class TestOptionRepo {
     @Test
     public void testInsert() {
         Option returnedOpt = optionRepo.insert(optionObj);
-        Option opt = optionRepo.selectByOptionID(returnedOpt.getOptionID());
+        Option opt = optionRepo.selectByID(returnedOpt.getOptionID());
         assertNotNull(opt);
         returnedOpt.setOptionContent("o 2");
         optionRepo.insert(returnedOpt);
-        opt = optionRepo.selectByOptionID(returnedOpt.getOptionID());
+        opt = optionRepo.selectByID(returnedOpt.getOptionID());
         assertEquals(returnedOpt.getOptionContent(), opt.getOptionContent());
     }
 
@@ -67,7 +67,7 @@ public class TestOptionRepo {
     @Test
     public void testSelectByOptionID() {
         Option returnedOpt = optionRepo.insert(optionObj);
-        Option opt = optionRepo.selectByOptionID(returnedOpt.getOptionID());
+        Option opt = optionRepo.selectByID(returnedOpt.getOptionID());
         assertNotNull(opt);
     }
 
@@ -75,7 +75,7 @@ public class TestOptionRepo {
     public void testDelete() {
         Option returnedOpt = optionRepo.insert(optionObj);
         optionRepo.delete(returnedOpt.getOptionID());
-        Option opt = optionRepo.selectByOptionID(returnedOpt.getOptionID());
+        Option opt = optionRepo.selectByID(returnedOpt.getOptionID());
         assertNull(opt);
     }
 }

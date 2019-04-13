@@ -1,6 +1,5 @@
 package com.pgault04.repositories;
 
-import com.pgault04.entities.Inputs;
 import com.pgault04.entities.OptionEntries;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +68,7 @@ public class TestOptionEntriesRepo {
     public void testSelectByOptionEntryID() {
         // Inserts one optionEntries to table
         OptionEntries oe = optionEntriesRepo.insert(optionEntries);
-        oe = optionEntriesRepo.selectByOptionEntryID(oe.getOptionEntryID());
+        oe = optionEntriesRepo.selectByID(oe.getOptionEntryID());
         assertNotNull(oe);
     }
 
@@ -78,7 +77,7 @@ public class TestOptionEntriesRepo {
         // Inserts one optionEntries to table
         OptionEntries oe = optionEntriesRepo.insert(optionEntries);
         optionEntriesRepo.delete(oe.getOptionEntryID());
-        oe = optionEntriesRepo.selectByOptionEntryID(oe.getOptionEntryID());
+        oe = optionEntriesRepo.selectByID(oe.getOptionEntryID());
         assertNull(oe);
     }
 }

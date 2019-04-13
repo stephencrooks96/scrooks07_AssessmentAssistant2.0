@@ -74,7 +74,7 @@ public class TestMainService {
         when(principal.getName()).thenReturn(USER_IN_DB);
         mainController.logout(principal);
         UserSession userSession = userSessionsRepo.selectByUsername(USER_IN_DB);
-        assertTrue(userSession.getLastActive().before(new Timestamp(System.currentTimeMillis() - 1800000)));
+        assertTrue(userSession.getLastActive().before(new Timestamp(System.currentTimeMillis() - 1500000)));
     }
 
     @Transactional

@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since December 2018
  */
-@Component
+@Repository
 public class InputsRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -82,8 +82,8 @@ public class InputsRepo {
      * @param inputID the input's id
      * @return the input
      */
-    public Inputs selectByInputID(Long inputID) {
-        log.debug("InputsRepo selectByInputID: #{}", inputID);
+    public Inputs selectByID(Long inputID) {
+        log.debug("InputsRepo selectByID: #{}", inputID);
         String selectByInputIDSQL = selectSQL + "inputID=?";
         List<Inputs> inputs = tmpl.query(selectByInputIDSQL,
                 new BeanPropertyRowMapper<>(Inputs.class), inputID);
@@ -102,7 +102,7 @@ public class InputsRepo {
      * @return the list of inputs
      */
     public List<Inputs> selectByAnswerID(Long answerID) {
-        log.debug("InputsRepo selectByAnswerID: #{}", answerID);
+        log.debug("InputsRepo selectByID: #{}", answerID);
         String selectByAnswerIDSQL = selectSQL + "answerID=?";
         List<Inputs> inputs = tmpl.query(selectByAnswerIDSQL,
                 new BeanPropertyRowMapper<>(Inputs.class), answerID);

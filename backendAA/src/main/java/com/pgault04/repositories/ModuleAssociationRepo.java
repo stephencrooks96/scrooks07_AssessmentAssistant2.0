@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class ModuleAssociationRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -83,7 +83,7 @@ public class ModuleAssociationRepo {
      * @param associationID the association id
      * @return the association
      */
-    public ModuleAssociation selectByAssociationID(Long associationID) {
+    public ModuleAssociation selectByID(Long associationID) {
         log.debug("ModuleAssociationRepo selectByModuleAssociationID: {}", associationID);
         String selectByAssociationIDSQL = selectSQL + "associationID=?";
         List<ModuleAssociation> moduleAssociations = tmpl.query(selectByAssociationIDSQL,
@@ -103,7 +103,7 @@ public class ModuleAssociationRepo {
      * @return a list of the module associations
      */
     public List<ModuleAssociation> selectByModuleID(Long moduleID) {
-        log.debug("ModuleAssociationRepo selectByModuleID: #{}", moduleID);
+        log.debug("ModuleAssociationRepo selectByID: #{}", moduleID);
         String selectByModuleIDSQL = selectSQL + "moduleID=?";
         List<ModuleAssociation> moduleAssociations = tmpl.query(selectByModuleIDSQL,
                 new BeanPropertyRowMapper<>(ModuleAssociation.class), moduleID);
@@ -119,7 +119,7 @@ public class ModuleAssociationRepo {
      * @return a list of the users module associations
      */
     public List<ModuleAssociation> selectByUserID(Long userID) {
-        log.debug("ModuleAssociationRepo selectByUserID: #{}", userID);
+        log.debug("ModuleAssociationRepo selectByID: #{}", userID);
         String selectByUserIDSQL = selectSQL + "userID=?";
         List<ModuleAssociation> moduleAssociations = tmpl.query(selectByUserIDSQL,
                 new BeanPropertyRowMapper<>(ModuleAssociation.class), userID);

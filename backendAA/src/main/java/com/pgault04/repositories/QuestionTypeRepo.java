@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class QuestionTypeRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -83,8 +83,8 @@ public class QuestionTypeRepo {
      * @param questionTypeID the question type's id
      * @return the question type
      */
-    public QuestionType selectByQuestionTypeID(Long questionTypeID) {
-        log.debug("QuestionTypeRepo selectByQuestionTypeID: #{}", questionTypeID);
+    public QuestionType selectByID(Long questionTypeID) {
+        log.debug("QuestionTypeRepo selectByID: #{}", questionTypeID);
         String selectByQuestionTypeIDSQL = selectSQL + "questionTypeID=?";
         List<QuestionType> questionTypes = tmpl.query(selectByQuestionTypeIDSQL,
                 new BeanPropertyRowMapper<>(QuestionType.class), questionTypeID);

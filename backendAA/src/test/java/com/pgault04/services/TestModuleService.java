@@ -103,14 +103,14 @@ public class TestModuleService {
         // Admins
         moduleRepo.insert(module);
         moduleController.approveModuleRequest(module.getModuleID(), principal);
-        module = moduleRepo.selectByModuleID(module.getModuleID());
+        module = moduleRepo.selectByID(module.getModuleID());
         assertEquals(1, module.getApproved(), 0);
 
         // Non-admin
         module.setApproved(0);
         moduleRepo.insert(module);
         moduleService.approveModuleRequest(module.getModuleID(), OTHER_USERNAME_IN_DB);
-        module = moduleRepo.selectByModuleID(module.getModuleID());
+        module = moduleRepo.selectByID(module.getModuleID());
         assertEquals(0, module.getApproved(), 0);
     }
 
@@ -123,13 +123,13 @@ public class TestModuleService {
         // Admins
         moduleRepo.insert(module);
         moduleController.rejectModuleRequest(module.getModuleID(), principal);
-        assertNull(moduleRepo.selectByModuleID(module.getModuleID()));
+        assertNull(moduleRepo.selectByID(module.getModuleID()));
 
         // Non-admin
         module.setModuleID(-1L);
         moduleRepo.insert(module);
         moduleService.rejectModuleRequest(module.getModuleID(), OTHER_USERNAME_IN_DB);
-        module = moduleRepo.selectByModuleID(module.getModuleID());
+        module = moduleRepo.selectByID(module.getModuleID());
         assertNotNull(module.getApproved());
     }
 

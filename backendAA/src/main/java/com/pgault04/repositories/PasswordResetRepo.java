@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class PasswordResetRepo {
 
     /**
@@ -54,7 +54,7 @@ public class PasswordResetRepo {
      */
     public PasswordReset insert(PasswordReset passwordReset) {
         BeanPropertySqlParameterSource namedParams = new BeanPropertySqlParameterSource(passwordReset);
-        if (selectByUserID(passwordReset.getUserID()) == null) {
+        if (selectByID(passwordReset.getUserID()) == null) {
             // insert
             log.debug("Inserting new passwordReset...");
 
@@ -76,8 +76,8 @@ public class PasswordResetRepo {
      * @param userID the users id
      * @return the password reset object for the user
      */
-    public PasswordReset selectByUserID(Long userID) {
-        log.debug("PasswordRepo selectByUserID: #{}", userID);
+    public PasswordReset selectByID(Long userID) {
+        log.debug("PasswordRepo selectByID: #{}", userID);
         String selectByPasswordIDSQL = selectSQL + "userID=?";
         List<PasswordReset> passwordResets = tmpl.query(selectByPasswordIDSQL,
                 new BeanPropertyRowMapper<>(PasswordReset.class), userID);

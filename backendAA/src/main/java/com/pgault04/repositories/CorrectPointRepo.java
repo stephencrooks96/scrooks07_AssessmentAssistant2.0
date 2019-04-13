@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since December 2018
  */
-@Component
+@Repository
 public class CorrectPointRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -83,8 +83,8 @@ public class CorrectPointRepo {
      * @param correctPointID the correct point's id
      * @return the correct point
      */
-    public CorrectPoint selectByCorrectPointID(Long correctPointID) {
-        log.debug("CorrectPointRepo selectByCorrectPointID: {}", correctPointID);
+    public CorrectPoint selectByID(Long correctPointID) {
+        log.debug("CorrectPointRepo selectByID: {}", correctPointID);
         String selectByCorrectPointIDSQL = selectSQL + "correctPointID=?";
         List<CorrectPoint> correctPoints = tmpl.query(selectByCorrectPointIDSQL,
                 new BeanPropertyRowMapper<>(CorrectPoint.class), correctPointID);
@@ -103,7 +103,7 @@ public class CorrectPointRepo {
      * @return the list of correct points
      */
     public List<CorrectPoint> selectByQuestionID(Long questionID) {
-        log.debug("AnswerRepo selectByQuestionID: {}", questionID);
+        log.debug("AnswerRepo selectByID: {}", questionID);
         String selectByQuestionIDSQL = selectSQL + "questionID=?";
         List<CorrectPoint> correctPoints = tmpl.query(selectByQuestionIDSQL,
                 new BeanPropertyRowMapper<>(CorrectPoint.class), questionID);

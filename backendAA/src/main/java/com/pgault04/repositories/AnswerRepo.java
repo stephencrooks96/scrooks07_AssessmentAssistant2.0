@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +23,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class AnswerRepo {
 
     /**
@@ -83,8 +84,8 @@ public class AnswerRepo {
      * @param answerID the answer id
      * @return the returned answer
      */
-    public Answer selectByAnswerID(Long answerID) {
-        log.debug("AnswerRepo selectByAnswerID: {}", answerID);
+    public Answer selectByID(Long answerID) {
+        log.debug("AnswerRepo selectByID: {}", answerID);
         String selectByAnswerIDSQL = selectSQL + "answerID=?";
         List<Answer> answers = tmpl.query(selectByAnswerIDSQL, new BeanPropertyRowMapper<>(Answer.class),
                 answerID);
@@ -123,7 +124,7 @@ public class AnswerRepo {
      * @return the list of answers
      */
     public List<Answer> selectByQuestionID(Long questionID) {
-        log.debug("AnswerRepo selectByQuestionID: {}", questionID);
+        log.debug("AnswerRepo selectByID: {}", questionID);
         String selectByQuestionIDSQL = selectSQL + "questionID=?";
         List<Answer> answers = tmpl.query(selectByQuestionIDSQL, new BeanPropertyRowMapper<>(Answer.class),
                 questionID);

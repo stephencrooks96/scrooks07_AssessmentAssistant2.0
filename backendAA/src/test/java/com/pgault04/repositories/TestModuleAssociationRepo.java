@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.pgault04.entities.ModuleAssociation;
-import com.pgault04.repositories.ModuleAssociationRepo;
 
 /**
  * @author Paul Gault 40126005
@@ -60,13 +59,13 @@ public class TestModuleAssociationRepo {
 		// Inserts one moduleAssociation to table
 		ModuleAssociation returnedModuleAssociation = moduleAssociationRepo.insert(moduleAssociation);
 		ModuleAssociation moduleAssociations = moduleAssociationRepo
-				.selectByAssociationID(returnedModuleAssociation.getAssociationID());
+				.selectByID(returnedModuleAssociation.getAssociationID());
 		assertNotNull(moduleAssociations);
 		// Updates the moduleAssociation in the table
 		returnedModuleAssociation.setAssociationType(OTHER_ASSOCIATION_TYPE_IN_DB);
 		// Inserts one moduleAssociation to table
 		moduleAssociationRepo.insert(returnedModuleAssociation);
-		moduleAssociations = moduleAssociationRepo.selectByAssociationID(returnedModuleAssociation.getAssociationID());
+		moduleAssociations = moduleAssociationRepo.selectByID(returnedModuleAssociation.getAssociationID());
 		assertEquals(OTHER_ASSOCIATION_TYPE_IN_DB,
 				moduleAssociations.getAssociationType().intValue());
 	}
@@ -76,7 +75,7 @@ public class TestModuleAssociationRepo {
 		// Inserts one moduleAssociation to table
 		ModuleAssociation returnedModuleAssociation = moduleAssociationRepo.insert(moduleAssociation);
 		ModuleAssociation moduleAssociations = moduleAssociationRepo
-				.selectByAssociationID(returnedModuleAssociation.getAssociationID());
+				.selectByID(returnedModuleAssociation.getAssociationID());
 		assertNotNull(moduleAssociations);
 	}
 
@@ -113,7 +112,7 @@ public class TestModuleAssociationRepo {
 		ModuleAssociation returnedModuleAssociation = moduleAssociationRepo.insert(moduleAssociation);
 		moduleAssociationRepo.delete(returnedModuleAssociation.getAssociationID());
 		ModuleAssociation moduleAssociations = moduleAssociationRepo
-				.selectByAssociationID(returnedModuleAssociation.getAssociationID());
+				.selectByID(returnedModuleAssociation.getAssociationID());
 		assertNull(moduleAssociations);
 	}
 }

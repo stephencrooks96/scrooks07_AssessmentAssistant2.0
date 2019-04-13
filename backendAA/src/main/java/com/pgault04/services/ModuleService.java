@@ -103,7 +103,7 @@ public class ModuleService {
     public void approveModuleRequest(Long moduleID, String username) {
         User admin = userRepo.selectByUsername(username);
         if (admin != null && admin.getUserRoleID().equals(UserRole.ROLE_ADMIN)) {
-            Module module = moduleRepo.selectByModuleID(moduleID);
+            Module module = moduleRepo.selectByID(moduleID);
             module.setApproved(APPROVED);
             moduleRepo.insert(module);
             emailSender.sendModuleRequestApproved(module);
@@ -125,7 +125,7 @@ public class ModuleService {
     public void rejectModuleRequest(Long moduleID, String username) {
         User user = userRepo.selectByUsername(username);
         if (user != null && user.getUserRoleID().equals(UserRole.ROLE_ADMIN)) {
-            Module module = moduleRepo.selectByModuleID(moduleID);
+            Module module = moduleRepo.selectByID(moduleID);
             moduleRepo.delete(moduleID);
             emailSender.sendModuleRequestRejected(module);
         }
@@ -257,7 +257,7 @@ public class ModuleService {
      */
     public ModuleWithTutor getModuleWithTutor(Long moduleID) {
         logger.info("Request made for module with tutor info, module #{}", moduleID);
-        Module m = moduleRepo.selectByModuleID(moduleID);
+        Module m = moduleRepo.selectByID(moduleID);
         User u = userRepo.selectByUserID(m.getTutorUserID());
         u.setPassword(null); // Protects password from outside view
         return new ModuleWithTutor(u, m);
@@ -575,7 +575,7 @@ public class ModuleService {
      * Populates the question and answer object with all necessary date for display
      */
     private void populateQuestionAndAnswer(Tests test, Long userID, List<QuestionAndAnswer> questions, TestQuestion testQuestion) throws SQLException {
-        Question questionToAdd = questionRepo.selectByQuestionID(testQuestion.getQuestionID());
+        Question questionToAdd = questionRepo.selectByID(testQuestion.getQuestionID());
         Answer answer = answerRepo.selectByQuestionIDAndAnswererIDAndTestID(questionToAdd.getQuestionID(), userID, test.getTestID());
         String base64 = BlobUtil.blobToBase(questionToAdd.getQuestionFigure());
         questionToAdd.setQuestionFigure(null);
@@ -676,7 +676,7 @@ public class ModuleService {
         List<ModuleAssociation> modAssociations = modAssocRepo.selectByUserID(user.getUserID());
         List<Module> modules = new ArrayList<>();
         for (ModuleAssociation m : modAssociations) {
-            Module module = moduleRepo.selectByModuleID(m.getModuleID());
+            Module module = moduleRepo.selectByID(m.getModuleID());
             if (module.getApproved().equals(APPROVED)) {
                 modules.add(module);
             }
@@ -761,7 +761,7 @@ public class ModuleService {
                 theAssociationTypeID = m.getAssociationType();
             }
         }
-        return theAssociationTypeID != null ? associationTypeRepo.selectByAssociationTypeID(theAssociationTypeID).getAssociationTypeID() : null;
+        return theAssociationTypeID != null ? associationTypeRepo.selectByID(theAssociationTypeID).getAssociationTypeID() : null;
     }
 
     /*

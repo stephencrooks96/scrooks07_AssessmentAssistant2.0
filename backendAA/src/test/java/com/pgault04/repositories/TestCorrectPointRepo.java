@@ -58,11 +58,11 @@ public class TestCorrectPointRepo {
     @Test
     public void testInsert() {
         CorrectPoint returnedCp = correctPointRepo.insert(correctPoint);
-        CorrectPoint cp = correctPointRepo.selectByCorrectPointID(returnedCp.getCorrectPointID());
+        CorrectPoint cp = correctPointRepo.selectByID(returnedCp.getCorrectPointID());
         assertNotNull(cp);
         returnedCp.setPhrase("p 2");
         correctPointRepo.insert(returnedCp);
-        cp = correctPointRepo.selectByCorrectPointID(returnedCp.getCorrectPointID());
+        cp = correctPointRepo.selectByID(returnedCp.getCorrectPointID());
         assertEquals(returnedCp.getPhrase(), cp.getPhrase());
     }
 
@@ -76,7 +76,7 @@ public class TestCorrectPointRepo {
     @Test
     public void testSelectByCorrectPointID() {
         CorrectPoint returnedCp = correctPointRepo.insert(correctPoint);
-        CorrectPoint cp = correctPointRepo.selectByCorrectPointID(returnedCp.getCorrectPointID());
+        CorrectPoint cp = correctPointRepo.selectByID(returnedCp.getCorrectPointID());
         assertNotNull(cp);
     }
 
@@ -84,7 +84,7 @@ public class TestCorrectPointRepo {
     public void testDelete() {
         CorrectPoint returnedCp = correctPointRepo.insert(correctPoint);
         correctPointRepo.delete(returnedCp.getCorrectPointID());
-        CorrectPoint cps = correctPointRepo.selectByCorrectPointID(returnedCp.getCorrectPointID());
+        CorrectPoint cps = correctPointRepo.selectByID(returnedCp.getCorrectPointID());
         assertNull(cps);
     }
 }

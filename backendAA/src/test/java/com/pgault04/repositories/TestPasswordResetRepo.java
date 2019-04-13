@@ -49,13 +49,13 @@ public class TestPasswordResetRepo {
     public void testInsert() {
         // Inserts one user to table
         passwordResetRepo.insert(passwordResetObj);
-        PasswordReset passwordResets = passwordResetRepo.selectByUserID(passwordResetObj.getUserID());
+        PasswordReset passwordResets = passwordResetRepo.selectByID(passwordResetObj.getUserID());
         assertNotNull(passwordResets);
         // Updates the user in the table
         passwordResetObj.setResetString("newPass");
         // Inserts one user to table
         passwordResetRepo.insert(passwordResetObj);
-        passwordResets = passwordResetRepo.selectByUserID(passwordResetObj.getUserID());
+        passwordResets = passwordResetRepo.selectByID(passwordResetObj.getUserID());
         assertEquals("newPass", passwordResets.getResetString());
     }
 
@@ -63,7 +63,7 @@ public class TestPasswordResetRepo {
     public void testSelectByUserID() {
         // Inserts one user to table
         passwordResetRepo.insert(passwordResetObj);
-        PasswordReset passwordResets = passwordResetRepo.selectByUserID(passwordResetObj.getUserID());
+        PasswordReset passwordResets = passwordResetRepo.selectByID(passwordResetObj.getUserID());
         assertNotNull(passwordResets);
     }
 
@@ -72,7 +72,7 @@ public class TestPasswordResetRepo {
         // Inserts one user to table
         passwordResetRepo.insert(passwordResetObj);
         passwordResetRepo.delete(passwordResetObj.getUserID());
-        PasswordReset passwordResets = passwordResetRepo.selectByUserID(passwordResetObj.getUserID());
+        PasswordReset passwordResets = passwordResetRepo.selectByID(passwordResetObj.getUserID());
         assertNull(passwordResets);
     }
 }

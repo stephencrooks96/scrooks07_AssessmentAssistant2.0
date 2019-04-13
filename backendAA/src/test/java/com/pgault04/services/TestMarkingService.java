@@ -137,7 +137,7 @@ public class TestMarkingService {
         answerOtherUserTex = answerRepo.insert(answerOtherUserTex);
         markingController.editFeedback(principalOther, answerUserTex);
         markingController.editScore(principalOther, answerUserTex);
-        answerOtherUserTex = answerRepo.selectByAnswerID(answerOtherUserTex.getAnswerID());
+        answerOtherUserTex = answerRepo.selectByID(answerOtherUserTex.getAnswerID());
         assertEquals(answerUserTex.getScore(), answerOtherUserTex.getScore());
         assertEquals(answerUserTex.getFeedback(), answerOtherUserTex.getFeedback());
 
@@ -152,7 +152,7 @@ public class TestMarkingService {
         inputsRepo.insert(new Inputs("correct", 0, answerOtherUserMat.getAnswerID(), 1));
         markingController.editFeedback(principal, answerUserMat);
         markingController.editScore(principal, answerUserMat);
-        answerOtherUserMat = answerRepo.selectByAnswerID(answerOtherUserMat.getAnswerID());
+        answerOtherUserMat = answerRepo.selectByID(answerOtherUserMat.getAnswerID());
         assertEquals(answerUserMat.getScore(), answerOtherUserMat.getScore());
         assertEquals(answerUserMat.getFeedback(), answerOtherUserMat.getFeedback());
 
@@ -168,7 +168,7 @@ public class TestMarkingService {
         optionEntriesRepo.insert(new OptionEntries(optionOpt.getOptionID(), answerOtherUserOpt.getAnswerID()));
         markingController.editFeedback(principal, answerUserOpt);
         markingController.editScore(principal, answerUserOpt);
-        answerOtherUserOpt = answerRepo.selectByAnswerID(answerOtherUserOpt.getAnswerID());
+        answerOtherUserOpt = answerRepo.selectByID(answerOtherUserOpt.getAnswerID());
         assertEquals(answerUserOpt.getScore(), answerOtherUserOpt.getScore());
         assertEquals(answerUserOpt.getFeedback(), answerOtherUserOpt.getFeedback());
 
@@ -183,7 +183,7 @@ public class TestMarkingService {
         inputsRepo.insert(new Inputs("correct", 0, answerOtherUserIns.getAnswerID(), 0));
         markingController.editFeedback(principal, answerUserIns);
         markingController.editScore(principal, answerUserIns);
-        answerOtherUserIns = answerRepo.selectByAnswerID(answerOtherUserIns.getAnswerID());
+        answerOtherUserIns = answerRepo.selectByID(answerOtherUserIns.getAnswerID());
         assertEquals(answerUserIns.getScore(), answerOtherUserIns.getScore());
         assertEquals(answerUserIns.getFeedback(), answerOtherUserIns.getFeedback());
     }
@@ -492,8 +492,8 @@ public class TestMarkingService {
         correctPoint.getAlternatives().add(alternative);
         markingController.addCorrectPoint(principal, correctPoint, testObj.getTestID());
 
-        answer1 = answerRepo.selectByAnswerID(answer1.getAnswerID());
-        answer2 = answerRepo.selectByAnswerID(answer2.getAnswerID());
+        answer1 = answerRepo.selectByID(answer1.getAnswerID());
+        answer2 = answerRepo.selectByID(answer2.getAnswerID());
         assertEquals(10, (int) answer1.getScore());
         assertEquals("\nCorrect!!", answer1.getFeedback());
         assertEquals(10, (int) answer2.getScore());
@@ -514,8 +514,8 @@ public class TestMarkingService {
         correctPointMath.getAlternatives().add(alternativeMath);
         markingController.addCorrectPoint(principal, correctPointMath, testObj.getTestID());
 
-        answer1Math = answerRepo.selectByAnswerID(answer1Math.getAnswerID());
-        answer2Math = answerRepo.selectByAnswerID(answer2Math.getAnswerID());
+        answer1Math = answerRepo.selectByID(answer1Math.getAnswerID());
+        answer2Math = answerRepo.selectByID(answer2Math.getAnswerID());
         assertEquals(10, (int) answer1Math.getScore());
         assertEquals("\nCorrect!!", answer1Math.getFeedback());
         assertEquals(10, (int) answer2Math.getScore());
@@ -557,8 +557,8 @@ public class TestMarkingService {
         Alternative alternative = new Alternative(correctPoint.getCorrectPointID(), "alt", 0);
         markingController.addAlternative(principal, alternative, testObj.getTestID());
 
-        answer1 = answerRepo.selectByAnswerID(answer1.getAnswerID());
-        answer2 = answerRepo.selectByAnswerID(answer2.getAnswerID());
+        answer1 = answerRepo.selectByID(answer1.getAnswerID());
+        answer2 = answerRepo.selectByID(answer2.getAnswerID());
         assertEquals(0, (int) answer1.getScore());
         assertEquals("", answer1.getFeedback());
         assertEquals(10, (int) answer2.getScore());
@@ -587,8 +587,8 @@ public class TestMarkingService {
         Alternative alternativeMath = new Alternative(correctPointMath.getCorrectPointID(), "alt", 1);
         markingController.addAlternative(principal, alternativeMath, testObj.getTestID());
 
-        answer1Math = answerRepo.selectByAnswerID(answer1Math.getAnswerID());
-        answer2Math = answerRepo.selectByAnswerID(answer2Math.getAnswerID());
+        answer1Math = answerRepo.selectByID(answer1Math.getAnswerID());
+        answer2Math = answerRepo.selectByID(answer2Math.getAnswerID());
         assertEquals(0, (int) answer1Math.getScore());
         assertEquals("", answer1Math.getFeedback());
         assertEquals(10, (int) answer2Math.getScore());
@@ -627,8 +627,8 @@ public class TestMarkingService {
         alternativeRepo.insert(alternative1);
         markingController.removeAlternative(principal, alternative1.getAlternativeID(), testObj.getTestID());
 
-        answer1 = answerRepo.selectByAnswerID(answer1.getAnswerID());
-        answer2 = answerRepo.selectByAnswerID(answer2.getAnswerID());
+        answer1 = answerRepo.selectByID(answer1.getAnswerID());
+        answer2 = answerRepo.selectByID(answer2.getAnswerID());
         assertEquals(10, (int) answer1.getScore());
         assertEquals("Correct!!\n", answer1.getFeedback());
         assertEquals(0, (int) answer2.getScore());
@@ -664,7 +664,7 @@ public class TestMarkingService {
         correctPoint = correctPointRepo.insert(correctPoint);
         markingController.removeCorrectPoints(principal, correctPoint.getCorrectPointID(), testObj.getTestID());
 
-        answer1 = answerRepo.selectByAnswerID(answer1.getAnswerID());
+        answer1 = answerRepo.selectByID(answer1.getAnswerID());
         assertEquals(0, (int) answer1.getScore());
         assertEquals("", answer1.getFeedback());
     }

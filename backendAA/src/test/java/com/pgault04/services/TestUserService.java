@@ -227,7 +227,7 @@ public class TestUserService {
     @Test
     public void testResetPassword() {
         BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-        PasswordReset passwordReset = passwordResetRepo.selectByUserID(user.getUserID());
+        PasswordReset passwordReset = passwordResetRepo.selectByID(user.getUserID());
         userController.resetPassword(USERNAME_IN_DB, "newPassword1", passwordReset.getResetString());
         user = userRepo.selectByUsername(USERNAME_IN_DB);
         assertTrue(bcrypt.matches("newPassword1", user.getPassword()));

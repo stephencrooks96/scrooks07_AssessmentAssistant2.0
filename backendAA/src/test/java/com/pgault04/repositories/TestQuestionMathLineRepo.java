@@ -1,6 +1,5 @@
 package com.pgault04.repositories;
 
-import com.pgault04.entities.OptionEntries;
 import com.pgault04.entities.QuestionMathLine;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +71,7 @@ public class TestQuestionMathLineRepo {
     public void testSelectByQuestionMathLineID() {
         // Inserts one questionMathLine to table
         QuestionMathLine qml = questionMathLineRepo.insert(questionMathLine);
-        qml = questionMathLineRepo.selectByQuestionMathLineID(qml.getQuestionMathLineID());
+        qml = questionMathLineRepo.selectByID(qml.getQuestionMathLineID());
         assertNotNull(qml);
     }
 
@@ -81,7 +80,7 @@ public class TestQuestionMathLineRepo {
         // Inserts one questionMathLine to table
         QuestionMathLine qml = questionMathLineRepo.insert(questionMathLine);
         questionMathLineRepo.delete(qml.getQuestionMathLineID());
-        qml = questionMathLineRepo.selectByQuestionMathLineID(qml.getQuestionMathLineID());
+        qml = questionMathLineRepo.selectByID(qml.getQuestionMathLineID());
         assertNull(qml);
     }
 }

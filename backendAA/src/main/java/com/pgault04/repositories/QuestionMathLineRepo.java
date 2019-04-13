@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class QuestionMathLineRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -84,7 +84,7 @@ public class QuestionMathLineRepo {
      * @return the questionMathLines
      */
     public List<QuestionMathLine> selectByQuestionID(Long questionID) {
-        log.debug("QuestionMathLineRepo selectByQuestionID: #{}", questionID);
+        log.debug("QuestionMathLineRepo selectByID: #{}", questionID);
         String selectByQuestionIDSQL = selectSQL + "questionID=? ORDER BY indexedAt";
         List<QuestionMathLine> mathLines = tmpl.query(selectByQuestionIDSQL,
                 new BeanPropertyRowMapper<>(QuestionMathLine.class), questionID);
@@ -99,8 +99,8 @@ public class QuestionMathLineRepo {
      * @param questionMathLineID the key
      * @return the questionMathLine
      */
-    public QuestionMathLine selectByQuestionMathLineID(Long questionMathLineID) {
-        log.debug("QuestionMathLineRepo selectByQuestionMathLineID: #{}", questionMathLineID);
+    public QuestionMathLine selectByID(Long questionMathLineID) {
+        log.debug("QuestionMathLineRepo selectByID: #{}", questionMathLineID);
         String selectByQuestionMathLineIDSQL = selectSQL + "questionMathLineID=?";
         List<QuestionMathLine> mathLines = tmpl.query(selectByQuestionMathLineIDSQL,
                 new BeanPropertyRowMapper<>(QuestionMathLine.class), questionMathLineID);

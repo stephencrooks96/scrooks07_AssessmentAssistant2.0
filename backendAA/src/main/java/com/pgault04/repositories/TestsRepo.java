@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class TestsRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -100,7 +100,7 @@ public class TestsRepo {
      * @return list of tests belonging to the module
      */
     public List<Tests> selectByModuleID(Long moduleID) {
-        log.debug("TestsRepo selectByModuleID: #{}", moduleID);
+        log.debug("TestsRepo selectByID: #{}", moduleID);
         String selectByModuleIDSQL = selectSQL + "moduleID=?";
         List<Tests> tests = tmpl.query(selectByModuleIDSQL, new BeanPropertyRowMapper<>(Tests.class), moduleID);
 

@@ -50,14 +50,14 @@ public class TestAssociationTypeRepo {
         // Inserts one associationType to table
         AssociationType returnedAssociationType = associationTypeRepo.insert(associationTypeObj);
         AssociationType associationTypes = associationTypeRepo
-                .selectByAssociationTypeID(returnedAssociationType.getAssociationTypeID());
+                .selectByID(returnedAssociationType.getAssociationTypeID());
         assertNotNull(associationTypes);
         // Updates the associationType in the table
         returnedAssociationType.setAssociationType("assocType");
         // Inserts one associationType to table
         associationTypeRepo.insert(returnedAssociationType);
         associationTypes = associationTypeRepo
-                .selectByAssociationTypeID(returnedAssociationType.getAssociationTypeID());
+                .selectByID(returnedAssociationType.getAssociationTypeID());
         assertEquals("assocType", associationTypes.getAssociationType());
     }
 
@@ -71,7 +71,7 @@ public class TestAssociationTypeRepo {
         // Inserts one associationType to table
         AssociationType returnedAssociationType = associationTypeRepo.insert(associationTypeObj);
         AssociationType associationTypes = associationTypeRepo
-                .selectByAssociationTypeID(returnedAssociationType.getAssociationTypeID());
+                .selectByID(returnedAssociationType.getAssociationTypeID());
         assertNotNull(associationTypes);
     }
 
@@ -90,7 +90,7 @@ public class TestAssociationTypeRepo {
         AssociationType returnedAssociationType = associationTypeRepo.insert(associationTypeObj);
         associationTypeRepo.delete(returnedAssociationType.getAssociationTypeID());
         AssociationType associationTypes = associationTypeRepo
-                .selectByAssociationTypeID(returnedAssociationType.getAssociationTypeID());
+                .selectByID(returnedAssociationType.getAssociationTypeID());
         assertNull(associationTypes);
     }
 }

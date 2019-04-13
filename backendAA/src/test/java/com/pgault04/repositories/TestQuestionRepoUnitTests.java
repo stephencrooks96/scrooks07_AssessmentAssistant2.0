@@ -2,7 +2,6 @@ package com.pgault04.repositories;
 
 import static org.junit.Assert.*;
 
-import java.sql.Blob;
 import java.util.List;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -17,8 +16,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.pgault04.entities.Question;
-import com.pgault04.repositories.QuestionRepo;
-import com.pgault04.repositories.QuestionTypeRepo;
 
 /**
  * @author Paul Gault 40126005
@@ -67,13 +64,13 @@ public class TestQuestionRepoUnitTests {
 	public void testInsert() {
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
+		Question questions = questionRepo.selectByID(questionObj.getQuestionID());
 		assertNotNull(questions);
 		// Updates the user in the table
 		questionObj.setQuestionContent("content2");
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-		questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
+		questions = questionRepo.selectByID(questionObj.getQuestionID());
 		assertEquals("content2", questions.getQuestionContent());
 	}
 
@@ -81,7 +78,7 @@ public class TestQuestionRepoUnitTests {
 	public void testSelectByQuestionID() {
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
-		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
+		Question questions = questionRepo.selectByID(questionObj.getQuestionID());
 		assertNotNull(questions);
 	}
 
@@ -100,7 +97,7 @@ public class TestQuestionRepoUnitTests {
 		// Inserts one user to table
 		questionRepo.insert(questionObj);
 		questionRepo.delete(questionObj.getQuestionID());
-		Question questions = questionRepo.selectByQuestionID(questionObj.getQuestionID());
+		Question questions = questionRepo.selectByID(questionObj.getQuestionID());
 		assertNull(questions);
 	}
 }

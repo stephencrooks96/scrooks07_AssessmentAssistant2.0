@@ -46,7 +46,7 @@ public class ModuleController {
     @CrossOrigin
     @RequestMapping(value = "/getByModuleID", method = RequestMethod.GET)
     public Module getModuleByID(Long moduleID) {
-        return modRepo.selectByModuleID(moduleID);
+        return modRepo.selectByID(moduleID);
     }
 
     /**

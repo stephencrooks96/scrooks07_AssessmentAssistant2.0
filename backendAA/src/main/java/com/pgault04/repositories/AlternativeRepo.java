@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class AlternativeRepo {
 
     /**
@@ -81,8 +81,8 @@ public class AlternativeRepo {
      * @param alternativeID the alternative id
      * @return the found alternative
      */
-    public Alternative selectByAlternativeID(Long alternativeID) {
-        log.debug("AlternativeRepo selectByAlternativeID: " + alternativeID);
+    public Alternative selectByID(Long alternativeID) {
+        log.debug("AlternativeRepo selectByID: " + alternativeID);
         String selectByQuestionIDSQL = selectSQL + "alternativeID=?";
         List<Alternative> alternatives = tmpl.query(selectByQuestionIDSQL,
                 new BeanPropertyRowMapper<>(Alternative.class), alternativeID);
@@ -101,7 +101,7 @@ public class AlternativeRepo {
      * @return the list of alternatives
      */
     public List<Alternative> selectByCorrectPointID(Long correctPointID) {
-        log.debug("CorrectPointRepo selectByCorrectPointID: {}", correctPointID);
+        log.debug("CorrectPointRepo selectByID: {}", correctPointID);
         String selectByCorrectPointIDSQL = selectSQL + "correctPointID=?";
         List<Alternative> alternatives = tmpl.query(selectByCorrectPointIDSQL,
                 new BeanPropertyRowMapper<>(Alternative.class), correctPointID);

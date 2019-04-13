@@ -76,7 +76,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .and()
                 .authorizeRequests().antMatchers("/myModules/**", "/user/**", "/moduleHome/**", "/modules/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
                 .and()
-                .authorizeRequests().antMatchers("/user/getTutorRequests", "/user/approveTutorRequest", "/user/rejectTutorRequest", "/modules/getModuleRequests", "/modules/approveModuleRequest", "/modules/rejectModuleRequest", "/user/makeAdmin", "/user/makeTutor", "/user/removeUser", "/user/addUsersaeayaye ").access("hasAnyRole('ROLE_ADMIN')")
+                .authorizeRequests().antMatchers("/user/getTutorRequests", "/user/approveTutorRequest", "/user/rejectTutorRequest", "/modules/getModuleRequests", "/modules/approveModuleRequest", "/modules/rejectModuleRequest", "/user/makeAdmin", "/user/makeTutor", "/user/removeUser", "/user/addUsers").access("hasAnyRole('ROLE_ADMIN')")
                 .and()
                 .csrf().disable();
     }

@@ -84,7 +84,7 @@ public class TestService {
         logger.info("Request made to add a test to the database by {}", username);
         primeInitialTestInfo(test);
         User user = userRepo.selectByUsername(username);
-        Module module = modRepo.selectByModuleID(test.getModuleID());
+        Module module = modRepo.selectByID(test.getModuleID());
         try {
             // Parse exceptions could be thrown here
             test.setEndDateTime(StringToDateUtil.convertInputDateToCorrectFormat(test.getEndDateTime()));
@@ -125,7 +125,7 @@ public class TestService {
         logger.info("Request made to add a test to the database by {}", username);
         User student = userRepo.selectByUsername(username);
         Tests test = testRepo.selectByTestID(script.get(0).getAnswer().getTestID());
-        Module module = modRepo.selectByModuleID(test.getModuleID());
+        Module module = modRepo.selectByID(test.getModuleID());
         User tutor = userRepo.selectByUserID(module.getTutorUserID());
 
         for (QuestionAndAnswer questionAndAnswer : script) {
@@ -214,7 +214,7 @@ public class TestService {
         questionAndAnswer.getAnswer().setScore(a.getScore());
         questionAndAnswer.getAnswer().setFeedback(a.getFeedback());
         questionAndAnswer.getAnswer().setMarkerApproved(1);
-        validateScore(questionAndAnswer.getAnswer(), questionRepo.selectByQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID()));
+        validateScore(questionAndAnswer.getAnswer(), questionRepo.selectByID(questionAndAnswer.getQuestion().getQuestion().getQuestionID()));
         return true;
     }
 
@@ -247,7 +247,7 @@ public class TestService {
      * Auto-marks multiples choice questions based on score and feedback given to options in marking phase
      */
     private void autoMarkMultipleChoice(QuestionAndAnswer questionAndAnswer) {
-        Question question = questionRepo.selectByQuestionID(questionAndAnswer.getAnswer().getQuestionID());
+        Question question = questionRepo.selectByID(questionAndAnswer.getAnswer().getQuestionID());
         List<Option> options = findOptions(questionAndAnswer.getAnswer().getQuestionID());
         options.sort(Collections.reverseOrder(Comparator.comparingDouble(Option::getWorthMarks)));
         prepareAnswerForAutoMarking(questionAndAnswer);
@@ -279,7 +279,7 @@ public class TestService {
      * Calls relevant methods for their specific question types
      */
     void autoMarkCorrectPoints(QuestionAndAnswer questionAndAnswer) {
-        Question question = questionRepo.selectByQuestionID(questionAndAnswer.getAnswer().getQuestionID());
+        Question question = questionRepo.selectByID(questionAndAnswer.getAnswer().getQuestionID());
         List<CorrectPoint> correctPoints = findCorrectPoints(questionAndAnswer.getAnswer().getQuestionID());
         correctPoints.sort(Collections.reverseOrder(Comparator.comparingDouble(CorrectPoint::getMarksWorth)));
         prepareAnswerForAutoMarking(questionAndAnswer);
@@ -536,7 +536,7 @@ public class TestService {
      */
     int getQuestionTotal(Tests test, int questionTotal) {
         for (TestQuestion tq : testQuestionRepo.selectByTestID(test.getTestID())) {
-            Question question = questionRepo.selectByQuestionID(tq.getQuestionID());
+            Question question = questionRepo.selectByID(tq.getQuestionID());
             questionTotal += question.getMaxScore();
         }
         return questionTotal;
@@ -586,7 +586,7 @@ public class TestService {
         logger.info("Request made to edit a test with id #{} to the database by {}", test.getTestID(), username);
         test.setTestTitle(test.getTestTitle().trim());
         User user = userRepo.selectByUsername(username);
-        Module module = modRepo.selectByModuleID(test.getModuleID());
+        Module module = modRepo.selectByID(test.getModuleID());
         Long check = modServ.checkValidAssociation(username, test.getModuleID());
         if (check != null && AssociationType.TUTOR == check) {
             if (test.getPractice() == 1) {
@@ -655,12 +655,12 @@ public class TestService {
      */
     public List<TutorQuestionPojo> getQuestionsByTestIDTutorView(String username, Long testID) throws SQLException {
         logger.info("Request made for questions and all necessary info requited by tutor for test #{} by {}", testID, username);
-        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
         if (check != null && AssociationType.TUTOR == check) {
             List<TutorQuestionPojo> tutorQuestions = new LinkedList<>();
             for (TestQuestion tq : tqs) {
-                Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
+                Question q = questionRepo.selectByID(tq.getQuestionID());
                 if (q != null) {
                     populateTutorQuestionList(testID, tutorQuestions, q);
                 }
@@ -682,7 +682,7 @@ public class TestService {
     public List<QuestionAndAnswer> getQuestionsStudent(String username, Long testID) throws SQLException {
         logger.info("Request made for questions for test #{} by {}", testID, username);
         List<TestQuestion> tqs = testQuestionRepo.selectByTestID(testID);
-        if (modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()) != null) {
+        if (modServ.checkValidAssociation(username, modRepo.selectByID(testRepo.selectByTestID(testID).getModuleID()).getModuleID()) != null) {
             List<QuestionAndAnswer> questions = new LinkedList<>();
             populateQuestionsForStudent(tqs, questions);
             return questions;
@@ -695,7 +695,7 @@ public class TestService {
      */
     private void populateQuestionsForStudent(List<TestQuestion> tqs, List<QuestionAndAnswer> questions) throws SQLException {
         for (TestQuestion tq : tqs) {
-            Question q = questionRepo.selectByQuestionID(tq.getQuestionID());
+            Question q = questionRepo.selectByID(tq.getQuestionID());
             if (q != null) {
                 List<Inputs> inputs = populateInputsForStudent(q);
                 List<OptionEntries> optionEntries = new LinkedList<>();
@@ -951,7 +951,7 @@ public class TestService {
         logger.info("Request made to add question #{} in to test #{} by {}", questionID, testID, username);
 
         Tests test = testRepo.selectByTestID(testID);
-        Question question = questionRepo.selectByQuestionID(questionID);
+        Question question = questionRepo.selectByID(questionID);
         Long check = modServ.checkValidAssociation(username, test.getModuleID());
         if (check != null && check == AssociationType.TUTOR && question.getCreatorID().equals(userRepo.selectByUsername(username).getUserID())) {
             return testQuestionRepo.insert(new TestQuestion(testID, questionID));
@@ -969,7 +969,7 @@ public class TestService {
      */
     public Boolean duplicateQuestion(Long questionID, String username) {
         logger.info("Request made to duplicate question #{} by {}", questionID, username);
-        Question question = questionRepo.selectByQuestionID(questionID);
+        Question question = questionRepo.selectByID(questionID);
         List<Option> options = optionRepo.selectByQuestionID(question.getQuestionID());
         List<CorrectPoint> cps = cpRepo.selectByQuestionID(question.getQuestionID());
         getAlternativesForCorrectPoints(cps);
@@ -1036,7 +1036,7 @@ public class TestService {
      * Carries out actions needed to add correct points in to the database
      */
     List<CorrectPoint> addCorrectPoints(List<CorrectPoint> correctPoints, Long questionID, Boolean update) {
-        Question question = questionRepo.selectByQuestionID(questionID);
+        Question question = questionRepo.selectByID(questionID);
         Map<Integer, CorrectPoint> correctPointTreeMap = new TreeMap<>();
         if (question.getQuestionType() == QuestionType.INSERT_THE_WORD) {
             correctPoints.addAll(cpRepo.selectByQuestionID(questionID));
@@ -1136,7 +1136,7 @@ public class TestService {
      */
     public Boolean removeQuestionFromTest(Long testID, Long questionID, String username) {
         logger.info("Request made to remove question #{} from test #{} by {}", questionID, testID, username);
-        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
         if (check != null && AssociationType.TUTOR == check) {
             List<TestQuestion> testQuestions = testQuestionRepo.selectByTestID(testID);
             for (TestQuestion tq : testQuestions) {
@@ -1159,10 +1159,10 @@ public class TestService {
     public Boolean removeQuestionMathLine(Long questionMathLineID, String username) {
         logger.info("Request made to remove question math line #{} by {}", questionMathLineID, username);
 
-        QuestionMathLine qm = questionMathLineRepo.selectByQuestionMathLineID(questionMathLineID);
+        QuestionMathLine qm = questionMathLineRepo.selectByID(questionMathLineID);
         User user = userRepo.selectByUsername(username);
 
-        if (user.getUserID().equals(questionRepo.selectByQuestionID(qm.getQuestionID()).getCreatorID())) {
+        if (user.getUserID().equals(questionRepo.selectByID(qm.getQuestionID()).getCreatorID())) {
             questionMathLineRepo.delete(questionMathLineID);
             return true;
         }
@@ -1178,9 +1178,9 @@ public class TestService {
      */
     public Boolean removeCorrectPoint(Long correctPointID, String username) {
         logger.info("Request made to remove correct point #{} by {}", correctPointID, username);
-        CorrectPoint cp = cpRepo.selectByCorrectPointID(correctPointID);
+        CorrectPoint cp = cpRepo.selectByID(correctPointID);
         User user = userRepo.selectByUsername(username);
-        if (user.getUserID().equals(questionRepo.selectByQuestionID(cp.getQuestionID()).getCreatorID())) {
+        if (user.getUserID().equals(questionRepo.selectByID(cp.getQuestionID()).getCreatorID())) {
             List<Alternative> alts = alternativeRepo.selectByCorrectPointID(correctPointID);
             for (Alternative alt : alts) {
                 alternativeRepo.delete(alt.getAlternativeID());
@@ -1201,9 +1201,9 @@ public class TestService {
     public Boolean removeAlternative(Long alternativeID, String username) {
         logger.info("Request made to remove alternative #{} by {}", alternativeID, username);
         User user = userRepo.selectByUsername(username);
-        Alternative alt = alternativeRepo.selectByAlternativeID(alternativeID);
-        CorrectPoint cp = cpRepo.selectByCorrectPointID(alt.getCorrectPointID());
-        if (user.getUserID().equals(questionRepo.selectByQuestionID(cp.getQuestionID()).getCreatorID())) {
+        Alternative alt = alternativeRepo.selectByID(alternativeID);
+        CorrectPoint cp = cpRepo.selectByID(alt.getCorrectPointID());
+        if (user.getUserID().equals(questionRepo.selectByID(cp.getQuestionID()).getCreatorID())) {
             alternativeRepo.delete(alt.getAlternativeID());
             return true;
         }
@@ -1220,8 +1220,8 @@ public class TestService {
     public Boolean removeOption(Long optionID, String username) {
         logger.info("Request made to remove option #{} by {}", optionID, username);
         User user = userRepo.selectByUsername(username);
-        Option option = optionRepo.selectByOptionID(optionID);
-        if (user.getUserID().equals(questionRepo.selectByQuestionID(option.getQuestionID()).getCreatorID())) {
+        Option option = optionRepo.selectByID(optionID);
+        if (user.getUserID().equals(questionRepo.selectByID(option.getQuestionID()).getCreatorID())) {
             optionRepo.delete(option.getOptionID());
             return true;
         }
@@ -1238,7 +1238,7 @@ public class TestService {
      */
     public Boolean deleteTest(Long testID, String username) {
         logger.info("Request made to delete test #{} by {}", testID, username);
-        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
         if (check != null && AssociationType.TUTOR == check) {
             testRepo.delete(testID);
             return true;
@@ -1255,7 +1255,7 @@ public class TestService {
      */
     public Boolean scheduleTest(Long testID, String username) throws ParseException {
         logger.info("Request made to schedule test #{} by {}", testID, username);
-        Long check = modServ.checkValidAssociation(username, modRepo.selectByModuleID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
+        Long check = modServ.checkValidAssociation(username, modRepo.selectByID(testRepo.selectByTestID(testID).getModuleID()).getModuleID());
         if (check != null && AssociationType.TUTOR == check) {
             Tests test = testRepo.selectByTestID(testID);
 
@@ -1276,7 +1276,7 @@ public class TestService {
      */
     private void sendNewTestToAssociates(Tests test) throws ParseException {
         List<ModuleAssociation> moduleAssociations = moduleAssociationRepo.selectByModuleID(test.getModuleID());
-        Module module = modRepo.selectByModuleID(test.getModuleID());
+        Module module = modRepo.selectByID(test.getModuleID());
         for (ModuleAssociation moduleAssociation : moduleAssociations) {
             if (moduleAssociation.getAssociationType().equals(AssociationType.STUDENT)) {
                 User user = userRepo.selectByUserID(moduleAssociation.getUserID());

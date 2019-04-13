@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Paul Gault 40126005
  * @since November 2018
  */
-@Component
+@Repository
 public class MessageRepo {
 
     private static final int INSERT_CHECKER_CONSTANT = 0;
@@ -83,8 +83,8 @@ public class MessageRepo {
      * @param messageID the message's id
      * @return the returned message
      */
-    public Message selectByMessageID(Long messageID) {
-        log.debug("MessageRepo selectByMessageID: {}", messageID);
+    public Message selectByID(Long messageID) {
+        log.debug("MessageRepo selectByID: {}", messageID);
         String selectByMessageIDSQL = selectSQL + "messageID=?";
         List<Message> messages = tmpl.query(selectByMessageIDSQL, new BeanPropertyRowMapper<>(Message.class),
                 messageID);

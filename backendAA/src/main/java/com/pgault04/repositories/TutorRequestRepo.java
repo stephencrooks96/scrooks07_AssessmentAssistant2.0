@@ -81,7 +81,7 @@ public class TutorRequestRepo {
      * @return the tutor request
      */
     public TutorRequests selectByUserID(Long userID) {
-        log.debug("TutorRequestRepo selectByUserID: #{}", userID);
+        log.debug("TutorRequestRepo selectByID: #{}", userID);
         String selectByUserIDSQL = selectSQL + "userID=?";
         List<TutorRequests> tutorRequests = tmpl.query(selectByUserIDSQL, new BeanPropertyRowMapper<>(TutorRequests.class), userID);
 
