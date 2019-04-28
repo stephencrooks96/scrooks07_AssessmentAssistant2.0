@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {UserService} from "../services/user.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-reset-password',
@@ -19,7 +19,7 @@ export class ResetPasswordComponent implements OnInit {
   errorMessage: string = "";
   resetString: string;
 
-  constructor(private userService: UserService, private route: ActivatedRoute) {
+  constructor(private router: Router, private userService: UserService, private route: ActivatedRoute) {
     this.resetString = this.route.snapshot.paramMap.get('resetString');
   }
 
@@ -72,7 +72,7 @@ export class ResetPasswordComponent implements OnInit {
         form.reset();
         this.success = true;
         this.error = false;
-        this.successMessage = "Password changed successfully."
+        this.successMessage = "Password changed successfully. Please return to login.";
       }, error => {
         this.error = true;
         this.errorMessage = "Reset string does not match what is stored in database for this user."

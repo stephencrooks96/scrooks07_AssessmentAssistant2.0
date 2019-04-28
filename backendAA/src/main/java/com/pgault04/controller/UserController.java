@@ -123,7 +123,7 @@ public class UserController {
      */
     @CrossOrigin
     @RequestMapping(value = "/editProfile", method = RequestMethod.POST)
-    public User editProfile(@RequestBody User user, Principal principal) { return userService.editProfile(user, principal); }
+    public UserSession editProfile(@RequestBody User user, Principal principal) { return userService.editProfile(user, principal); }
 
     /**
      * Finds all users in the system

@@ -259,6 +259,9 @@ CREATE INDEX userRoleID ON Users (userRoleID);
 
 CREATE UNIQUE INDEX usernameS ON UserSessions (username);
 
+ALTER TABLE Alternative
+  ADD FOREIGN KEY (correctPointID) REFERENCES CorrectPoint (correctPointID) ON UPDATE CASCADE ON DELETE CASCADE;
+
 ALTER TABLE Answer
   ADD FOREIGN KEY (questionID) REFERENCES Question (questionID) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE Answer
@@ -268,6 +271,8 @@ ALTER TABLE Answer
 ALTER TABLE Answer
   ADD FOREIGN KEY (testID) REFERENCES Tests (testID) ON UPDATE CASCADE ON DELETE CASCADE;
 
+ALTER TABLE CorrectPoint
+  ADD FOREIGN KEY (questionID) REFERENCES Question (questionID) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE Inputs
   ADD FOREIGN KEY (answerID) REFERENCES Answer (answerID) ON UPDATE CASCADE ON DELETE CASCADE;
@@ -336,203 +341,113 @@ ALTER TABLE TutorRequests
 ALTER TABLE Users
   ADD FOREIGN KEY (userRoleID) REFERENCES UserRole (userRoleID) ON UPDATE CASCADE ON DELETE CASCADE;
 
-insert into UserRole (role)
-values ('ROLE_ADMIN');
+INSERT INTO AssociationType (associationTypeID, associationType) VALUES (1,'tutor');
+INSERT INTO AssociationType (associationTypeID, associationType) VALUES (2,'student');
+INSERT INTO AssociationType (associationTypeID, associationType) VALUES (3,'teaching assistant');
 
-insert into UserRole (role)
-values ('ROLE_USER');
+INSERT INTO UserRole (userRoleID, role) VALUES (1,'ROLE_ADMIN');
+INSERT INTO UserRole (userRoleID, role) VALUES (2,'ROLE_USER');
 
-insert into QuestionType (questionType)
-values ('Text-based');
-insert into QuestionType (questionType)
-values ('Multiple-Choice');
-insert into QuestionType (questionType)
-values ('Insert the word');
-insert into QuestionType (questionType)
-values ('Math/Text');
+INSERT INTO Users (userID, username, password, firstName, lastName, enabled, userRoleID, tutor) VALUES (1,'tutor@qub.ac.uk','$2a$10$fcYVmhWKfvSHIOgsy8vQiuqdYbyangYXr88k3fyRDAscm3Qjg80Py','Tutor','User',1,1,1);
+INSERT INTO Users (userID, username, password, firstName, lastName, enabled, userRoleID, tutor) VALUES (2,'student@qub.ac.uk','$2a$10$DrO3jV2QIQbqeCf5G2H4hux/vX7D0XpDgPNwzfaDmFpzsAU.ZiFkO','Student','User',0,1,0);
+INSERT INTO Users (userID, username, password, firstName, lastName, enabled, userRoleID, tutor) VALUES (3,'t_a@qub.ac.uk','$2a$10$aDBYhCrLseqkfRKNYIOBiOZQfq14NONtGr1xo0Vj5qkCQJ.fsg7fi','Teaching','Assistant',0,1,0);
+INSERT INTO Users (userID, username, password, firstName, lastName, enabled, userRoleID, tutor) VALUES (4,'richard.gault@qub.ac.uk','$2a$10$zKCpaI0Y0y5m8VMdsnUaheVrMtXy2SFzjGbwiDab3eunA5cY4FEvu','Richard','Gault',0,1,1);
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('pgault04@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Paul', 'Gault', 1, 1, 0);
-insert into PasswordReset (userID, resetString) values (1, 'reset');
-insert into UserSessions (username, token, lastActive)
-values ('pgault04@qub.ac.uk', 'cGdhdWx0MDRAcXViLmFjLnVrOjEyMw==', '1970-01-01 00:00:01');
+INSERT INTO PasswordReset (userID, resetString) VALUES (1,'reset');
+INSERT INTO PasswordReset (userID, resetString) VALUES (2,'oScUl5fFfTT9EYz');
+INSERT INTO PasswordReset (userID, resetString) VALUES (3,'DZU5FdrngkzpBOH');
+INSERT INTO PasswordReset (userID, resetString) VALUES (4,'fobtTPnQuTICp8o');
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('richard.gault@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Richard', 'Gault',
-        1, 2, 1);
-insert into PasswordReset (userID, resetString) values (2, 'reset');
-insert into UserSessions (username, token, lastActive)
-values ('richard.gault@qub.ac.uk', 'cmljaGFyZC5nYXVsdEBxdWIuYWMudWs6MTIz', '1970-01-01 00:00:01');
+INSERT INTO Modules (moduleID, moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved) VALUES (1,'Example Module','Tester module for production build.',1,'2019-03-20','2020-03-20',1);
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('bart.simpson@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bart', 'Simpson', 1,
-        2, 0);
-insert into UserSessions (username, token, lastActive)
-values ('bart.simpson@qub.ac.uk', 'YmFydC5zaW1wc29uQHF1Yi5hYy51azoxMjM=', '1970-01-01 00:00:01');
+INSERT INTO ModuleAssociation (associationID, moduleID, userID, associationType) VALUES (1,1,1,1);
+INSERT INTO ModuleAssociation (associationID, moduleID, userID, associationType) VALUES (2,1,2,2);
+INSERT INTO ModuleAssociation (associationID, moduleID, userID, associationType) VALUES (5,1,3,3);
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('clark.kent@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Clark', 'Kent', 1, 2,
-        0);
-insert into UserSessions (username, token, lastActive)
-values ('clark.kent@qub.ac.uk', 'Y2xhcmsua2VudEBxdWIuYWMudWs6MTIz', '1970-01-01 00:00:01');
+INSERT INTO QuestionType (questionTypeID, questionType) VALUES (1,'Text-based');
+INSERT INTO QuestionType (questionTypeID, questionType) VALUES (2,'Multiple-Choice');
+INSERT INTO QuestionType (questionTypeID, questionType) VALUES (3,'Insert the word');
+INSERT INTO QuestionType (questionTypeID, questionType) VALUES (4,'Math/Text');
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('bruce.wayne@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Bruce', 'Wayne', 1, 2,
-        0);
-insert into UserSessions (username, token, lastActive)
-values ('bruce.wayne@qub.ac.uk', 'YnJ1Y2Uud2F5bmVAcXViLmFjLnVrOjEyMw==', '1970-01-01 00:00:01');
+INSERT INTO Tests (testID, moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) VALUES (9,1,'Marked Test Example','2019-04-02 00:00:00','2019-04-02 14:50:00',1,1,1,0);
+INSERT INTO Tests (testID, moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) VALUES (18,1,'Active Test Example','2019-04-26 00:00:00','2019-06-27 00:00:00',0,1,0,0);
+INSERT INTO Tests (testID, moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) VALUES (24,1,'Practice Test Example','2019-04-26 00:00:00','2019-06-27 00:00:00',0,1,1,1);
+INSERT INTO Tests (testID, moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice) VALUES (25,1,'Scheduled Test Example','2019-06-27 00:00:00','2019-06-30 00:00:00',0,1,0,0);
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('peter.parker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Peter', 'Parker', 1,
-        2, 0);
-insert into UserSessions (username, token, lastActive)
-values ('peter.parker@qub.ac.uk', 'cGV0ZXIucGFya2VyQHF1Yi5hYy51azoxMjM=', '1970-01-01 00:00:01');
+INSERT INTO Question (questionType, questionID, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) VALUES (1,1,'Which ‘BBT’ was first formulated by George Lemaitre and suggests that the universe formed billions of years ago and has been expanding ever since?',NULL,10,0,1,NULL);
+INSERT INTO Question (questionType, questionID, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) VALUES (2,2,'Triton is the largest of the satellites orbiting which of the traditional solar system planets?',NULL,10,0,1,0);
+INSERT INTO Question (questionType, questionID, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) VALUES (3,3,'A water molecule is composed of two [[hydrogen]] atoms and one [[oxygen]] atom.',NULL,10,0,1,NULL);
+INSERT INTO Question (questionType, questionID, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply) VALUES (4,4,'Solve the following simultaneous equations.',NULL,10,0,1,NULL);
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('luke.skywalker@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Luke', 'Skywalker',
-        1, 2, 0);
-insert into UserSessions (username, token, lastActive)
-values ('luke.skywalker@qub.ac.uk', 'bHVrZS5za3l3YWxrZXJAcXViLmFjLnVrOjEyMw==', '1970-01-01 00:00:01');
+INSERT INTO QuestionMathLines (questionMathLineID, questionID, content, indexedAt) VALUES (1,4,'y + 2x = 15',0);
+INSERT INTO QuestionMathLines (questionMathLineID, questionID, content, indexedAt) VALUES (2,4,'y = 2x + 3',1);
 
-insert into Users (username, password, firstname, lastname, enabled, userRoleID, tutor)
-values ('harry.potter@qub.ac.uk', '$2a$10$PrI5Gk9L.tSZiW9FXhTS8O8Mz9E97k2FZbFvGFFaSsiTUIl.TCrFu', 'Harry', 'Potter', 1,
-        2, 0);
-insert into UserSessions (username, token, lastActive)
-values ('harry.potter@qub.ac.uk', 'aGFycnkucG90dGVyQHF1Yi5hYy51azoxMjM=', '1970-01-01 00:00:01');
+INSERT INTO CorrectPoint (correctPointID, questionID, phrase, marksWorth, feedback, indexedAt, math) VALUES (1,1,'Big Bang Theory',10,'Yes the big bang theory',NULL,0);
+INSERT INTO CorrectPoint (correctPointID, questionID, phrase, marksWorth, feedback, indexedAt, math) VALUES (2,3,'hydrogen',5,'Yes 2 hydrogen',0,0);
+INSERT INTO CorrectPoint (correctPointID, questionID, phrase, marksWorth, feedback, indexedAt, math) VALUES (3,3,'oxygen',5,'Yes one oxygen',1,0);
+INSERT INTO CorrectPoint (correctPointID, questionID, phrase, marksWorth, feedback, indexedAt, math) VALUES (4,4,'x=3',5,'Yes x is 3.',NULL,1);
+INSERT INTO CorrectPoint (correctPointID, questionID, phrase, marksWorth, feedback, indexedAt, math) VALUES (5,4,'y=9',5,'Yes y is 9.',NULL,1);
 
-insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved)
-values ('Foundation Physics', 'Physics for beginners', 2, '2018-09-01', '2019-09-01', 1);
-insert into Modules (moduleName, moduleDescription, tutorUserID, commencementDate, endDate, approved)
-values ('Ad Physics', 'Advanced Physics', 2, '2018-09-01', '2019-09-01', 1);
+INSERT INTO Alternative (alternativeID, correctPointID, alternativePhrase, math) VALUES (1,1,'Big Bang',0);
+INSERT INTO Alternative (alternativeID, correctPointID, alternativePhrase, math) VALUES (2,4,'x = 3',1);
+INSERT INTO Alternative (alternativeID, correctPointID, alternativePhrase, math) VALUES (3,5,'y = 9',1);
 
-insert into AssociationType (associationType)
-values ('tutor');
-insert into AssociationType (associationType)
-values ('student');
-insert into AssociationType (associationType)
-values ('teaching assistant');
+INSERT INTO OptionTbl (optionID, questionID, optionContent, worthMarks, feedback) VALUES (1,2,'Mars',0,'Not Mars - Neptune.');
+INSERT INTO OptionTbl (optionID, questionID, optionContent, worthMarks, feedback) VALUES (2,2,'Saturn',0,'Not Saturn - Neptune.');
+INSERT INTO OptionTbl (optionID, questionID, optionContent, worthMarks, feedback) VALUES (3,2,'Neptune',10,'Yes Neptune.');
 
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 1, 2);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (2, 1, 2);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 2, 1);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (2, 2, 1);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 3, 3);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (2, 3, 3);
-
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 4, 2);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 5, 2);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 6, 2);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 7, 2);
-insert into ModuleAssociation (moduleID, userID, associationType)
-values (1, 8, 2);
-
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Quantum Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Medical Physics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Astrophysics', '2018-11-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (18,9,2);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (19,9,1);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (20,9,3);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (21,9,4);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (61,18,1);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (62,18,2);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (63,18,3);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (64,18,4);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (65,24,1);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (66,24,2);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (67,24,3);
+INSERT INTO TestQuestion (testQuestionID, testID, questionID) VALUES (68,24,4);
 
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Quantum Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Medical Physics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Astrophysics 2', '2019-06-11 00:00:00', '2019-11-11 00:00:00', 0, 1, 0, 0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (26,2,9,1,3,'',0,'Not Saturn - Neptune.\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (27,1,9,1,3,'bbt',0,'',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (28,3,9,1,3,'',10,'Yes 2 hydrogen\nYes one oxygen\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (29,4,9,1,3,'',10,'Yes x is 3.\nYes y is 9.\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (30,2,9,2,1,'',10,'Yes Neptune.\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (31,1,9,2,1,'The Big Bang Theory',10,'Yes the big bang theory\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (32,3,9,2,1,'',10,'Yes 2 hydrogen\nYes one oxygen\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (33,4,9,2,1,'',10,'Yes x is 3.\nYes y is 9.\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (34,2,9,3,1,'',0,'Not Saturn - Neptune.\n',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (35,1,9,3,1,'bbt',0,'',1,0);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (36,3,9,3,1,'',0,'',1,1);
+INSERT INTO Answer (answerID, questionID, testID, answererID, markerID, content, score, feedback, markerApproved, tutorApproved) VALUES (37,4,9,3,1,'',0,'',1,1);
 
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (25,'hydrogen',0,28,0);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (26,'oxygen',1,28,0);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (27,'x=3',0,29,1);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (28,'y=9',1,29,1);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (29,'hydrogen',0,32,0);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (30,'oxygen',1,32,0);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (31,'x=3',0,33,1);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (32,'y=9',1,33,1);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (33,'oxy',0,36,0);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (34,'hydro',1,36,0);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (35,'x=12',0,37,1);
+INSERT INTO Inputs (inputID, inputValue, inputIndex, answerID, math) VALUES (36,'y=1',1,37,1);
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Quantum Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Medical Physics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Astrophysics 3', '2019-01-11 00:00:00', '2019-11-11 00:00:00', 0, 0, 0, 0);
+INSERT INTO OptionEntries (optionEntryID, optionID, answerID) VALUES (7,2,26);
+INSERT INTO OptionEntries (optionEntryID, optionID, answerID) VALUES (8,3,30);
+INSERT INTO OptionEntries (optionEntryID, optionID, answerID) VALUES (9,2,34);
 
+INSERT INTO TestResult (testResultID, testID, studentID, testScore) VALUES (5,9,1,20);
+INSERT INTO TestResult (testResultID, testID, studentID, testScore) VALUES (6,9,2,40);
+INSERT INTO TestResult (testResultID, testID, studentID, testScore) VALUES (7,9,3,0);
 
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Quantum Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Medical Physics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0, 0);
-insert into Tests (moduleID, testTitle, startDateTime, endDateTime, publishResults, scheduled, publishGrades, practice)
-values (1, 'Astrophysics 3', '2018-12-5 12:00:00', '2018-12-5 13:00:00', 0, 1, 0, 0);
+INSERT INTO TutorRequests (tutorRequestID, userID, reason, approved) VALUES (1,1,'I want to be a tutor',1);
+INSERT INTO TutorRequests (tutorRequestID, userID, reason, approved) VALUES (2,4,'RMG: testing tutor request functionality',1);
 
-insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
-values (1, 'What is the name of the negatively charged particles in an atom?', null, 3, 0, 2, 0);
-insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
-values (1, 'How much wood would a wood chuck chuck if a wood chuck could chuck wood?', null, 3, 0, 2, 0);
-insert into Question(questionType, questionContent, questionFigure, maxScore, minScore, creatorID, allThatApply)
-values (1, 'In Star Wars what color was Luke Skywalkers lightsaber?', null, 2, 0, 2, 0);
-
-insert into TestQuestion(testID, questionID)
-values (7, 1);
-insert into TestQuestion(testID, questionID)
-values (7, 2);
-insert into TestQuestion(testID, questionID)
-values (7, 3);
-
-insert into TestQuestion(testID, questionID)
-values (8, 1);
-insert into TestQuestion(testID, questionID)
-values (8, 2);
-insert into TestQuestion(testID, questionID)
-values (8, 3);
-
-insert into TestQuestion(testID, questionID)
-values (9, 1);
-insert into TestQuestion(testID, questionID)
-values (9, 2);
-insert into TestQuestion(testID, questionID)
-values (9, 3);
-
-insert into TestQuestion(testID, questionID)
-values (10, 1);
-insert into TestQuestion(testID, questionID)
-values (10, 2);
-insert into TestQuestion(testID, questionID)
-values (10, 3);
-
-insert into TestQuestion(testID, questionID)
-values (11, 1);
-insert into TestQuestion(testID, questionID)
-values (11, 2);
-insert into TestQuestion(testID, questionID)
-values (11, 3);
-
-insert into TestQuestion(testID, questionID)
-values (12, 1);
-insert into TestQuestion(testID, questionID)
-values (12, 2);
-insert into TestQuestion(testID, questionID)
-values (12, 3);
-
-insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved)
-values (1, 10, 1, 2, 'Electrons', null, 1, 0);
-insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved)
-values (2, 10, 1, 3, 'A lot', 3, 1, 0);
-insert into Answer(questionID, testID, answererID, markerID, content, score, markerApproved, tutorApproved)
-values (3, 10, 1, 2, 'Blue then green', 2, 0, 0);
-
-insert into Answer(questionID, testID, answererID, markerID, content, score)
-values (1, 11, 1, 2, 'Electrons', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score)
-values (2, 11, 1, 2, 'A lot', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score)
-values (3, 11, 1, 2, 'Blue then green', null);
-
-insert into Answer(questionID, testID, answererID, markerID, content, score)
-values (1, 12, 1, 2, 'Electrons', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score)
-values (2, 12, 1, 3, 'A lot', null);
-insert into Answer(questionID, testID, answererID, markerID, content, score)
-values (3, 12, 1, 2, 'Blue then green', 2);
+INSERT INTO UserSessions (username, token, lastActive) VALUES ('richard.gault@qub.ac.uk','cmljaGFyZC5nYXVsdEBxdWIuYWMudWs6UGF1bEdhdWx0MQ==','2019-04-18 10:05:33');
+INSERT INTO UserSessions (username, token, lastActive) VALUES ('student@qub.ac.uk','c3R1ZGVudEBxdWIuYWMudWs6c3R1ZGVudFVzZXIx','2019-04-26 23:02:01');
+INSERT INTO UserSessions (username, token, lastActive) VALUES ('tutor@qub.ac.uk','dHV0b3JAcXViLmFjLnVrOnR1dG9yVXNlcjE=','2019-04-26 22:58:21');
+INSERT INTO UserSessions (username, token, lastActive) VALUES ('t_a@qub.ac.uk','dF9hQHF1Yi5hYy51azphc3Npc3RhbnRVc2VyMQ==','2019-04-26 23:24:27');

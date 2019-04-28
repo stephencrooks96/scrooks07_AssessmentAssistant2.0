@@ -170,7 +170,8 @@ public class TestService {
         List<Answer> answers = answerRepo.selectByQuestionID(questionAndAnswer.getQuestion().getQuestion().getQuestionID());
         if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_BASED)) {
             answerMatch = checkForTextBasedIdenticals(questionAndAnswer, false, answers);
-        } else if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD) || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH)) {
+        } else if (questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.INSERT_THE_WORD)
+                        || questionAndAnswer.getQuestion().getQuestion().getQuestionType().equals(QuestionType.TEXT_MATH)) {
             answerMatch = checkForInputBasedIdenticals(questionAndAnswer, false, answers);
         }
         return answerMatch;

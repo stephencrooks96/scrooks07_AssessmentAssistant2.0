@@ -222,7 +222,6 @@ public class MarkingService {
      * Performs the actual feedback update (common among all question types)
      */
     private void updateFeedback(Answer answer, Answer a) {
-        a.setMarkerApproved(1);
         a.setFeedback(answer.getFeedback());
         answerRepo.insert(a);
     }
@@ -311,7 +310,6 @@ public class MarkingService {
      * Performs the actual score update (common among all question types)
      */
     private void updateScore(Answer answer, Answer a) {
-        a.setMarkerApproved(1);
         a.setScore(answer.getScore());
         answerRepo.insert(a);
     }
@@ -1004,7 +1002,8 @@ public class MarkingService {
     double calculateStandardDeviation(List<Answer> answers) {
         double sum = answers.stream().mapToDouble(answer -> answer.getScore().doubleValue()).sum();
         double mean = (sum) / (answers.size());
-        double newSum = answers.stream().mapToDouble(answer -> ((answer.getScore().doubleValue() - mean) * (answer.getScore().doubleValue() - mean))).sum();
+        double newSum = answers.stream().mapToDouble(answer ->
+                        ((answer.getScore().doubleValue() - mean) * (answer.getScore().doubleValue() - mean))).sum();
         return (Math.sqrt((newSum) / (answers.size())));
     }
 

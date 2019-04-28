@@ -75,8 +75,8 @@ export class UserService {
    * Sends request to edit profile to backend
    * @param user
    */
-  editProfile(user: User): Observable<User> {
-    return this.http.post<User>(this.app.url + "/user/editProfile", user, {headers: this.app.headers})
+  editProfile(user: User): Observable<UserSession> {
+    return this.http.post<UserSession>(this.app.url + "/user/editProfile", user, {headers: this.app.headers})
       .pipe(
         tap(_ => console.log('User edited.'))
       );

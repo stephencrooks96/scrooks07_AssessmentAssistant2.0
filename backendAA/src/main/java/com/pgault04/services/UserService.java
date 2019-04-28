@@ -150,9 +150,15 @@ public class UserService {
                 User user = userRepo.selectByUsername(u.getUsername());
                 if (user == null) {
                     String password = PasswordUtil.generateRandomString();
-                    user = userRepo.insert(new User(u.getUsername(), PasswordUtil.encrypt(password), u.getFirstName(), u.getLastName(), 0, UserRole.ROLE_USER, 0));
+                    user = userRepo.insert(new User(u.getUsername(),
+                                                    PasswordUtil.encrypt(password),
+                                                    u.getFirstName(), u.getLastName(), 0, UserRole.ROLE_USER, 0));
+
                     passwordResetRepo.insert(new PasswordReset(user.getUserID(), PasswordUtil.generateRandomString()));
-                    userSessionRepo.insert(new UserSession(user.getUsername(), new String(Base64.getEncoder().encode((user.getUsername() + ":" + password).getBytes())), new Timestamp(System.currentTimeMillis())));
+                    userSessionRepo.insert(new UserSession(user.getUsername(),
+                                                            new String(Base64.getEncoder().encode((user.getUsername() + ":" + password).getBytes())),
+                                                            new Timestamp(System.currentTimeMillis())));
+
                     emailSender.sendNewAccountMessageFromSystemToUser(user, password, username);
                 }
             }
@@ -373,7 +379,7 @@ public class UserService {
      * @return the user
      * @throws IllegalArgumentException if the user name is in use
      */
-    public User editProfile(User user, Principal principal) throws IllegalArgumentException {
+    public UserSession editProfile(User user, Principal principal) throws IllegalArgumentException {
         User principalUser = userRepo.selectByUsername(principal.getName());
         if (!usernameCheck(user.getUsername(), principal)) {
             UserSession userSession = userSessionRepo.selectByUsername(principalUser.getUsername());
@@ -385,7 +391,7 @@ public class UserService {
             principalUser = userRepo.insert(principalUser);
             userSession = new UserSession(principalUser.getUsername(), new String(Base64.getEncoder().encode((principalUser.getUsername() + ":" + decodedPassword).getBytes())), new Timestamp(System.currentTimeMillis()));
             userSessionRepo.insert(userSession);
-            return user;
+            return userSession;
         }
         throw new IllegalArgumentException("Username already in use.");
     }

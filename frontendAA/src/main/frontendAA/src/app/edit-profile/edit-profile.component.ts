@@ -113,6 +113,9 @@ export class EditProfileComponent implements OnInit {
         form.reset();
         this.getUser();
         this.success = true;
+        localStorage.removeItem('creds');
+        localStorage.setItem('creds', test.token);
+        location.reload();
       }, error => {
       });
   }

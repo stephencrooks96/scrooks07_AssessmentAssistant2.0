@@ -235,6 +235,7 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       .subscribe(answer => {
         form.reset();
         this.editScoreShow = false;
+        this.getScriptsByTestID(this.testID);
         this.answerDetail.questionAndAnswer.answer = answer;
       }, error => {
         return;
@@ -387,6 +388,7 @@ export class MarkTestComponent implements OnInit, AfterViewInit {
       .subscribe(answer => {
         form.reset();
         this.editFeedbackShow = false;
+        this.getScriptsByTestID(this.testID);
         this.answerDetail.questionAndAnswer.answer = answer;
       }, error => {
         return;

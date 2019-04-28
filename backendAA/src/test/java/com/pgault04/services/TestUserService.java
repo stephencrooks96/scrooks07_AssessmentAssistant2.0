@@ -2,10 +2,7 @@ package com.pgault04.services;
 
 import com.pgault04.controller.MainController;
 import com.pgault04.controller.UserController;
-import com.pgault04.entities.PasswordReset;
-import com.pgault04.entities.TutorRequests;
-import com.pgault04.entities.User;
-import com.pgault04.entities.UserRole;
+import com.pgault04.entities.*;
 import com.pgault04.pojos.ChangePassword;
 import com.pgault04.pojos.TutorRequestPojo;
 import com.pgault04.repositories.PasswordResetRepo;
@@ -316,8 +313,8 @@ public class TestUserService {
         User user = new User("username", "password", "firstName", "lastName", 0, UserRole.ROLE_USER, 0);
         user = userController.createProfile(user);
         user.setUsername("username2");
-        user = userController.editProfile(user, principal);
-        assertEquals("username2", user.getUsername());
+        userController.editProfile(user, principal);
+        assertEquals("username2", userRepo.selectByUserID(user.getUserID()).getUsername());
     }
 
     @Transactional

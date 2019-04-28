@@ -102,7 +102,6 @@ export class AdminAreaComponent implements OnInit {
    */
   readUsers(csv: any) {
     this.userFile = csv.target.files[0];
-
     let fileReader = new FileReader();
     let stopPush;
     fileReader.readAsText(this.userFile);
@@ -136,11 +135,7 @@ export class AdminAreaComponent implements OnInit {
             if (headers[j] == "Email") {
               userToAdd.username = subData[j];
             } else if (headers[j] == "Tutor") {
-              if (subData[j] == 'Y') {
-                userToAdd.tutor = 1;
-              } else {
-                userToAdd.tutor = 0;
-              }
+              userToAdd.tutor = subData[j] == 'Y' ? 1 : 0;
             } else if (headers[j] == "FirstName") {
               userToAdd.firstName = subData[j];
             } else if (headers[j] == "LastName") {
@@ -167,7 +162,6 @@ export class AdminAreaComponent implements OnInit {
       }
       this.fileSuccess = true;
     };
-
   }
 
   /**
